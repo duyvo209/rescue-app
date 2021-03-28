@@ -1,7 +1,7 @@
 // import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -105,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // floatingActionButton: FloatingActionButton(
       //   onPressed: () {},
       // ),
+
       drawerEdgeDragWidth: 0,
       drawer: Drawer(
         child: ListView(
@@ -295,6 +296,25 @@ class _HomeScreenState extends State<HomeScreen> {
             //     ],
             //   ),
             // ),
+            Container(
+              padding: const EdgeInsets.fromLTRB(25, 600, 0, 0),
+              child: SizedBox(
+                width: 360,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  child: Text(
+                    "Tìm kiếm cửa hàng gần bạn",
+                    style: TextStyle(color: Colors.blueGrey[800], fontSize: 18),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.transparent,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(6))),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

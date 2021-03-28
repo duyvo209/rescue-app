@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rescue/models/chat_massages.dart';
 import 'package:rescue/models/send_menu_item.dart';
 import 'package:rescue/screens/chats/chat_bubble.dart';
 import 'package:rescue/screens/chats/chat_detail_screen_appbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum MessageType {
   Sender,
@@ -19,15 +22,123 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  String peerId;
+  String peerAvatar;
+  String id;
+
+  List<QueryDocumentSnapshot> listMessage = new List.from([]);
+  int _limit = 20;
+  int _limitIncrement = 20;
+  String groupChatId;
+  SharedPreferences prefs;
+
+  bool isLoading;
+  bool isShowSticker;
+
+  final TextEditingController textEditingController = TextEditingController();
+  final ScrollController listScrollController = ScrollController();
+  final FocusNode focusNode = FocusNode();
+
+  _scrollListener() {
+    if (listScrollController.offset >=
+            listScrollController.position.maxScrollExtent &&
+        !listScrollController.position.outOfRange) {
+      setState(() {
+        _limit += _limitIncrement;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    focusNode.addListener(onFocusChange);
+    listScrollController.addListener(_scrollListener);
+
+    groupChatId = '';
+
+    isLoading = false;
+    isShowSticker = false;
+
+    readLocal();
+  }
+
+  void onFocusChange() {
+    if (focusNode.hasFocus) {
+      // Hide sticker when keyboard appear
+      setState(() {
+        isShowSticker = false;
+      });
+    }
+  }
+
+  readLocal() async {
+    prefs = await SharedPreferences.getInstance();
+    id = prefs.getString('id') ?? '';
+    if (id.hashCode <= peerId.hashCode) {
+      groupChatId = '$id-$peerId';
+    } else {
+      groupChatId = '$peerId-$id';
+    }
+
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(id)
+        .update({'chattingWith': peerId});
+
+    setState(() {});
+  }
+
+  void getSticker() {
+    // Hide keyboard when sticker appear
+    focusNode.unfocus();
+    setState(() {
+      isShowSticker = !isShowSticker;
+    });
+  }
+
+  void onSendMessage(String content, int type) {
+    // type: 0 = text, 1 = image, 2 = sticker
+    if (content.trim() != '') {
+      textEditingController.clear();
+
+      var documentReference = FirebaseFirestore.instance
+          .collection('messages')
+          .doc(groupChatId)
+          .collection(groupChatId)
+          .doc(DateTime.now().millisecondsSinceEpoch.toString());
+
+      FirebaseFirestore.instance.runTransaction((transaction) async {
+        transaction.set(
+          documentReference,
+          {
+            'idFrom': id,
+            'idTo': peerId,
+            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'content': content,
+            'type': type
+          },
+        );
+      });
+      listScrollController.animateTo(0.0,
+          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+    } else {
+      Fluttertoast.showToast(
+          msg: 'Nothing to send',
+          backgroundColor: Colors.black,
+          textColor: Colors.red);
+    }
+  }
+
   List<ChatMessage> chatMessage = [
-    ChatMessage(message: "Hi John", type: MessageType.Receiver),
-    ChatMessage(message: "Hope you are doin good", type: MessageType.Receiver),
+    ChatMessage(message: "Ê Duy", type: MessageType.Receiver),
     ChatMessage(
-        message: "Hello Jane, I'm good what about you",
+        message: "Nay buồn quá đi nhậu k ?", type: MessageType.Receiver),
+    ChatMessage(
+        message: "T đang làm luận văn, k kịp rồi nản quá",
         type: MessageType.Sender),
-    ChatMessage(
-        message: "I'm fine, Working from home", type: MessageType.Receiver),
-    ChatMessage(message: "Oh! Nice. Same here man", type: MessageType.Sender),
+    ChatMessage(message: "Đi đi, t chỉ cho", type: MessageType.Receiver),
+    ChatMessage(message: "OK, vậy đi", type: MessageType.Sender),
   ];
 
   List<SendMenuItems> menuItems = [
@@ -174,7 +285,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   Icons.send,
                   color: Colors.white,
                 ),
-                backgroundColor: Colors.pink,
+                backgroundColor: Colors.blueGrey[800],
                 elevation: 0,
               ),
             ),
