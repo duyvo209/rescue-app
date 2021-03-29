@@ -125,7 +125,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           itemBuilder: (context, index) {
                             return ChatUsersList(
                               text: snapshot.data.docs[index]['name'],
-                              secondaryText: "AAAAA",
+                              secondaryText: "OK, vậy đi",
                               image: chatUsers[index].image,
                               time: chatUsers[index].time,
                               isMessageRead:

@@ -2,6 +2,8 @@
 import 'dart:async';
 
 // import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,8 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       accountName: Text('${state.user?.name}'),
                       currentAccountPicture: ClipRRect(
                         borderRadius: BorderRadius.circular(70),
-                        child: Image.asset(
-                          'assets/diemmy.jpeg',
+                        child: CachedNetworkImage(
+                          imageUrl: '${state.user.imageUser}',
                           width: 70,
                           height: 70,
                           fit: BoxFit.cover,
@@ -179,20 +181,55 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: Icon(Icons.home),
             ),
             SizedBox(height: 10),
-            ListTile(
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new HomeScreen()));
-              },
+            ExpansionTile(
               title: Text(
                 'Language',
                 style: TextStyle(fontSize: 16),
               ),
               leading: Icon(Icons.home),
+              children: <Widget>[
+                ListTile(
+                  onTap: () {
+                    setState(() {
+                      EasyLocalization.of(context).locale = Locale('vi', 'VN');
+                    });
+                  },
+                  title: Text(
+                    "Vietnamese",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  leading: Icon(Icons.arrow_forward),
+                  //Icon(),
+                ),
+                ListTile(
+                  onTap: () {
+                    setState(() {
+                      EasyLocalization.of(context).locale = Locale('en', 'US');
+                    });
+                  },
+                  title: Text(
+                    "English",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                  leading: Icon(Icons.arrow_forward),
+                  //Icon(),
+                ),
+              ],
             ),
+            // ListTile(
+            //   onTap: () {
+            //     Navigator.pop(context);
+            //     Navigator.push(
+            //         context,
+            //         new MaterialPageRoute(
+            //             builder: (context) => new HomeScreen()));
+            //   },
+            //   title: Text(
+            //     'Language',
+            //     style: TextStyle(fontSize: 16),
+            //   ),
+            //   leading: Icon(Icons.home),
+            // ),
             SizedBox(height: 10),
             BlocBuilder<AuthencationBloc, AuthencationState>(
                 builder: (_, state) {
@@ -308,7 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(color: Colors.blueGrey[800], fontSize: 18),
                   ),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.transparent,
+                    primary: Colors.white.withOpacity(0.4),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(6))),
                   ),
