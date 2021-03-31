@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
+import 'package:rescue/blocs/store/store_bloc.dart';
 // import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/screens/ChatScreen.dart';
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
+    BlocProvider.of<StoreBloc>(context).add(GetListStore());
     // _kGooglePlex = CameraPosition(
     //   target: LatLng(_originLatitude, _originLongitude),
     //   zoom: 9.4746,
@@ -216,20 +218,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            // ListTile(
-            //   onTap: () {
-            //     Navigator.pop(context);
-            //     Navigator.push(
-            //         context,
-            //         new MaterialPageRoute(
-            //             builder: (context) => new HomeScreen()));
-            //   },
-            //   title: Text(
-            //     'Language',
-            //     style: TextStyle(fontSize: 16),
-            //   ),
-            //   leading: Icon(Icons.home),
-            // ),
             SizedBox(height: 10),
             BlocBuilder<AuthencationBloc, AuthencationState>(
                 builder: (_, state) {
@@ -333,25 +321,71 @@ class _HomeScreenState extends State<HomeScreen> {
             //     ],
             //   ),
             // ),
+
             Container(
               padding: const EdgeInsets.fromLTRB(25, 600, 0, 0),
               child: SizedBox(
                 width: 360,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    BlocBuilder<StoreBloc, StoreState>(
+                        builder: (context, state) {
+                      return Column(
+                          children: state.listStore.map((e) {
+                        return Text('${e.name}');
+                      }).toList());
+                    });
+                  },
                   child: Text(
                     "Tìm kiếm cửa hàng gần bạn",
                     style: TextStyle(color: Colors.blueGrey[800], fontSize: 18),
                   ),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.white.withOpacity(0.4),
+                    primary: Colors.white.withOpacity(0.7),
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(6))),
                   ),
                 ),
               ),
-            )
+            ),
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: BlocBuilder<StoreBloc, StoreState>(
+                    builder: (context, state) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                        children: state.listStore.map((e) {
+                      return Container(
+                          height: 100,
+                          width: 200,
+                          margin: EdgeInsets.all(20),
+                          padding: EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${e.name}',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              Text(
+                                "${e.address}",
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              )
+                            ],
+                          ));
+                    }).toList()),
+                  );
+                }),
+              ),
+            ),
           ],
         ),
       ),

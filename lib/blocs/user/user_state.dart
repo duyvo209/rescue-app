@@ -4,14 +4,16 @@ class UserState extends Equatable {
   final bool isUserLoading;
   final UserInfo user;
   final String userError;
+  final bool userSuccess;
 
-  UserState({this.isUserLoading, this.user, this.userError});
+  UserState({this.isUserLoading, this.user, this.userError, this.userSuccess});
 
   factory UserState.empty() {
     return UserState(
       isUserLoading: false,
       user: null,
       userError: '',
+      userSuccess: false,
     );
   }
 
@@ -19,11 +21,13 @@ class UserState extends Equatable {
     bool isUserLoading,
     UserInfo user,
     String userError,
+    bool userSuccess,
   }) {
     return UserState(
       isUserLoading: isUserLoading ?? this.isUserLoading,
       user: user ?? this.user,
       userError: userError ?? this.userError,
+      userSuccess: userSuccess ?? this.userSuccess,
     );
   }
 
@@ -32,5 +36,6 @@ class UserState extends Equatable {
         this.isUserLoading,
         this.user,
         this.userError,
+        this.userSuccess,
       ];
 }

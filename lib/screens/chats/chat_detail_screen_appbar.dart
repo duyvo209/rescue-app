@@ -26,7 +26,7 @@ class ChatDetailPageAppBar extends StatelessWidget
                   Navigator.pop(context);
                 },
                 icon: Icon(
-                  Icons.arrow_back,
+                  Icons.arrow_back_ios,
                   color: Colors.black,
                 ),
               ),

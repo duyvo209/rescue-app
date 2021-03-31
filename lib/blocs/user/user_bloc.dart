@@ -20,13 +20,16 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         yield state.copyWith(
           isUserLoading: true,
           userError: '',
+          userSuccess: false,
         );
         var result = await FirebaseFirestore.instance
             .collection('users')
             .doc(event.userId)
             .get();
         yield state.copyWith(
-            isUserLoading: false, user: UserInfo.fromFireStore(result.data()));
+            isUserLoading: false,
+            userSuccess: true,
+            user: UserInfo.fromFireStore(result.data()));
       } catch (e) {
         yield state.copyWith(
           isUserLoading: false,

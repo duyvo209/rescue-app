@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-import 'package:rescue/blocs/signup/signup_bloc.dart';
+import 'package:rescue/blocs/store/store_bloc.dart';
+import 'package:rescue/models/place_service.dart';
+import 'package:rescue/screens/AddressSreachScreen.dart';
 import 'package:rescue/screens/LoginStoreScreen.dart';
+import 'package:uuid/uuid.dart';
+
+const kGoogleApiKey = "AIzaSyBHRMxpBKc25CMHY51h1jrnCCm6PjNs62s";
 
 // ignore: must_be_immutable
 class SignupStoreScreen extends StatefulWidget {
@@ -17,14 +22,18 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
   final TextEditingController _passwordController = new TextEditingController();
   final TextEditingController _retypepasswordController =
       new TextEditingController();
+  final TextEditingController _addressController = new TextEditingController();
+  final TextEditingController _timeController = new TextEditingController();
 
   String name = '';
   String email = '';
   String password = '';
   String retypepassword = '';
+  String address = '';
+  String time = '';
   bool isLoading = false;
   bool first = true;
-
+  Place place;
   @override
   initState() {
     super.initState();
@@ -46,6 +55,16 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
     _retypepasswordController.addListener(() {
       setState(() {
         retypepassword = _retypepasswordController.text;
+      });
+    });
+    _addressController.addListener(() {
+      setState(() {
+        address = _addressController.text;
+      });
+    });
+    _timeController.addListener(() {
+      setState(() {
+        _timeController.text;
       });
     });
   }
@@ -90,19 +109,39 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
     return null;
   }
 
+  String _addressError() {
+    if (first) {
+      return null;
+    }
+    if (email == '') {
+      return 'Address is invalid';
+    }
+    return null;
+  }
+
+  String _timeError() {
+    if (first) {
+      return null;
+    }
+    if (email == '') {
+      return 'Time is invalid';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SignupBloc, SignupState>(
+    return BlocListener<StoreBloc, StoreState>(
       listener: (_, state) {
-        if (state.signupSuccess) {
+        if (state.storeSuccess) {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => LoginStoreScreen()));
         }
       },
-      child: BlocBuilder<SignupBloc, SignupState>(
+      child: BlocBuilder<StoreBloc, StoreState>(
         builder: (context, state) {
           return LoadingOverlay(
-            isLoading: state.signupLoading,
+            isLoading: state.storeLoading,
             opacity: 0.5,
             color: Colors.transparent,
             child: GestureDetector(
@@ -153,7 +192,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Name",
+                                  hintText: "Tên cửa hàng",
                                   errorText: _nameError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -207,7 +246,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Password",
+                                  hintText: "Mật khẩu",
                                   errorText: _passwordError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -234,8 +273,84 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Retype Password",
+                                  hintText: "Nhập lại mật khẩu",
                                   errorText: _retypepasswordError(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 20),
+                                ),
+                                validator: (String value) {
+                                  if (value.isEmpty) {
+                                    return "a";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final sessionToken = Uuid().v4();
+                              final Suggestion result = await showSearch(
+                                context: context,
+                                delegate: AddressSearch(sessionToken),
+                              ).then((value) {
+                                _addressController.text = value.description;
+                                return value;
+                              });
+                              // This will change the text displayed in the TextField
+                              if (result != null) {
+                                final placeDetails =
+                                    await PlaceApiProvider(sessionToken)
+                                        .getPlaceDetailFromId(result.placeId);
+                                place = placeDetails;
+
+                                //print(placeDetails.);
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                              child: Container(
+                                margin: EdgeInsets.symmetric(
+                                    horizontal: 4.0, vertical: 4.0),
+                                decoration: BoxDecoration(
+                                    color: Color(0xFFF2F2F2),
+                                    borderRadius: BorderRadius.circular(12.0)),
+                                child: TextFormField(
+                                  enabled: false,
+                                  controller: _addressController,
+                                  textInputAction: TextInputAction.next,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "Địa chỉ",
+                                    errorText: _addressError(),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        horizontal: 24, vertical: 20),
+                                  ),
+                                  validator: (String value) {
+                                    if (value.isEmpty) {
+                                      return "a";
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 4.0),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFF2F2F2),
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: TextFormField(
+                                controller: _timeController,
+                                textInputAction: TextInputAction.next,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Giờ mở cửa - đóng cửa",
+                                  errorText: _timeError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
                                 ),
@@ -256,13 +371,17 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                               setState(() {
                                 first = false;
                               });
-                              BlocProvider.of<SignupBloc>(context).add(
-                                SignupStore(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    password: _passwordController.text,
-                                    uid: widget.uid),
-                              );
+                              // BlocProvider.of<StoreBloc>(context).add(
+                              //   Store(
+                              //       name: _nameController.text,
+                              //       email: _emailController.text,
+                              //       password: _passwordController.text,
+                              //       address: _addressController.text,
+                              //       time: _timeController.text,
+                              //       lat: place?.lat,
+                              //       long: place?.long,
+                              //       uid: widget.uid),
+                              // );
                               await Navigator.push(
                                   context,
                                   new MaterialPageRoute(
@@ -287,42 +406,6 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                               ),
                             ),
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
-                          //   child: SizedBox(
-                          //     width: 360,
-                          //     height: 52,
-                          //     child: ElevatedButton(
-                          //       onPressed: () async {
-                          //         setState(() {
-                          //           first = false;
-                          //         });
-                          //         BlocProvider.of<SignupBloc>(context).add(
-                          //           Signup(
-                          //               name: _nameController.text,
-                          //               email: _emailController.text,
-                          //               password: _passwordController.text,
-                          //               uid: widget.uid),
-                          //         );
-                          //         await Navigator.push(
-                          //             context,
-                          //             new MaterialPageRoute(
-                          //                 builder: (context) => LoginScreen()));
-                          //       },
-                          //       child: Text(
-                          //         "Sign Up",
-                          //         style: TextStyle(
-                          //             color: Colors.white, fontSize: 18),
-                          //       ),
-                          //       style: ElevatedButton.styleFrom(
-                          //         primary: Colors.blueGrey[800],
-                          //         shape: RoundedRectangleBorder(
-                          //             borderRadius:
-                          //                 BorderRadius.all(Radius.circular(6))),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           SizedBox(
                             height: 20,
                           )

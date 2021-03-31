@@ -75,6 +75,10 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
             'name': event.name,
             'email': event.email,
             'type': '0',
+            'address': event.address,
+            'time': event.time,
+            'lat': event.lat,
+            'long': event.long,
           });
           yield state.copyWith(
             signupLoading: false,
