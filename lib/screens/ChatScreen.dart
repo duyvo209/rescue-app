@@ -60,7 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Chats'),
+          title: Text('Tin nhắn'),
           backgroundColor: Colors.blueGrey[800],
           brightness: Brightness.light,
           elevation: 0,
@@ -76,7 +76,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 padding: EdgeInsets.only(top: 16, left: 16, right: 16),
                 child: TextField(
                   decoration: InputDecoration(
-                    hintText: "Search...",
+                    hintText: "Tìm kiếm...",
                     hintStyle: TextStyle(color: Colors.grey.shade400),
                     prefixIcon: Icon(
                       Icons.search,

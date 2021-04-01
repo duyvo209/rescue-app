@@ -154,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Name",
+                                  hintText: "Họ tên",
                                   errorText: _nameError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -208,7 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Password",
+                                  hintText: "Mật khẩu",
                                   errorText: _passwordError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -235,7 +235,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Retype Password",
+                                  hintText: "Nhập lại mật khẩu",
                                   errorText: _retypepasswordError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -278,7 +278,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   color: Colors.blueGrey[800]),
                               child: Center(
                                 child: Text(
-                                  'Sign Up',
+                                  'Đăng Ký',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,

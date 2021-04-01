@@ -19,41 +19,6 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
   Stream<StoreState> mapEventToState(
     StoreEvent event,
   ) async* {
-    // if (event is Store) {
-    //   try {
-    //     yield state.copyWith(
-    //       storeLoading: true,
-    //       storeSuccess: false,
-    //       storeError: '',
-    //     );
-    //     // var user = await firebaseAuth.createUserWithEmailAndPassword(
-    //     //     email: event.email, password: event.password);
-    //     // if (user != null) {
-    //     //   await fireStore.collection('store').doc(user.user.uid).set({
-    //     //     'name': event.name,
-    //     //     'email': event.email,
-    //     //     'address': event.address,
-    //     //     'time': event.time,
-    //     //     'lat': event.lat,
-    //     //     'long': event.long,
-    //     //   });
-    //     //   yield state.copyWith(
-    //     //     storeLoading: false,
-    //     //     storeSuccess: true,
-    //     //   );
-    //     //   // }
-    //     } else {
-    //       yield state.copyWith(storeLoading: false, storeSuccess: false);
-    //     }
-    //   } catch (e) {
-    //     yield state.copyWith(
-    //       storeLoading: false,
-    //       storeSuccess: false,
-    //       storeError: e.toString(),
-    //     );
-    //   }
-    // }
-
     if (event is GetListStore) {
       try {
         yield state.copyWith(

@@ -1,10 +1,11 @@
 part of 'store_bloc.dart';
 
+// ignore: must_be_immutable
 class StoreState extends Equatable {
   final bool storeLoading;
   final bool storeSuccess;
   final String storeError;
-  List<Store> listStore;
+  List<Store> listStore = [];
 
   StoreState(
       {this.storeLoading, this.storeSuccess, this.storeError, this.listStore});

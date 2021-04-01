@@ -54,7 +54,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Edit Profile'),
+        title: Text('Chỉnh sửa hồ sơ'),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -144,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _nameController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Full Name',
+                                labelText: 'Họ tên',
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 hintStyle: TextStyle(
@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _phoneController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Phone Number',
+                                labelText: 'Số điện thoại',
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 // hintText: '0939397979',
@@ -177,7 +177,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _addressController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Address',
+                                labelText: 'Địa chỉ',
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 // hintText: 'Can Tho',
@@ -208,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.red[900]),
                         child: Center(
                           child: Text(
-                            'Cancel',
+                            'Huỷ',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -244,7 +244,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.blueGrey[800]),
                         child: Center(
                           child: Text(
-                            'Save',
+                            'Lưu',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

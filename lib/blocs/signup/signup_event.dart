@@ -21,24 +21,24 @@ class Signup extends SignupEvent {
       this.uid});
 }
 
-class SignupStore extends SignupEvent {
-  final String name;
-  final String email;
-  final String password;
-  final String address;
-  final String time;
-  final String uid;
-  final double lat;
-  final double long;
+// class SignupStore extends SignupEvent {
+//   final String name;
+//   final String email;
+//   final String password;
+//   final String address;
+//   final String time;
+//   final String uid;
+//   final double lat;
+//   final double long;
 
-  SignupStore({
-    @required this.name,
-    @required this.email,
-    @required this.password,
-    @required this.address,
-    @required this.time,
-    @required this.lat,
-    @required this.long,
-    this.uid,
-  });
-}
+//   SignupStore({
+//     @required this.name,
+//     @required this.email,
+//     @required this.password,
+//     @required this.address,
+//     @required this.time,
+//     @required this.lat,
+//     @required this.long,
+//     this.uid,
+//   });
+// }

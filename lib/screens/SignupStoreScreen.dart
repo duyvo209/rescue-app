@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
+import 'package:rescue/blocs/signupStore/signupstore_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/place_service.dart';
 import 'package:rescue/screens/AddressSreachScreen.dart';
@@ -371,17 +372,17 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                               setState(() {
                                 first = false;
                               });
-                              // BlocProvider.of<StoreBloc>(context).add(
-                              //   Store(
-                              //       name: _nameController.text,
-                              //       email: _emailController.text,
-                              //       password: _passwordController.text,
-                              //       address: _addressController.text,
-                              //       time: _timeController.text,
-                              //       lat: place?.lat,
-                              //       long: place?.long,
-                              //       uid: widget.uid),
-                              // );
+                              BlocProvider.of<SignupstoreBloc>(context)
+                                  .add(SignupStore(
+                                name: _nameController.text,
+                                email: _emailController.text,
+                                password: _passwordController.text,
+                                address: _addressController.text,
+                                time: _timeController.text,
+                                lat: place?.lat,
+                                long: place?.long,
+                                uid: widget.uid,
+                              ));
                               await Navigator.push(
                                   context,
                                   new MaterialPageRoute(

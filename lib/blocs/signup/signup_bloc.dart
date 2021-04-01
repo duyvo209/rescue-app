@@ -61,40 +61,40 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
       }
     }
 
-    if (event is SignupStore) {
-      try {
-        yield state.copyWith(
-          signupLoading: true,
-          signupSuccess: false,
-          signupError: '',
-        );
-        var user = await firebaseAuth.createUserWithEmailAndPassword(
-            email: event.email, password: event.password);
-        if (user != null) {
-          await fireStore.collection('users').doc(user.user.uid).set({
-            'name': event.name,
-            'email': event.email,
-            'type': '0',
-            'address': event.address,
-            'time': event.time,
-            'lat': event.lat,
-            'long': event.long,
-          });
-          yield state.copyWith(
-            signupLoading: false,
-            signupSuccess: true,
-          );
-          // }
-        } else {
-          yield state.copyWith(signupLoading: false, signupSuccess: false);
-        }
-      } catch (e) {
-        yield state.copyWith(
-          signupLoading: false,
-          signupSuccess: false,
-          signupError: e.toString(),
-        );
-      }
-    }
+    // if (event is SignupStore) {
+    //   try {
+    //     yield state.copyWith(
+    //       signupLoading: true,
+    //       signupSuccess: false,
+    //       signupError: '',
+    //     );
+    //     var user = await firebaseAuth.createUserWithEmailAndPassword(
+    //         email: event.email, password: event.password);
+    //     if (user != null) {
+    //       await fireStore.collection('users').doc(user.user.uid).set({
+    //         'name': event.name,
+    //         'email': event.email,
+    //         'type': '0',
+    //         'address': event.address,
+    //         'time': event.time,
+    //         'lat': event.lat,
+    //         'long': event.long,
+    //       });
+    //       yield state.copyWith(
+    //         signupLoading: false,
+    //         signupSuccess: true,
+    //       );
+    //       // }
+    //     } else {
+    //       yield state.copyWith(signupLoading: false, signupSuccess: false);
+    //     }
+    //   } catch (e) {
+    //     yield state.copyWith(
+    //       signupLoading: false,
+    //       signupSuccess: false,
+    //       signupError: e.toString(),
+    //     );
+    //   }
+    // }
   }
 }
