@@ -31,6 +31,7 @@ class SignupstoreBloc extends Bloc<SignupstoreEvent, SignupstoreState> {
           await fireStore.collection('store').doc(user.user.uid).set({
             'name': event.name,
             'email': event.email,
+            'phone': event.phone,
             'address': event.address,
             'time': event.time,
             'lat': event.lat,

@@ -11,18 +11,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
-// import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
-import 'package:rescue/models/Store.dart';
 import 'package:rescue/screens/ChatScreen.dart';
-// import 'package:rescue/configs/configs.dart';
+import 'package:rescue/screens/InforStoreScreen.dart';
 import 'package:rescue/screens/MapScreen.dart';
 import 'package:rescue/screens/ProfileScreen.dart';
 import 'package:rescue/screens/IntroScreen.dart';
-// import 'package:rescue/widgets/ride_picker.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-// import 'package:location/location.dart';
-//
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -89,52 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      // BlocBuilder<StoreBloc, StoreState>(builder: (context, state) {
-      //   var lat = state.listStore.map((e) => e.lat);
-      //   var long = state.listStore.map((e) => e.long);
-      //   Marker(
-      //     markerId: MarkerId('${state.listStore.map((e) => e.email)}'),
-      //     position: LatLng(lat, long),
-      //     icon: iconMarker,
-      //     infoWindow: InfoWindow(
-      //       title: '${state.listStore.map((e) => e.name)}',
-      //       snippet: '${state.listStore.map((e) => e.address)}',
-      //     ),
-      //   );
-      //   });
-      // });
-
-      // _marker.add(Marker(
-      //   markerId: MarkerId('id-1'),
-      //   position: LatLng(10.03002255212139, 105.77049000332502),
-      //   icon: iconMarker,
-      //   infoWindow: InfoWindow(
-      //     title: 'Phúc Sửa Xe',
-      //     snippet: '44 Mạc Thiên Tích',
-      //   ),
-      // ));
-
-      // _marker.add(Marker(
-      //   markerId: MarkerId('id-2'),
-      //   position: LatLng(10.02840404568503, 105.77436822874425),
-      //   icon: iconMarker,
-      //   infoWindow: InfoWindow(
-      //     title: 'Đan Sửa Xe',
-      //     snippet: '44 Mạc Thiên Tích',
-      //   ),
-      // ));
-
-      // _marker.add(Marker(
-      //   markerId: MarkerId('id-3'),
-      //   position: LatLng(10.026618659360077, 105.77678237037138),
-      //   icon: iconMarker,
-      //   infoWindow: InfoWindow(
-      //     title: 'Nghĩa Sửa Xe',
-      //     snippet: '44 Mạc Thiên Tích',
-      //   ),
-      // ));
-    });
+    setState(() {});
   }
 
   @override
@@ -247,12 +197,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 10),
               ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new MapScreen()));
-                },
+                // onTap: () {
+                //   Navigator.push(
+                //       context,
+                //       new MaterialPageRoute(
+                //           builder: (context) => new MapScreen()));
+                // },
                 title: Text(
                   'Lịch sử',
                   style: TextStyle(fontSize: 16),
@@ -450,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // calculateDistance(10.02545, 105.77621, e.lat, e.long);
                         return Container(
                             height: 120,
-                            width: 200,
+                            width: MediaQuery.of(context).size.width * 0.8,
                             margin: EdgeInsets.only(
                                 left: 20, right: 20, bottom: 35),
                             padding: EdgeInsets.all(20),
@@ -458,31 +408,58 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: Colors.blueGrey[800],
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${e.name}',
-                                  style: TextStyle(
-                                      fontSize: 16, color: Colors.white),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  "${e.address}",
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  'Cách bạn ${m.toString().substring(0, 5)} km',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(
+                                        builder: (context) => InforStoreScreen(
+                                              store: e,
+                                            )));
+                              },
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 100,
+                                    height: 100,
+                                    child: Image.asset('assets/2.jpeg',
+                                        fit: BoxFit.cover),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${e.name}',
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.white),
+                                      ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      // Text(
+                                      //   "${e.address}",
+                                      //   maxLines: 2,
+                                      //   overflow: TextOverflow.ellipsis,
+                                      //   style: TextStyle(color: Colors.white),
+                                      // ),
+                                      SizedBox(
+                                        height: 5,
+                                      ),
+                                      Text(
+                                        'Cách bạn ${m.toString().substring(0, 5)} km',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ));
                       }).toList()),
                     );

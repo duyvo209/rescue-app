@@ -3,6 +3,7 @@ import 'dart:math' show cos, sqrt, asin;
 class Store {
   String name;
   String email;
+  String phone;
   String address;
   String time;
   double lat;
@@ -11,6 +12,7 @@ class Store {
   Store(
       {this.name,
       this.email,
+      this.phone,
       this.address,
       this.time,
       this.lat,
@@ -21,6 +23,7 @@ class Store {
     return Store(
       name: json['name'],
       email: json['email'],
+      phone: json['phone'],
       address: json['address'],
       time: json['time'],
       lat: json['lat'],
@@ -34,6 +37,7 @@ class Store {
     return {
       'name': name,
       'email': email,
+      'phone': phone,
       'address': address,
       'time': time,
       'lat': lat,

@@ -23,6 +23,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
   final TextEditingController _passwordController = new TextEditingController();
   final TextEditingController _retypepasswordController =
       new TextEditingController();
+  final TextEditingController _phoneController = new TextEditingController();
   final TextEditingController _addressController = new TextEditingController();
   final TextEditingController _timeController = new TextEditingController();
 
@@ -30,6 +31,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
   String email = '';
   String password = '';
   String retypepassword = '';
+  String phone = '';
   String address = '';
   String time = '';
   bool isLoading = false;
@@ -56,6 +58,11 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
     _retypepasswordController.addListener(() {
       setState(() {
         retypepassword = _retypepasswordController.text;
+      });
+    });
+    _phoneController.addListener(() {
+      setState(() {
+        phone = _phoneController.text;
       });
     });
     _addressController.addListener(() {
@@ -106,6 +113,16 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
     }
     if (retypepassword == '' || retypepassword != password) {
       return 'Password incorrect';
+    }
+    return null;
+  }
+
+  String _phoneError() {
+    if (first) {
+      return null;
+    }
+    if (name == '') {
+      return 'Phone is invalid';
     }
     return null;
   }
@@ -288,6 +305,33 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                            child: Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 4.0, vertical: 4.0),
+                              decoration: BoxDecoration(
+                                  color: Color(0xFFF2F2F2),
+                                  borderRadius: BorderRadius.circular(12.0)),
+                              child: TextFormField(
+                                controller: _phoneController,
+                                textInputAction: TextInputAction.next,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: "Số điện thoại",
+                                  errorText: _phoneError(),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 24, vertical: 20),
+                                ),
+                                validator: (String value) {
+                                  if (value.isEmpty) {
+                                    return "a";
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ),
                           GestureDetector(
                             onTap: () async {
                               final sessionToken = Uuid().v4();
@@ -377,6 +421,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                 name: _nameController.text,
                                 email: _emailController.text,
                                 password: _passwordController.text,
+                                phone: _phoneController.text,
                                 address: _addressController.text,
                                 time: _timeController.text,
                                 lat: place?.lat,
