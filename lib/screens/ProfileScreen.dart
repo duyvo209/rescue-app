@@ -9,6 +9,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:path/path.dart';
+import 'package:rescue/models/place_service.dart';
+import 'package:rescue/screens/AddressSreachScreen.dart';
+import 'package:uuid/uuid.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -22,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   String imageUser = '';
   File _image;
+  Place place;
 
   Future getImage() async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
@@ -171,18 +175,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         SizedBox(
                           height: 35,
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          child: TextField(
-                            controller: _addressController,
-                            decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Địa chỉ',
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                // hintText: 'Can Tho',
-                                hintStyle: TextStyle(
-                                    fontSize: 20, color: Colors.black)),
+                        GestureDetector(
+                          onTap: () async {
+                            final sessionToken = Uuid().v4();
+                            final Suggestion result = await showSearch(
+                              context: context,
+                              delegate: AddressSearch(sessionToken),
+                            ).then((value) {
+                              _addressController.text = value.description;
+                              return value;
+                            });
+                            // This will change the text displayed in the TextField
+                            if (result != null) {
+                              final placeDetails =
+                                  await PlaceApiProvider(sessionToken)
+                                      .getPlaceDetailFromId(result.placeId);
+                              place = placeDetails;
+
+                              //print(placeDetails.);
+                            }
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(left: 5, right: 5),
+                            child: TextField(
+                              enabled: false,
+                              controller: _addressController,
+                              decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.only(bottom: 5),
+                                  labelText: 'Địa chỉ',
+                                  floatingLabelBehavior:
+                                      FloatingLabelBehavior.always,
+                                  // hintText: 'Can Tho',
+                                  hintStyle: TextStyle(
+                                      fontSize: 20, color: Colors.black)),
+                            ),
                           ),
                         ),
                       ],

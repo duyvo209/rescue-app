@@ -443,7 +443,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                   color: Colors.blueGrey[800]),
                               child: Center(
                                 child: Text(
-                                  'Sign Up',
+                                  'Đăng Ký',
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,

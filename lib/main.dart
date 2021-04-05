@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,7 +21,19 @@ void main() async {
     systemNavigationBarColor: Colors.white,
     systemNavigationBarIconBrightness: Brightness.dark,
   ));
-  runApp(MyApp());
+
+  runApp(
+    EasyLocalization(
+      child: MyApp(),
+      path: 'assets/langs',
+      saveLocale: true,
+      supportedLocales: [
+        Locale('vi', 'VN'),
+        Locale('en', 'US'),
+      ],
+      fallbackLocale: Locale('vi', 'VN'),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {

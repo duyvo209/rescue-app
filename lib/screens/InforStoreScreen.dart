@@ -208,6 +208,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
+                        _showDialog(context);
                         BlocProvider.of<RequestBloc>(context).add(
                           AddToRequest(
                             userId: FirebaseAuth.instance.currentUser.uid,
@@ -215,12 +216,6 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                             problem: valueChoose,
                           ),
                         );
-
-                        // AddToRequest();
-                        // BlocProvider.of<RequestBloc>(context).add(AddToRequest(
-                        //   userId: FirebaseAuth.instance.currentUser.uid,
-                        //   store: widget.store,
-                        // ));
                       },
                       child: Container(
                         height: 55,
@@ -248,89 +243,23 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
           ],
         ));
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text(
+                'Yêu cầu của bạn đã được gửi đi, chúng tôi sẽ đến trong ít phút'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }
-//         body: Material(
-//           child: CustomScrollView(
-//             slivers: [
-//               SliverPersistentHeader(
-//                 delegate: MySliverAppBar(expandedHeight: 200),
-//                 pinned: true,
-//               ),
-//               SliverList(
-//                 delegate: SliverChildBuilderDelegate(
-//                   (_, index) => ListTile(
-//                     title: Text("Index: $index"),
-//                   ),
-//                 ),
-//               )
-//             ],
-//           ),
-//         ));
-//   }
-// }
-
-// class MySliverAppBar extends SliverPersistentHeaderDelegate {
-//   final double expandedHeight;
-
-//   MySliverAppBar({@required this.expandedHeight});
-
-//   @override
-//   Widget build(
-//       BuildContext context, double shrinkOffset, bool overlapsContent) {
-//     return Stack(
-//       fit: StackFit.expand,
-//       overflow: Overflow.visible,
-//       children: [
-//         Image.network(
-//           "https://images.pexels.com/photos/396547/pexels-photo-396547.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-//           fit: BoxFit.cover,
-//         ),
-//         Center(
-//           child: Opacity(
-//             opacity: shrinkOffset / expandedHeight,
-//             child: Text(
-//               "MySliverAppBar",
-//               style: TextStyle(
-//                 color: Colors.white,
-//                 fontWeight: FontWeight.w700,
-//                 fontSize: 23,
-//               ),
-//             ),
-//           ),
-//         ),
-//         Positioned(
-//           top: expandedHeight / 2 - shrinkOffset,
-//           left: MediaQuery.of(context).size.width / 4,
-//           child: Opacity(
-//             opacity: (1 - shrinkOffset / expandedHeight),
-//             child: Card(
-//               elevation: 10,
-//               child: SizedBox(
-//                   height: expandedHeight,
-//                   width: MediaQuery.of(context).size.width / 2,
-//                   child: Container(
-//                     child: Column(
-//                       children: <Widget>[
-//                         Text('${}')
-//                       ],
-//                     ),
-//                   )
-
-//                   ),
-//                   ),
-//             ),
-//           ),
-
-//       ],
-//     );
-//   }
-
-//   @override
-//   double get maxExtent => expandedHeight;
-
-//   @override
-//   double get minExtent => kToolbarHeight;
-
-//   @override
-//   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
-// }

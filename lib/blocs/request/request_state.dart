@@ -1,14 +1,14 @@
 part of 'request_bloc.dart';
 
 class RequestState extends Equatable {
-  final List<Request> request;
+  final List<Rescue> request;
   RequestState({this.request});
 
   factory RequestState.empty() {
     return RequestState(request: []);
   }
 
-  RequestState copyWith(List<Request> request) {
+  RequestState copyWith(List<Rescue> request) {
     return RequestState(request: request ?? this.request);
   }
 

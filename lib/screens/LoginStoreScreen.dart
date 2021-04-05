@@ -171,7 +171,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Password",
+                                hintText: "Mật khẩu",
                                 errorText: _passwordError(),
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 20),
@@ -197,7 +197,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                                 );
                               },
                               child: Text(
-                                "Log In",
+                                "Đăng Nhập",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
                               ),
@@ -219,7 +219,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                                     builder: (context) => SignupStoreScreen()));
                           },
                           child: Text(
-                            "Create a new account",
+                            "Tạo tài khoản mới",
                             style:
                                 TextStyle(color: Colors.blueGrey, fontSize: 15),
                           ),
@@ -236,7 +236,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                                     builder: (context) => ForgotPassScreen()));
                           },
                           child: Text(
-                            "Forgot Password ?",
+                            "Quên mật khẩu ?",
                             style:
                                 TextStyle(color: Colors.blueGrey, fontSize: 15),
                           ),

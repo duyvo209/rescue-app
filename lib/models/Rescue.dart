@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Rescue {
   String idUser;
   String idStore;
@@ -8,17 +10,33 @@ class Rescue {
   double lat;
   double long;
   String address;
-  Rescue({
-    this.idUser,
-    this.idStore,
-    this.problem,
-    this.service,
-    this.time,
-    this.desc,
-    this.lat,
-    this.long,
-    this.address,
-  });
+  String idRequest;
+  static const status_new = 0;
+  int status;
+
+  Rescue.newRescue(
+      {this.idUser,
+      this.idStore,
+      this.idRequest,
+      this.problem,
+      this.address,
+      this.desc,
+      this.service})
+      : status = status_new,
+        time = DateTime.now();
+
+  Rescue(
+      {this.idUser,
+      this.idStore,
+      this.problem,
+      this.service,
+      this.time,
+      this.status,
+      this.desc,
+      this.lat,
+      this.long,
+      this.address,
+      this.idRequest});
 
   factory Rescue.fromFireStore(Map<String, dynamic> json) {
     return Rescue(
@@ -26,7 +44,8 @@ class Rescue {
       idStore: json['idStore'],
       problem: json['problem'],
       service: json['service'],
-      time: json['time'],
+      time: (json['time'] as Timestamp).toDate(),
+      status: json['status'],
       desc: json['json'],
       lat: json['lat'],
       long: json['long'],
@@ -40,12 +59,17 @@ class Rescue {
       'idStore': idStore,
       'problem': problem,
       'service': service,
-      'time': DateTime.now(),
+      'time': time,
+      'status': status,
       'desc': desc,
       'lat': lat,
       'long': long,
       'address': address,
     };
+  }
+
+  void setRequestId(String id) {
+    this.idRequest = id;
   }
 
   @override

@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:http/http.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/login/login_bloc.dart';
+import 'package:rescue/models/Rescue.dart';
 
 part 'request_event.dart';
 part 'request_state.dart';
@@ -28,26 +31,36 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         // });
         //
         FirebaseFirestore firebase = FirebaseFirestore.instance;
-        firebase.collection("res").doc("123").set({"123": "123"});
-        // var add = await FirebaseFirestore.instance
-        //     .collection('request')
-        //     .doc(event.userId)
-        //     .set({
-        //   "idstore": "",
-        //   'userId': event.userId,
-        //   "time": "",
-        //   "problem": ""
-        // });
-        firebase.collection("request").doc(event.userId).set({
-          "storeName": event.storeName,
-          'userId': event.userId,
-          "time": DateTime.now(),
-          'problem': event.problem,
-          "status": "0",
-        }).then((value) {
+        firebase
+            .collection("request")
+            .doc()
+            .set(event.toRescue().toMap())
+            .then((value) {
           print("success");
         });
       } catch (e) {}
+    }
+
+    if (event is GetListRequest) {
+      try {
+        var user = BlocProvider.of<LoginBloc>(event.context).state.user;
+        var data = await FirebaseFirestore.instance
+            .collection('request')
+            .where('idUser', isEqualTo: user.uid)
+            .snapshots()
+            .first;
+        print(data);
+
+        var listRes = data.docs.map((e) {
+          var res = Rescue.fromFireStore(e.data());
+          var idRes = e.id;
+          res.setRequestId(idRes);
+          return res;
+        }).toList();
+        yield state.copyWith(listRes);
+      } catch (e) {
+        print(e.toString());
+      }
     }
   }
 }

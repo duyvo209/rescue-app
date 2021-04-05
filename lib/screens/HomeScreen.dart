@@ -12,9 +12,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
+import 'package:rescue/configs/configs.dart';
 import 'package:rescue/screens/ChatScreen.dart';
+import 'package:rescue/screens/History.dart';
 import 'package:rescue/screens/InforStoreScreen.dart';
-import 'package:rescue/screens/MapScreen.dart';
 import 'package:rescue/screens/ProfileScreen.dart';
 import 'package:rescue/screens/IntroScreen.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -39,6 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Set<Marker> _marker = {};
   BitmapDescriptor iconMarker;
+
+  Set<Polyline> _polylines = {};
+  List<LatLng> polylineCoordinates = [];
 
   @override
   void initState() {
@@ -85,6 +89,61 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {});
+    setMapPins();
+    // setPolylines();
+  }
+
+  void setMapPins() {
+    setState(() {
+      BlocListener<StoreBloc, StoreState>(
+        listener: (_, state) {
+          if (state.listStore.isNotEmpty) {
+            state.listStore.forEach((element) {
+              _marker.add(Marker(
+                markerId: MarkerId('${element.email}'),
+                position: LatLng(element.lat, element.long),
+                icon: iconMarker,
+                infoWindow: InfoWindow(
+                  title: '${element.name}',
+                  snippet: '${element.address}',
+                ),
+              ));
+            });
+          }
+        },
+      );
+    });
+  }
+
+  setPolylines(latitude, longitude) async {
+    polylineCoordinates.clear();
+    PolylineResult resultPoly =
+        await polylinePoints?.getRouteBetweenCoordinates(GOOGLE_API_KEY,
+            PointLatLng(10.02545, 105.77621), PointLatLng(latitude, longitude));
+    List<PointLatLng> result = resultPoly?.points;
+    // print(result);
+    if (result.isNotEmpty) {
+      // loop through all PointLatLng points and convert them
+      // to a list of LatLng, required by the Polyline
+      result.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+    setState(() {
+      // create a Polyline instance
+      // with an id, an RGB color and the list of LatLng pairs
+      Polyline polyline = Polyline(
+          polylineId: PolylineId('poly'),
+          geodesic: true,
+          width: 5,
+          color: Color.fromARGB(255, 40, 122, 198),
+          // points: [LatLng(latitude, longitude), LatLng(10.02545, 105.77621)]);
+          points: polylineCoordinates);
+      // add the constructed polyline as a set of points
+      // to the polyline set, which will eventually
+      // end up showing up on the map
+      _polylines.add(polyline);
+    });
   }
 
   @override
@@ -197,12 +256,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 10),
               ListTile(
-                // onTap: () {
-                //   Navigator.push(
-                //       context,
-                //       new MaterialPageRoute(
-                //           builder: (context) => new MapScreen()));
-                // },
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new HistoryScreen()));
+                },
                 title: Text(
                   'Lịch sử',
                   style: TextStyle(fontSize: 16),
@@ -295,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                   title: Text(
-                    'Log out',
+                    'Đăng xuất',
                     style: TextStyle(fontSize: 16),
                   ),
                   leading: Icon(Icons.home),
@@ -332,31 +391,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 compassEnabled: true,
                 scrollGesturesEnabled: true,
                 zoomGesturesEnabled: true,
-                polylines: Set<Polyline>.of(polylines.values),
-                // markers: Set<Marker>.of(markers.values),
-                // onMapCreated: (GoogleMapController controller) {
-                //   _controller.complete(controller);
-                // },
-
                 markers: _marker,
                 onMapCreated: _onMapCreated,
+                polylines: _polylines,
               ),
-              // Positioned(
-              //   left: 0,
-              //   top: 0,
-              //   right: 0,
-              //   child: Column(
-              //     children: <Widget>[
-              //       Padding(
-              //         padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-              //         child: RidePicker(),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
               Container(
-                padding: const EdgeInsets.fromLTRB(25, 600, 0, 0),
+                padding: const EdgeInsets.fromLTRB(25, 580, 0, 0),
                 child: SizedBox(
                   width: 360,
                   height: 50,
@@ -399,7 +439,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         double m = e.getM(10.02545, 105.77621);
                         // calculateDistance(10.02545, 105.77621, e.lat, e.long);
                         return Container(
-                            height: 120,
+                            height: 140,
                             width: MediaQuery.of(context).size.width * 0.8,
                             margin: EdgeInsets.only(
                                 left: 20, right: 20, bottom: 35),
@@ -443,19 +483,34 @@ class _HomeScreenState extends State<HomeScreen> {
                                       SizedBox(
                                         height: 5,
                                       ),
-                                      // Text(
-                                      //   "${e.address}",
-                                      //   maxLines: 2,
-                                      //   overflow: TextOverflow.ellipsis,
-                                      //   style: TextStyle(color: Colors.white),
-                                      // ),
+                                      Text(
+                                        "${e.address}",
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                       SizedBox(
                                         height: 5,
                                       ),
                                       Text(
-                                        'Cách bạn ${m.toString().substring(0, 5)} km',
+                                        'Cách bạn ${m.toString().substring(0, 4)} km',
                                         style: TextStyle(color: Colors.white),
                                       ),
+                                      // SizedBox(
+                                      //   height: 5,
+                                      // ),
+                                      Container(
+                                          height: 35,
+                                          // color: Colors.red,
+                                          child: IconButton(
+                                            icon: Icon(
+                                              Icons.arrow_forward,
+                                              color: Colors.white,
+                                            ),
+                                            onPressed: () {
+                                              setPolylines(e.lat, e.long);
+                                            },
+                                          )),
                                     ],
                                   ),
                                 ],
