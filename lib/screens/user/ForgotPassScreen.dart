@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
-import 'package:rescue/screens/LoginScreen.dart';
+import 'package:rescue/screens/user/LoginScreen.dart';
 
 class ForgotPassScreen extends StatefulWidget {
   @override

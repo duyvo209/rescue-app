@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rescue/models/chat_massages.dart';
-import 'package:rescue/screens/ChatDetailScreen.dart';
+import 'package:rescue/screens/user/ChatDetailScreen.dart';
 
 // ignore: must_be_immutable
 class ChatBubble extends StatefulWidget {

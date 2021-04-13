@@ -1,33 +1,48 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rescue/models/Service.dart';
+import 'package:rescue/models/UserInfo.dart';
+import 'dart:math' show cos, sqrt, asin;
 
 class Rescue {
   String idUser;
   String idStore;
-  String problem;
+  String storeName;
+  Service problem;
   List<String> service = [];
   DateTime time;
   String desc;
   double lat;
   double long;
+  double latUser;
+  double lngUser;
+  double m;
   String address;
   String idRequest;
   static const status_new = 0;
   int status;
+  UserInfo userInfo;
 
   Rescue.newRescue(
       {this.idUser,
       this.idStore,
+      this.storeName,
       this.idRequest,
       this.problem,
       this.address,
       this.desc,
-      this.service})
+      this.lat,
+      this.long,
+      this.latUser,
+      this.lngUser,
+      this.m,
+      this.service,
+      this.userInfo})
       : status = status_new,
         time = DateTime.now();
 
   Rescue(
       {this.idUser,
       this.idStore,
+      this.storeName,
       this.problem,
       this.service,
       this.time,
@@ -35,36 +50,49 @@ class Rescue {
       this.desc,
       this.lat,
       this.long,
+      this.latUser,
+      this.lngUser,
+      this.m,
       this.address,
-      this.idRequest});
+      this.idRequest,
+      this.userInfo});
 
   factory Rescue.fromFireStore(Map<String, dynamic> json) {
     return Rescue(
-      idUser: json['idUser'],
-      idStore: json['idStore'],
-      problem: json['problem'],
-      service: json['service'],
-      time: (json['time'] as Timestamp).toDate(),
-      status: json['status'],
-      desc: json['json'],
-      lat: json['lat'],
-      long: json['long'],
-      address: json['address'],
-    );
+        idUser: json['idUser'],
+        idStore: json['idStore'],
+        storeName: json['store_name'],
+        problem: Service.fromFireStore(json['problem']),
+        service: json['service'],
+        time: DateTime.parse(json['time']),
+        status: json['status'],
+        desc: json['json'],
+        lat: json['lat'],
+        long: json['long'],
+        latUser: json['lat_user'],
+        lngUser: json['lng_user'],
+        m: json['m'],
+        address: json['address'],
+        userInfo: UserInfo.fromFireStore(json['user_info']));
   }
 
   Map<String, dynamic> toMap() {
     return {
       'idUser': idUser,
       'idStore': idStore,
-      'problem': problem,
+      'store_name': storeName,
+      'problem': problem.toMap(),
       'service': service,
       'time': time,
       'status': status,
       'desc': desc,
       'lat': lat,
       'long': long,
+      'lat_user': latUser,
+      'lng_user': lngUser,
+      'm': m,
       'address': address,
+      'user_info': userInfo?.toMap()
     };
   }
 
@@ -72,16 +100,31 @@ class Rescue {
     this.idRequest = id;
   }
 
+  double getM(lat1, lon1) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((this.latUser - lat1) * p) / 2 +
+        c(lat1 * p) *
+            c(this.latUser * p) *
+            (1 - c((this.lngUser - lon1) * p)) /
+            2;
+    return 12742 * asin(sqrt(a));
+  }
+
   @override
   // ignore: override_on_non_overriding_member
   List<Object> get props => [
         this.idUser,
         this.idStore,
+        this.storeName,
         this.service,
         this.problem,
         this.time,
         this.lat,
         this.long,
+        this.latUser,
+        this.lngUser,
         this.address,
         this.desc,
       ];

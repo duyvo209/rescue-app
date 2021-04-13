@@ -4,4 +4,5 @@ class Constants {
   // Login Method
   static const String LOGIN_METHOD = 'login method';
   static const String LOGIN_WITH_EMAIL = 'login_with_email';
+  static const String LOGIN_WITH_STORE = 'login_with_store';
 }

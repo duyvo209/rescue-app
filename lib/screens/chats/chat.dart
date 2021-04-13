@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rescue/screens/ChatDetailScreen.dart';
+import 'package:rescue/screens/user/ChatDetailScreen.dart';
 
 // ignore: must_be_immutable
 class ChatUsersList extends StatefulWidget {

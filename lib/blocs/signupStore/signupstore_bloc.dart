@@ -36,6 +36,8 @@ class SignupstoreBloc extends Bloc<SignupstoreEvent, SignupstoreState> {
             'time': event.time,
             'lat': event.lat,
             'long': event.long,
+            'idStore': user.user.uid,
+            'status': 0,
           });
           yield state.copyWith(
             signupLoading: false,

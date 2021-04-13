@@ -11,6 +11,7 @@
     "Quên mật khẩu": "Forgot password ?",
     "Tên cửa hàng": "Store name",
     "Số điện thoại": "Phone number",
+    "Đăng nhập": "Log In",
     "Địa chỉ": "Address",
     "Giờ mở cửa - đóng cửa": "Opening hours - closing",
     "Tìm kiếm cửa hàng gần bạn": "Search for stores near you",
@@ -18,9 +19,11 @@
     "Hồ sơ": "Profile",
     "Chỉnh sửa hồ sơ": "Edit profile",
     "Lịch sử": "History",
+    "Lưu": "Save",
+    "Huỷ": "Cancel",
     "Ngôn ngữ": "Language",
     "Tiếng việt": "Vietnamese",
     "Tiếng anh": "English",
     "Đăng xuất": "Log out",
     "Bạn đã đăng xuất": "You have logged out"
-    }
+}

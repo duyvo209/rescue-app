@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
 import 'package:rescue/blocs/signup/signup_bloc.dart';
-import 'package:rescue/screens/LoginScreen.dart';
+import 'package:rescue/screens/user/LoginScreen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 // ignore: must_be_immutable
 class SignUpScreen extends StatefulWidget {
@@ -154,7 +155,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Họ tên",
+                                  hintText: "Họ tên".tr().toString(),
                                   errorText: _nameError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -208,7 +209,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Mật khẩu",
+                                  hintText: "Mật khẩu".tr().toString(),
                                   errorText: _passwordError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -235,7 +236,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 textInputAction: TextInputAction.next,
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
-                                  hintText: "Nhập lại mật khẩu",
+                                  hintText: "Nhập lại mật khẩu".tr().toString(),
                                   errorText: _retypepasswordError(),
                                   contentPadding: EdgeInsets.symmetric(
                                       horizontal: 24, vertical: 20),
@@ -278,7 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   color: Colors.blueGrey[800]),
                               child: Center(
                                 child: Text(
-                                  'Đăng Ký',
+                                  'Đăng ký'.tr().toString(),
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,

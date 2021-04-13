@@ -1,17 +1,15 @@
-import 'dart:io';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
+
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
-import 'package:rescue/blocs/user/user_bloc.dart';
-import 'package:path/path.dart';
+
+import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/place_service.dart';
-import 'package:rescue/screens/AddressSreachScreen.dart';
+import 'package:rescue/screens/user/AddressSreachScreen.dart';
 import 'package:uuid/uuid.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -22,43 +20,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _nameController = new TextEditingController();
   final TextEditingController _phoneController = new TextEditingController();
   final TextEditingController _addressController = new TextEditingController();
+  final TextEditingController _timeController = new TextEditingController();
 
-  String imageUser = '';
-  File _image;
   Place place;
-
-  Future getImage() async {
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
-    setState(() {
-      _image = File(image.path);
-      print('Image Path $_image');
-    });
-  }
-
-  Future uploadPic() async {
-    try {
-      String fileName = basename(_image.path);
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = firebaseStorageRef.putFile(_image);
-      TaskSnapshot taskSnapshot = await uploadTask;
-      var downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      String url = downloadUrl.toString();
-      setState(() {
-        print("Profile Picture uploaded");
-      });
-      return url;
-    } catch (e) {
-      print(e.toString());
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chỉnh sửa hồ sơ'),
+        title: Text('Chỉnh sửa hồ sơ'.tr().toString()),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -76,68 +47,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               BlocBuilder<AuthencationBloc, AuthencationState>(
                   builder: (_, state) {
                 if (state is AuthenticationAuthenticated) {
-                  return BlocBuilder<UserBloc, UserState>(
+                  return BlocBuilder<StoreBloc, StoreState>(
                       builder: (context, state) {
-                    state.user.name == null
+                    state.store.name == null
                         ? _nameController.text = ""
-                        : _nameController.text = state.user.name;
+                        : _nameController.text = state.store.name;
 
-                    state.user.phone == null
+                    state.store.phone == null
                         ? _phoneController.text = ""
-                        : _phoneController.text = state.user.phone;
+                        : _phoneController.text = state.store.phone;
 
-                    state.user.address == null
+                    state.store.address == null
                         ? _addressController.text = ""
-                        : _addressController.text = state.user.address;
+                        : _addressController.text = state.store.address;
+
+                    state.store.time == null
+                        ? _timeController.text == ""
+                        : _timeController.text == state.store.time;
 
                     return Column(
                       children: [
                         SizedBox(
                           height: 15,
-                        ),
-                        Center(
-                          child: Stack(
-                            children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: CircleAvatar(
-                                  radius: 75,
-                                  backgroundColor: Colors.blueGrey[800],
-                                  child: ClipOval(
-                                    child: new SizedBox(
-                                      width: 140.0,
-                                      height: 140.0,
-                                      child: (_image != null)
-                                          ? Image.file(
-                                              _image,
-                                              fit: BoxFit.fill,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl: state.user.imageUser,
-                                              fit: BoxFit.cover,
-                                            ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  top: 100,
-                                  left: 220,
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.camera_alt,
-                                    size: 40.0,
-                                    color: Colors.orange[300],
-                                  ),
-                                  onPressed: () {
-                                    getImage();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
                         ),
                         SizedBox(
                           height: 35,
@@ -148,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _nameController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Họ tên',
+                                labelText: 'Họ tên'.tr().toString(),
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 hintStyle: TextStyle(
@@ -164,10 +95,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _phoneController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Số điện thoại',
+                                labelText: 'Số điện thoại'.tr().toString(),
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 // hintText: '0939397979',
+                                hintStyle: TextStyle(
+                                    fontSize: 20, color: Colors.black)),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 35,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 5, right: 5),
+                          child: TextField(
+                            controller: _timeController,
+                            decoration: InputDecoration(
+                                contentPadding: EdgeInsets.only(bottom: 5),
+                                labelText:
+                                    'Giờ mở cửa - đóng cửa'.tr().toString(),
+                                floatingLabelBehavior:
+                                    FloatingLabelBehavior.always,
                                 hintStyle: TextStyle(
                                     fontSize: 20, color: Colors.black)),
                           ),
@@ -202,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               controller: _addressController,
                               decoration: InputDecoration(
                                   contentPadding: EdgeInsets.only(bottom: 5),
-                                  labelText: 'Địa chỉ',
+                                  labelText: 'Địa chỉ'.tr().toString(),
                                   floatingLabelBehavior:
                                       FloatingLabelBehavior.always,
                                   // hintText: 'Can Tho',
@@ -234,7 +182,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.red[900]),
                         child: Center(
                           child: Text(
-                            'Huỷ',
+                            'Huỷ'.tr().toString(),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
@@ -250,17 +198,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        final url = await uploadPic();
-                        BlocProvider.of<UserBloc>(context).add(
-                          UpdateUser(
+                        BlocProvider.of<StoreBloc>(context).add(
+                          UpdateStore(
                             FirebaseAuth.instance.currentUser.uid,
                             _nameController.text,
                             _phoneController.text,
                             _addressController.text,
-                            url,
+                            _timeController.text,
                           ),
                         );
-                        uploadPic();
                         Navigator.pop(context);
                       },
                       child: Container(
@@ -270,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: Colors.blueGrey[800]),
                         child: Center(
                           child: Text(
-                            'Lưu',
+                            'Lưu'.tr().toString(),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,

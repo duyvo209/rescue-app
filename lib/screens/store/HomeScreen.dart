@@ -1,24 +1,22 @@
-// import 'package:cached_network_image/cached_network_image.dart';
 import 'dart:async';
 
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
+import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
-import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/configs/configs.dart';
-import 'package:rescue/screens/ChatScreen.dart';
-import 'package:rescue/screens/History.dart';
-import 'package:rescue/screens/InforStoreScreen.dart';
-import 'package:rescue/screens/ProfileScreen.dart';
-import 'package:rescue/screens/IntroScreen.dart';
+import 'package:rescue/screens/store/ChatScreen.dart';
+import 'package:rescue/screens/store/ConfirmScreen.dart';
+import 'package:rescue/screens/store/ServiceScreen.dart';
+import 'package:rescue/screens/user/HistoryScreen.dart';
+import 'package:rescue/screens/store/ProfileScreen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import '../IntroScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,8 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   GlobalKey<ScaffoldState> drawerKey = GlobalKey();
-
-// Markers to show points on the map
+  // Markers to show points on the map
   Map<MarkerId, Marker> markers = {};
 
   PolylinePoints polylinePoints = PolylinePoints();
@@ -43,39 +40,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Set<Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = [];
-
   @override
   void initState() {
-    BlocProvider.of<StoreBloc>(context).add(GetListStore());
-    // _kGooglePlex = CameraPosition(
-    //   target: LatLng(_originLatitude, _originLongitude),
-    //   zoom: 9.4746,
-    // );
+    BlocProvider.of<StoreBloc>(context)
+        .add(GetStore(FirebaseAuth.instance.currentUser.uid));
 
-    BlocProvider.of<UserBloc>(context)
-        .add(GetUser(FirebaseAuth.instance.currentUser.uid));
+    BlocProvider.of<RequestBloc>(context).add(GetRequest());
 
     _kGooglePlex = CameraPosition(
       // target: LatLng(10.7915178, 106.7271422),
-      target: LatLng(10.02545, 105.77621),
+      target: LatLng(10.03088, 105.76904),
       zoom: 14.4746,
     );
-
-    /// add origin marker origin marker
-    // _addMarker(
-    //   LatLng(_originLatitude, _originLongitude),
-    //   "origin",
-    //   BitmapDescriptor.defaultMarker,
-    // );
-
-    // // Add destination marker
-    // _addMarker(
-    //   LatLng(_destLatitude, _destLongitude),
-    //   "destination",
-    //   BitmapDescriptor.defaultMarkerWithHue(90),
-    // );
-
-    // _getPolyline();
 
     setCustomMarker();
 
@@ -95,17 +71,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setMapPins() {
     setState(() {
-      BlocListener<StoreBloc, StoreState>(
+      BlocListener<RequestBloc, RequestState>(
         listener: (_, state) {
-          if (state.listStore.isNotEmpty) {
-            state.listStore.forEach((element) {
+          if (state.request.isNotEmpty) {
+            state.request.forEach((element) {
               _marker.add(Marker(
-                markerId: MarkerId('${element.email}'),
-                position: LatLng(element.lat, element.long),
+                markerId: MarkerId('${element.idUser}'),
+                position: LatLng(element.latUser, element.lngUser),
                 icon: iconMarker,
                 infoWindow: InfoWindow(
-                  title: '${element.name}',
-                  snippet: '${element.address}',
+                  title: '${element.userInfo.name}',
+                  snippet: '${element.userInfo.address}',
                 ),
               ));
             });
@@ -119,46 +95,38 @@ class _HomeScreenState extends State<HomeScreen> {
     polylineCoordinates.clear();
     PolylineResult resultPoly =
         await polylinePoints?.getRouteBetweenCoordinates(GOOGLE_API_KEY,
-            PointLatLng(10.02545, 105.77621), PointLatLng(latitude, longitude));
+            PointLatLng(10.03088, 105.76904), PointLatLng(latitude, longitude));
     List<PointLatLng> result = resultPoly?.points;
-    // print(result);
+
     if (result.isNotEmpty) {
-      // loop through all PointLatLng points and convert them
-      // to a list of LatLng, required by the Polyline
       result.forEach((PointLatLng point) {
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       });
     }
     setState(() {
-      // create a Polyline instance
-      // with an id, an RGB color and the list of LatLng pairs
       Polyline polyline = Polyline(
           polylineId: PolylineId('poly'),
           geodesic: true,
           width: 5,
           color: Color.fromARGB(255, 40, 122, 198),
-          // points: [LatLng(latitude, longitude), LatLng(10.02545, 105.77621)]);
           points: polylineCoordinates);
-      // add the constructed polyline as a set of points
-      // to the polyline set, which will eventually
-      // end up showing up on the map
       _polylines.add(polyline);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<StoreBloc, StoreState>(
+    return BlocListener<RequestBloc, RequestState>(
       listener: (_, state) {
-        if (state.listStore.isNotEmpty) {
-          state.listStore.forEach((element) {
+        if (state.request.isNotEmpty) {
+          state.request.forEach((element) {
             _marker.add(Marker(
-              markerId: MarkerId('${element.email}'),
-              position: LatLng(element.lat, element.long),
+              markerId: MarkerId('${element.userInfo.email}'),
+              position: LatLng(10.02545, 105.7762),
               icon: iconMarker,
               infoWindow: InfoWindow(
-                title: '${element.name}',
-                snippet: '${element.address}',
+                title: '${element.userInfo.name}',
+                snippet: '${element.userInfo.address}',
               ),
             ));
           });
@@ -192,10 +160,6 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           ],
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {},
-        // ),
-
         drawerEdgeDragWidth: 0,
         drawer: Drawer(
           child: ListView(
@@ -203,22 +167,17 @@ class _HomeScreenState extends State<HomeScreen> {
               BlocBuilder<AuthencationBloc, AuthencationState>(
                   builder: (_, state) {
                 if (state is AuthenticationAuthenticated) {
-                  return BlocBuilder<UserBloc, UserState>(
+                  return BlocBuilder<StoreBloc, StoreState>(
                       builder: (context, state) {
                     return UserAccountsDrawerHeader(
                         decoration: BoxDecoration(
                           color: Colors.blueGrey[800],
                         ),
-                        accountEmail: Text('${state.user?.email}'),
-                        accountName: Text('${state.user?.name}'),
+                        accountEmail: Text('${state.store?.email}'),
+                        accountName: Text('${state.store?.name}'),
                         currentAccountPicture: ClipRRect(
-                          borderRadius: BorderRadius.circular(70),
-                          child: CachedNetworkImage(
-                            imageUrl: '${state.user.imageUser}',
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          ),
+                          // borderRadius: BorderRadius.circular(70),
+                          child: Image.asset('assets/2.jpeg'),
                         ));
                   });
                 }
@@ -234,7 +193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context) => new HomeScreen()));
                 },
                 title: Text(
-                  'Trang chủ',
+                  'Trang chủ'.tr().toString(),
                   style: TextStyle(fontSize: 16),
                 ),
                 leading: Icon(Icons.home),
@@ -249,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context) => new ProfileScreen()));
                 },
                 title: Text(
-                  'Hồ sơ',
+                  'Hồ sơ'.tr().toString(),
                   style: TextStyle(fontSize: 16),
                 ),
                 leading: Icon(Icons.person),
@@ -263,18 +222,45 @@ class _HomeScreenState extends State<HomeScreen> {
                           builder: (context) => new HistoryScreen()));
                 },
                 title: Text(
-                  'Lịch sử',
+                  'Cứu hộ',
                   style: TextStyle(fontSize: 16),
                 ),
-                leading: Icon(Icons.home),
+                leading: Icon(Icons.history),
               ),
               SizedBox(height: 10),
-              ExpansionTile(
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new ServiceScreen()));
+                },
                 title: Text(
-                  'Ngôn ngữ',
+                  'Dịch vụ',
                   style: TextStyle(fontSize: 16),
                 ),
-                leading: Icon(Icons.home),
+                leading: Icon(Icons.history),
+              ),
+              SizedBox(height: 10),
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new HistoryScreen()));
+                },
+                title: Text(
+                  'Hoá đơn',
+                  style: TextStyle(fontSize: 16),
+                ),
+                leading: Icon(Icons.history),
+              ),
+              ExpansionTile(
+                title: Text(
+                  'Ngôn ngữ'.tr().toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+                leading: Icon(Icons.language),
                 children: <Widget>[
                   ListTile(
                     onTap: () {
@@ -284,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     title: Text(
-                      "Vietnamese",
+                      "Vietnamese".tr().toString(),
                       style: TextStyle(fontSize: 16),
                     ),
                     leading: Icon(Icons.arrow_forward),
@@ -298,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       });
                     },
                     title: Text(
-                      "English",
+                      "English".tr().toString(),
                       style: TextStyle(fontSize: 16),
                     ),
                     leading: Icon(Icons.arrow_forward),
@@ -324,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             Padding(
                               padding: EdgeInsets.only(left: 25, right: 20),
-                              child: Text("Bạn đã đăng xuất !"),
+                              child: Text("Bạn đã đăng xuất !".tr().toString()),
                             ),
                             SizedBox(
                               height: 20,
@@ -354,10 +340,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                   title: Text(
-                    'Đăng xuất',
+                    'Đăng xuất'.tr().toString(),
                     style: TextStyle(fontSize: 16),
                   ),
-                  leading: Icon(Icons.home),
+                  leading: Icon(Icons.logout),
                 );
               }),
               SizedBox(height: 20),
@@ -395,74 +381,38 @@ class _HomeScreenState extends State<HomeScreen> {
                 onMapCreated: _onMapCreated,
                 polylines: _polylines,
               ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(25, 580, 0, 0),
-                child: SizedBox(
-                  width: 360,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      BlocBuilder<StoreBloc, StoreState>(
-                          builder: (context, state) {
-                        return Column(
-                            children: state.listStore.map((e) {
-                          return Text('${e.name}');
-                        }).toList());
-                      });
-                    },
-                    child: Text(
-                      "Tìm kiếm cửa hàng gần bạn",
-                      style:
-                          TextStyle(color: Colors.blueGrey[800], fontSize: 18),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white.withOpacity(0.7),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(6))),
-                    ),
-                  ),
-                ),
-              ),
               Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BlocBuilder<StoreBloc, StoreState>(
-                      builder: (context, state) {
-                    // List<Store> temp = state.listStore.map((e) => e);
-                    state.listStore.sort((a, b) => a
-                        .getM(10.02545, 105.77621)
-                        .compareTo(b.getM(10.02545, 105.77621)));
+                  child: Align(
+                alignment: Alignment.topCenter,
+                child: BlocBuilder<RequestBloc, RequestState>(
+                  builder: (context, state) {
+                    state.listRescue.sort((a, b) => a
+                        .getM(10.0281188, 105.7736494)
+                        .compareTo(b.getM(10.0281188, 105.7736494)));
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                          children: state.listStore.map((e) {
-                        double m = e.getM(10.02545, 105.77621);
-                        // calculateDistance(10.02545, 105.77621, e.lat, e.long);
-                        return Container(
-                            height: 140,
+                        children: state.request.map((e) {
+                          double m = e.getM(10.0281188, 105.7736494);
+                          return Container(
+                            height: 180,
                             width: MediaQuery.of(context).size.width * 0.8,
-                            margin: EdgeInsets.only(
-                                left: 20, right: 20, bottom: 35),
+                            margin:
+                                EdgeInsets.only(left: 20, right: 20, top: 20),
                             padding: EdgeInsets.all(20),
                             decoration: BoxDecoration(
                               color: Colors.blueGrey[800],
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => InforStoreScreen(
-                                              store: e,
-                                            )));
-                              },
+                              onTap: () {},
                               child: Row(
                                 children: [
                                   Container(
                                     width: 100,
-                                    height: 100,
-                                    child: Image.asset('assets/2.jpeg',
+                                    height: 150,
+                                    child: CachedNetworkImage(
+                                        imageUrl: e.userInfo.imageUser,
                                         fit: BoxFit.cover),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(8),
@@ -471,56 +421,90 @@ class _HomeScreenState extends State<HomeScreen> {
                                   SizedBox(
                                     width: 10,
                                   ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${e.name}',
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "${e.address}",
-                                        maxLines: 2,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        'Cách bạn ${m.toString().substring(0, 4)} km',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                      // SizedBox(
-                                      //   height: 5,
-                                      // ),
-                                      Container(
-                                          height: 35,
-                                          // color: Colors.red,
-                                          child: IconButton(
-                                            icon: Icon(
-                                              Icons.arrow_forward,
-                                              color: Colors.white,
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${e.userInfo.name}',
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          '${e.userInfo.address}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          'Cách bạn ${m.toString().substring(0, 4)} km',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          '${e.problem.name}',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          children: [
+                                            FlatButton(
+                                              color: Colors.white70,
+                                              onPressed: () {
+                                                Navigator.push(
+                                                    context,
+                                                    new MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ComfirmScreen(
+                                                                rescue: e)));
+                                              },
+                                              child: Text(
+                                                'Xác nhận',
+                                              ),
                                             ),
-                                            onPressed: () {
-                                              setPolylines(e.lat, e.long);
-                                            },
-                                          )),
-                                    ],
+                                            Spacer(),
+                                            FlatButton(
+                                              color: Colors.white70,
+                                              onPressed: () {
+                                                // Navigator.push(
+                                                //     context,
+                                                //     new MaterialPageRoute(
+                                                //         builder: (context) =>
+                                                //             ComfirmScreen()));
+                                              },
+                                              child: Text(
+                                                'Nhắn tin',
+                                                style: TextStyle(
+                                                    color: Colors.black),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
-                            ));
-                      }).toList()),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     );
-                  }),
+                  },
                 ),
-              ),
+              )),
             ],
           ),
         ),

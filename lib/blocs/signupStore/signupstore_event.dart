@@ -17,6 +17,7 @@ class SignupStore extends SignupstoreEvent {
   final String uid;
   final double lat;
   final double long;
+  final String status;
 
   SignupStore({
     @required this.name,
@@ -27,6 +28,7 @@ class SignupStore extends SignupstoreEvent {
     @required this.time,
     @required this.lat,
     @required this.long,
+    this.status,
     this.uid,
   });
 }

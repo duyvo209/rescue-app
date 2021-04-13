@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rescue/blocs/user/user_bloc.dart';
+import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/chat_users.dart';
 import 'package:rescue/screens/chats/chat.dart';
 
@@ -92,17 +90,12 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
               ),
-              BlocBuilder<UserBloc, UserState>(builder: (_, state) {
-                if (state.user != null) {
-                  String type = state.user.type;
+              BlocBuilder<StoreBloc, StoreState>(builder: (_, state) {
+                if (state.store != null) {
                   return Container(
                       child: StreamBuilder(
                     stream: FirebaseFirestore.instance
                         .collection('users')
-                        .where('email',
-                            isNotEqualTo:
-                                FirebaseAuth.instance.currentUser.email)
-                        .where('type', isEqualTo: type == '0' ? '1' : '0')
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
@@ -139,6 +132,51 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
                 return Container();
               }),
+              // BlocBuilder<StoreBloc, StoreState>(builder: (_, state) {
+              //   if (state.store != null) {
+              //     return Container(
+              //         child: StreamBuilder(
+              //       stream: FirebaseFirestore.instance
+              //           .collection('users')
+              //           .where('email',
+              //               isNotEqualTo:
+              //                   FirebaseAuth.instance.currentUser.email)
+              //           .snapshots(),
+              //       builder: (context, snapshot) {
+              //         if (snapshot.hasError) {
+              //           print(snapshot.error);
+              //           return Text(snapshot.error.toString());
+              //         }
+              //         if (!snapshot.hasData) {
+              //           return Center(
+              //             child: CircularProgressIndicator(
+              //               valueColor: AlwaysStoppedAnimation<Color>(
+              //                   Colors.blueGrey[800]),
+              //             ),
+              //           );
+              //         } else {
+              //           return ListView.builder(
+              //             itemCount: snapshot.data.docs.length,
+              //             shrinkWrap: true,
+              //             padding: EdgeInsets.only(top: 16),
+              //             physics: NeverScrollableScrollPhysics(),
+              //             itemBuilder: (context, index) {
+              //               return ChatUsersList(
+              //                 text: snapshot.data.docs[index]['name'],
+              //                 secondaryText: "OK, vậy đi",
+              //                 image: chatUsers[index].image,
+              //                 time: chatUsers[index].time,
+              //                 isMessageRead:
+              //                     (index == 0 || index == 3) ? true : false,
+              //               );
+              //             },
+              //           );
+              //         }
+              //       },
+              //     ));
+              //   }
+              //   return Container();
+              // }),
             ],
           ),
         ));

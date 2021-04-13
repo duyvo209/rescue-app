@@ -57,6 +57,8 @@ dependencies:
 
   expandable: ^4.1.4
 
+  flutter_phone_direct_caller: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

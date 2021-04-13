@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
+import 'package:rescue/blocs/store/store_bloc.dart';
+import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Store.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class InforStoreScreen extends StatefulWidget {
   final Store store;
@@ -21,29 +24,14 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
     super.initState();
   }
 
-  String valueChoose;
-  List listProblem = [
-    'Xe bị mất lửa',
-    'Ổ khoá xe bị kẹt',
-    'Bể hộp số',
-    'Xe bị nóng máy',
-    'Xe bị chết máy',
-    'Xe bị rung lắc',
-    'Xe bị ngập nước',
-    'Xe bị rồ ga',
-    'Xe bị cháy cầu chì',
-    'Xe bị rỉ nhớt',
-    'Xe bị sặc xăng',
-    'Xe bị thủng bô',
-    'Xe bị trượt đề'
-  ];
+  Service serviceSelected;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('dvRescue'),
+          title: Text('Thông tin cửa hàng'),
           backgroundColor: Colors.blueGrey[800],
           brightness: Brightness.light,
           elevation: 0,
@@ -57,20 +45,15 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
               child: Stack(
                 children: <Widget>[
                   Container(
-                    child: Hero(
-                      tag: widget.store.name,
-                      child: AspectRatio(
-                        aspectRatio: 1 / 0.667,
-                        child: Image.asset(
-                          'assets/2.jpeg',
-                        ),
-                        // child: CachedNetworkImage(
-                        //   imageUrl:
-                        //       "https://drive.google.com/thumbnail?id=${widget.product.picture[i]}&sz=w500-h500",
-                        // ),
+                      child: Hero(
+                    tag: widget.store.name,
+                    child: AspectRatio(
+                      aspectRatio: 1 / 0.667,
+                      child: Image.asset(
+                        'assets/2.jpeg',
                       ),
                     ),
-                  ),
+                  )),
                 ],
               ),
             ),
@@ -114,9 +97,30 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                 vertical: 0,
               ),
               child: Text(
-                "Cách bạn ${widget.store.getM(10.02545, 105.77621).toString().substring(0, 5)} km",
+                "Cách bạn ${widget.store.getM(10.02545, 105.77621).toString().substring(0, 4)} km",
                 style: TextStyle(
                   fontSize: 18,
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 0,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 0,
+              ),
+              child: FlatButton(
+                padding: EdgeInsets.only(right: 270),
+                onPressed: () async {
+                  await FlutterPhoneDirectCaller.callNumber(widget.store.phone);
+                },
+                child: Text(
+                  "${widget.store.phone}",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ),
@@ -128,47 +132,42 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                 horizontal: 20,
                 vertical: 0,
               ),
-              child: Text(
-                "${widget.store.phone}",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 0,
-              ),
-              child: Container(
-                padding: EdgeInsets.only(left: 16, right: 16),
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.blueGrey[800],
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(15)),
-                child: DropdownButton(
-                  hint: Text('Vấn đề của bạn là gì ?'),
-                  underline: SizedBox(),
-                  isExpanded: true,
-                  value: valueChoose,
-                  onChanged: (value) {
-                    setState(() {
-                      valueChoose = value;
-                    });
-                  },
-                  items: listProblem.map((value) {
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
-                ),
-              ),
+              child: StreamBuilder<List<Service>>(
+                  stream: BlocProvider.of<StoreBloc>(context)
+                      .getListService(widget.store.idStore),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        padding: EdgeInsets.only(left: 16, right: 16),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.blueGrey[800],
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(15)),
+                        child: DropdownButton<Service>(
+                          hint: Text(
+                              '${serviceSelected?.name ?? "Vấn đề của bạn là gì ?"} '),
+                          underline: SizedBox(),
+                          isExpanded: true,
+                          // value: serviceSelected,
+                          onChanged: (value) {
+                            setState(() {
+                              serviceSelected = value;
+                            });
+                          },
+                          items: snapshot.data.map((value) {
+                            return DropdownMenuItem(
+                              value: value,
+                              child: Text(
+                                  '${value.name}' + ' - ' + '${value.price}'),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    }
+                    return Container();
+                  }),
             ),
             SizedBox(
               height: 50,
@@ -207,13 +206,16 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                   ),
                   Expanded(
                     child: GestureDetector(
-                      onTap: () async {
+                      onTap: () {
                         _showDialog(context);
                         BlocProvider.of<RequestBloc>(context).add(
                           AddToRequest(
                             userId: FirebaseAuth.instance.currentUser.uid,
+                            storeId: widget.store.idStore,
                             storeName: widget.store.name,
-                            problem: valueChoose,
+                            problem: serviceSelected?.toMap(),
+                            lat: widget.store.lat,
+                            long: widget.store.long,
                           ),
                         );
                       },

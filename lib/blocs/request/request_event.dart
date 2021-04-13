@@ -9,16 +9,32 @@ abstract class RequestEvent extends Equatable {
 
 class AddToRequest extends RequestEvent {
   final String userId;
+  final String storeId;
   final String storeName;
-  final String problem;
-  AddToRequest({this.userId, this.storeName, this.problem});
+  final Map<String, dynamic> problem;
 
-  Rescue toRescue() {
+  final UserInfo userInfo;
+  final double lat;
+  final double long;
+  AddToRequest(
+      {this.userId,
+      this.storeId,
+      this.storeName,
+      this.problem,
+      this.userInfo,
+      this.lat,
+      this.long});
+
+  Rescue toRescue(UserInfo b) {
     return Rescue.newRescue(
-      idUser: userId,
-      idStore: storeName,
-      problem: problem,
-    );
+        // idUser: userId,
+        // idStore: storeId,
+        // storeName: storeName,
+        // problem: problem,
+        // userInfo: b,
+        // lat: lat,
+        // long: long,
+        );
   }
 }
 
@@ -26,4 +42,12 @@ class GetListRequest extends RequestEvent {
   // final String userId;
   final BuildContext context;
   GetListRequest(this.context);
+}
+
+class GetRequest extends RequestEvent {
+  final String idStore;
+  final double lat;
+  final double lgn;
+
+  GetRequest({this.idStore, this.lat, this.lgn});
 }

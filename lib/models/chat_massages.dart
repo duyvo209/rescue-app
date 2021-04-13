@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:rescue/screens/ChatDetailScreen.dart';
+import 'package:rescue/screens/user/ChatDetailScreen.dart';
 
 class ChatMessage {
   String message;

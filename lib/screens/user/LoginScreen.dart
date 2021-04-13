@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_overlay/loading_overlay.dart';
-// import 'package:rescue/blocs/auth/authencation_bloc.dart';
-
+import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
-import 'package:rescue/screens/ForgotPassScreen.dart';
-import 'package:rescue/screens/HomeScreen.dart';
-import 'package:rescue/screens/SignupStoreScreen.dart';
+import 'package:rescue/screens/user/ForgotPassScreen.dart';
+import 'package:rescue/screens/user/HomeScreen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
-class LoginStoreScreen extends StatefulWidget {
+import 'SignUpScreen.dart';
+
+class LoginScreen extends StatefulWidget {
   @override
-  _LoginStoreScreenState createState() => _LoginStoreScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginStoreScreenState extends State<LoginStoreScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   String email = '';
@@ -95,7 +96,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
               });
         }
         if (state.loginSuccess) {
-          // BlocProvider.of<AuthencationBloc>(context).add(LoggedIn());
+          BlocProvider.of<AuthencationBloc>(context).add(LoggedIn());
           Navigator.push(context,
               new MaterialPageRoute(builder: (context) => HomeScreen()));
         }
@@ -171,7 +172,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Mật khẩu",
+                                hintText: "Mật khẩu".tr().toString(),
                                 errorText: _passwordError(),
                                 contentPadding: EdgeInsets.symmetric(
                                     horizontal: 24, vertical: 20),
@@ -197,7 +198,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                                 );
                               },
                               child: Text(
-                                "Đăng Nhập",
+                                "Đăng nhập".tr().toString(),
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
                               ),
@@ -216,10 +217,10 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                             Navigator.push(
                                 context,
                                 new MaterialPageRoute(
-                                    builder: (context) => SignupStoreScreen()));
+                                    builder: (context) => SignUpScreen()));
                           },
                           child: Text(
-                            "Tạo tài khoản mới",
+                            "Tạo tài khoản mới".tr().toString(),
                             style:
                                 TextStyle(color: Colors.blueGrey, fontSize: 15),
                           ),
@@ -236,7 +237,7 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                                     builder: (context) => ForgotPassScreen()));
                           },
                           child: Text(
-                            "Quên mật khẩu ?",
+                            "Quên mật khẩu".tr().toString(),
                             style:
                                 TextStyle(color: Colors.blueGrey, fontSize: 15),
                           ),
@@ -253,5 +254,3 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
     );
   }
 }
-
-class LoggedIn {}

@@ -73,7 +73,8 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
               create: (context) => AuthencationBloc(
                   loginBloc: BlocProvider.of<LoginBloc>(context),
-                  userBloc: BlocProvider.of<UserBloc>(context))
+                  userBloc: BlocProvider.of<UserBloc>(context),
+                  storeBloc: BlocProvider.of<StoreBloc>(context))
                 ..add(StartApp())),
         ],
         child: MaterialApp(

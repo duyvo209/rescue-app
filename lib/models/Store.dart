@@ -1,6 +1,7 @@
 import 'dart:math' show cos, sqrt, asin;
 
 class Store {
+  String idStore;
   String name;
   String email;
   String phone;
@@ -10,7 +11,8 @@ class Store {
   double long;
   double m;
   Store(
-      {this.name,
+      {this.idStore,
+      this.name,
       this.email,
       this.phone,
       this.address,
@@ -21,6 +23,7 @@ class Store {
 
   factory Store.fromFireStore(Map<String, dynamic> json) {
     return Store(
+      idStore: json['idStore'],
       name: json['name'],
       email: json['email'],
       phone: json['phone'],
@@ -35,6 +38,7 @@ class Store {
 
   Map<String, dynamic> toMap() {
     return {
+      'idStore': idStore,
       'name': name,
       'email': email,
       'phone': phone,

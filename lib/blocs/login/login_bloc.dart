@@ -31,6 +31,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (result != null) {
           await LocalStorage().setUserPass(event.email, event.password);
           await LocalStorage().setLoginMethod(Constants.LOGIN_WITH_EMAIL);
+          await LocalStorage().setLoginMethod(Constants.LOGIN_WITH_STORE);
           yield state.copyWith(
               loginLoading: false, loginSuccess: true, user: result.user);
         }

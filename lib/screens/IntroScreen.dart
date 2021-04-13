@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rescue/screens/LoginStoreScreen.dart';
-import 'LoginScreen.dart';
+import 'package:rescue/screens/store/LoginStoreScreen.dart';
+import 'user/LoginScreen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class IntroScreen extends StatefulWidget {
   @override
@@ -71,7 +72,10 @@ class _IntroScreenState extends State<IntroScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text("Tìm kiếm cửa hàng cứu hộ xe máy gần bạn",
+                          Text(
+                              "Tìm kiếm cửa hàng cứu hộ xe máy gần bạn"
+                                  .tr()
+                                  .toString(),
                               style: TextStyle(
                                 fontSize: 18,
                               )),
@@ -83,7 +87,7 @@ class _IntroScreenState extends State<IntroScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text("Đăng nhập vào ứng dụng"),
+                          Text("Đăng nhập vào ứng dụng".tr().toString()),
                         ],
                       ),
                       SizedBox(
@@ -109,7 +113,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Text(
-                                "Dành cho người dùng",
+                                "Dành cho người dùng".tr().toString(),
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
@@ -136,7 +140,7 @@ class _IntroScreenState extends State<IntroScreen> {
                           child: Padding(
                               padding: const EdgeInsets.all(16),
                               child: Text(
-                                "Dành cho cửa hàng",
+                                "Dành cho cửa hàng".tr().toString(),
                                 style: TextStyle(color: Colors.white),
                               )),
                         ),
