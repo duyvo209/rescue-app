@@ -93,7 +93,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               BlocBuilder<UserBloc, UserState>(builder: (_, state) {
                 if (state.user != null) {
-                  String type = state.user.type;
+                  // String type = state.user.type;
                   return Container(
                       child: StreamBuilder(
                     stream: FirebaseFirestore.instance

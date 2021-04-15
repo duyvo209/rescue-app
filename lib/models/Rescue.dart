@@ -6,7 +6,7 @@ class Rescue {
   String idUser;
   String idStore;
   String storeName;
-  Service problem;
+  List<Service> problems;
   List<String> service = [];
   DateTime time;
   String desc;
@@ -26,7 +26,7 @@ class Rescue {
       this.idStore,
       this.storeName,
       this.idRequest,
-      this.problem,
+      this.problems,
       this.address,
       this.desc,
       this.lat,
@@ -43,7 +43,7 @@ class Rescue {
       {this.idUser,
       this.idStore,
       this.storeName,
-      this.problem,
+      this.problems,
       this.service,
       this.time,
       this.status,
@@ -61,8 +61,11 @@ class Rescue {
     return Rescue(
         idUser: json['idUser'],
         idStore: json['idStore'],
+        idRequest: json['idRequest'],
         storeName: json['store_name'],
-        problem: Service.fromFireStore(json['problem']),
+        problems: (json['problems'] as List)
+            .map((e) => Service.fromFireStore(e))
+            .toList(),
         service: json['service'],
         time: DateTime.parse(json['time']),
         status: json['status'],
@@ -80,8 +83,9 @@ class Rescue {
     return {
       'idUser': idUser,
       'idStore': idStore,
+      'idRequest': idRequest,
       'store_name': storeName,
-      'problem': problem.toMap(),
+      'problems': problems.map((e) => e.toMap()).toList(),
       'service': service,
       'time': time,
       'status': status,
@@ -117,9 +121,10 @@ class Rescue {
   List<Object> get props => [
         this.idUser,
         this.idStore,
+        this.idRequest,
         this.storeName,
         this.service,
-        this.problem,
+        this.problems,
         this.time,
         this.lat,
         this.long,

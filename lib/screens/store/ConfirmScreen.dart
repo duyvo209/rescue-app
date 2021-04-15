@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
+import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Service.dart';
@@ -33,6 +34,8 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
   }
 
   List<Service> listServiceSelected = [];
+  Service listService;
+
   var totalPrice = 0;
 
   @override
@@ -177,6 +180,20 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(
                             height: 20,
                           ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text(widget.rescue.problems.first.name),
+                                  SizedBox(
+                                    height: 30,
+                                  ),
+                                  Spacer(),
+                                  Text(widget.rescue.problems.first.price),
+                                ],
+                              ),
+                            ],
+                          ),
                           if (listServiceSelected.isNotEmpty)
                             Column(
                               children: listServiceSelected.map((e) {
@@ -252,7 +269,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                     .getListService(widget.rescue.idStore),
                 builder: (context, snapshot) {
                   return Container(
-                    height: 180,
+                    height: 200,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
@@ -295,35 +312,82 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                     ),
                                   // if (state.listService.isEmpty)
                                   // if (user == null)
-                                  TextSpan(
-                                    text: "",
-                                    style: TextStyle(
-                                        fontSize: 20, color: Colors.black),
-                                  ),
+                                  if (listServiceSelected.isEmpty)
+                                    TextSpan(
+                                      text: "",
+                                      style: TextStyle(
+                                          fontSize: 20, color: Colors.black),
+                                    ),
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              width: 100,
-                            ),
-                            SizedBox(
-                              width: 150,
-                              height: 50,
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                onPressed: () {},
-                                textColor: Colors.white,
-                                color: Colors.blueGrey[800],
-                                child: Text(
-                                  'Thanh toán',
-                                  style: TextStyle(fontSize: 15),
+                            Spacer(),
+                            Container(
+                              margin: EdgeInsets.only(right: 20, bottom: 10),
+                              // padding: EdgeInsets.only(bottom: 20),
+                              child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  onPressed: () {
+                                    BlocProvider.of<RequestBloc>(context)
+                                        .add(UpdateService(
+                                      requestId: widget.rescue.idRequest,
+                                      service: listServiceSelected,
+                                      total: getTotalPrice(listServiceSelected)
+                                          .toStringAsFixed(0),
+                                    ));
+                                  },
+                                  textColor: Colors.white,
+                                  color: Colors.blueGrey[800],
+                                  child: Text(
+                                    'Xác nhận',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
                                 ),
                               ),
                             )
                           ],
-                        )
+                        ),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                            ),
+                            Text.rich(
+                              TextSpan(
+                                text: "dvRescue",
+                                // '${getTotalPrice(listServiceSelected).toStringAsFixed(0)}',
+                                style: TextStyle(
+                                    fontSize: 20, color: Colors.black),
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              margin: EdgeInsets.only(right: 20),
+                              child: SizedBox(
+                                width: 150,
+                                height: 50,
+                                child: RaisedButton(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  onPressed: () {},
+                                  textColor: Colors.white,
+                                  color: Colors.red[900],
+                                  child: Text(
+                                    'Huỷ yêu cầu',
+                                    style: TextStyle(fontSize: 15),
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ],
                     ),
                   );

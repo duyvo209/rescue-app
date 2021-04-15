@@ -27,6 +27,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   String id;
 
   List<QueryDocumentSnapshot> listMessage = new List.from([]);
+  // ignore: unused_field
   int _limit = 20;
   int _limitIncrement = 20;
   String groupChatId;

@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   PolylinePoints polylinePoints = PolylinePoints();
   Map<PolylineId, Polyline> polylines = {};
 
+  // ignore: unused_field
   Completer<GoogleMapController> _controller = Completer();
   // Configure map position and zoom
   CameraPosition _kGooglePlex;
@@ -452,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           height: 5,
                                         ),
                                         Text(
-                                          '${e.problem.name}',
+                                          '${e.problems.first.name}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(

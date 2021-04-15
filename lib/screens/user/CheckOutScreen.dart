@@ -112,27 +112,30 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             SizedBox(
               height: 20,
             ),
-            Row(
-              children: <Widget>[
-                Text('Vá vỏ xe'),
-                Spacer(),
-                Text(
-                  '80.000 đ',
-                ),
-              ],
-            ),
+            Column(
+                children: widget.detailStore.problems.map((e) {
+              return Row(
+                children: <Widget>[
+                  Text('${e.name}'),
+                  Spacer(),
+                  Text(
+                    '${e.price} đ',
+                  ),
+                ],
+              );
+            }).toList()),
             SizedBox(
               height: 20,
             ),
-            Row(
-              children: <Widget>[
-                Text('Phí cứu hộ'),
-                Spacer(),
-                Text(
-                  '500.000 đ',
-                ),
-              ],
-            ),
+            // Row(
+            //   children: <Widget>[
+            //     Text('Phí cứu hộ'),
+            //     Spacer(),
+            //     Text(
+            //       '500.000 đ',
+            //     ),
+            //   ],
+            // ),
             SizedBox(
               height: 80,
             ),

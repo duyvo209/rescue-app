@@ -62,7 +62,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         : _addressController.text = state.store.address;
 
                     state.store.time == null
+                        // ignore: unnecessary_statements
                         ? _timeController.text == ""
+                        // ignore: unnecessary_statements
                         : _timeController.text == state.store.time;
 
                     return Column(

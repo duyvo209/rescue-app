@@ -83,7 +83,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               ],
                             ),
                             Text(
-                              '${state.request[index].problem.name}',
+                              '${state.request[index].problems.map((e) => e.name).reduce((value, element) => value + element)}',
                               style: TextStyle(color: Colors.white),
                             ),
                             SizedBox(

@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:location/location.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
+import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/UserInfo.dart';
 
 part 'request_event.dart';
@@ -22,17 +23,6 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
   ) async* {
     if (event is AddToRequest) {
       try {
-        // var query =
-        //     await FirebaseFirestore.instance.collection('request').get();
-
-        // var listRequest =
-        //     query.docs.map((e) => Rescue().fromFireStore(e.data())).toList();
-
-        // await FirebaseFirestore.instance.collection('request').add({
-        //   'rescue': event.rescue.toMap(),
-        // });
-        //
-
         Location location = new Location();
 
         bool _serviceEnabled;
@@ -68,6 +58,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
           'desc': '',
           'idStore': event.storeId,
           'idUser': event.userId,
+          'idRequest': event.requestId,
           'lat_user': lat,
           'lng_user': lng,
           'user_info': b.toMap(),
@@ -76,7 +67,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
           'status': 0,
           'lat_store': event.lat,
           'lng_store': event.long,
-          'problem': event.problem
+          'problems': [event.problem]
         }).then((value) {
           print("success");
         });
@@ -111,10 +102,21 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
           .where('idStore', isEqualTo: event.idStore)
           .get();
       var listRes = result.docs.map((e) {
-        var res = Rescue.fromFireStore(e.data());
+        var res = Rescue.fromFireStore(e.data()..addAll({'idRequest': e.id}));
         return res;
       }).toList();
       yield state.copyWith(listRes);
+    }
+
+    if (event is UpdateService) {
+      // ignore: unused_local_variable
+      var data = await FirebaseFirestore.instance
+          .collection('request')
+          .doc(event.requestId)
+          .update({
+        'service': event.service.map((e) => e.toMap()).toList(),
+        'total': event.total,
+      });
     }
   }
 }

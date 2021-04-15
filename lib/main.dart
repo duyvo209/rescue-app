@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/invoice/invoice_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/signup/signup_bloc.dart';
@@ -70,6 +71,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => StoreBloc()),
           BlocProvider(create: (context) => SignupstoreBloc()),
           BlocProvider(create: (context) => RequestBloc()),
+          BlocProvider(create: (context) => InvoiceBloc()),
           BlocProvider(
               create: (context) => AuthencationBloc(
                   loginBloc: BlocProvider.of<LoginBloc>(context),

@@ -10,6 +10,7 @@ abstract class RequestEvent extends Equatable {
 class AddToRequest extends RequestEvent {
   final String userId;
   final String storeId;
+  final String requestId;
   final String storeName;
   final Map<String, dynamic> problem;
 
@@ -19,6 +20,7 @@ class AddToRequest extends RequestEvent {
   AddToRequest(
       {this.userId,
       this.storeId,
+      this.requestId,
       this.storeName,
       this.problem,
       this.userInfo,
@@ -50,4 +52,12 @@ class GetRequest extends RequestEvent {
   final double lgn;
 
   GetRequest({this.idStore, this.lat, this.lgn});
+}
+
+class UpdateService extends RequestEvent {
+  final List<Service> service;
+  final String requestId;
+  final String total;
+
+  UpdateService({this.service, this.requestId, this.total});
 }

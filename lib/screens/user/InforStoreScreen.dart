@@ -11,7 +11,8 @@ import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 class InforStoreScreen extends StatefulWidget {
   final Store store;
   final String storeId;
-  InforStoreScreen({@required this.store, this.storeId});
+  final String requestId;
+  InforStoreScreen({@required this.store, this.storeId, this.requestId});
   @override
   _InforStoreScreenState createState() => _InforStoreScreenState();
 }
@@ -212,6 +213,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                           AddToRequest(
                             userId: FirebaseAuth.instance.currentUser.uid,
                             storeId: widget.store.idStore,
+                            requestId: widget.requestId,
                             storeName: widget.store.name,
                             problem: serviceSelected?.toMap(),
                             lat: widget.store.lat,

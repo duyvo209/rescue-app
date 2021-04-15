@@ -21,7 +21,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
   @override
   void initState() {
     store = BlocProvider.of<StoreBloc>(context).state.store.idStore;
-    print("store ${store}");
+    // print("store ${store}");
     _nameController.addListener(() {
       setState(() {
         name = _nameController.text;
