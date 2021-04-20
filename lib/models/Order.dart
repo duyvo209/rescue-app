@@ -1,50 +1,49 @@
-import 'package:rescue/models/Service.dart';
+import 'package:rescue/models/Services.dart';
 import 'package:rescue/models/UserInfo.dart';
 
-class Invoice {
-  String invoiceId;
+class Order {
+  String orderId;
   String userId;
   String storeId;
   String total;
   UserInfo userInfo;
-  Service problem;
+  Services services;
   DateTime time;
   int status;
   int checkout;
   static const status_new = 0;
   static const checkout_new = 0;
 
-  Invoice.newInvoice({
-    this.invoiceId,
-    this.userId,
+  Order.newOrder({
     this.storeId,
+    this.userId,
     this.total,
     this.userInfo,
-    this.problem,
+    this.services,
   })  : time = DateTime.now(),
         status = status_new,
         checkout = checkout_new;
 
-  Invoice({
-    this.invoiceId,
+  Order({
+    this.orderId,
     this.userId,
     this.storeId,
     this.total,
     this.userInfo,
-    this.problem,
+    this.services,
     this.status,
     this.checkout,
     this.time,
   });
 
-  factory Invoice.fromFireStore(Map<String, dynamic> json) {
-    return Invoice(
-        invoiceId: json['invoiceId'],
+  factory Order.fromFireStore(Map<String, dynamic> json) {
+    return Order(
+        orderId: json['orderId'],
         userId: json['userId'],
         storeId: json['storeId'],
         total: json['total'],
         userInfo: UserInfo.fromFireStore(json['user_info']),
-        problem: Service.fromFireStore(json['problem']),
+        services: Services.fromFireStore(json['problem']),
         status: json['status'],
         checkout: json['checkout'],
         time: DateTime.parse(json['time']));
@@ -52,12 +51,12 @@ class Invoice {
 
   Map<String, dynamic> toMap() {
     return {
-      'invoiceId': invoiceId,
+      'orderId': orderId,
       'userId': userId,
       'storeId': storeId,
       'total': total,
       'user_info': userInfo?.toMap(),
-      'problem': problem.toMap(),
+      'services': services.toMap(),
       'status': status,
       'checkout': checkout,
       'time': time,
@@ -67,12 +66,12 @@ class Invoice {
   @override
   // ignore: override_on_non_overriding_member
   List<Object> get props => [
-        this.invoiceId,
+        this.orderId,
         this.userId,
         this.storeId,
         this.total,
         this.userInfo,
-        this.problem,
+        this.services,
         this.status,
         this.checkout,
         this.time,

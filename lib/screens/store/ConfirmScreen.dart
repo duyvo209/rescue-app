@@ -116,6 +116,18 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                               ),
                             ],
                           ),
+                          SizedBox(height: 15),
+                          Row(
+                            children: <Widget>[
+                              Text('Bị gì ?'),
+                              Spacer(),
+                              Text(
+                                '${widget.rescue.problems.first.name}',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                           SizedBox(
                             height: 40,
                           ),
@@ -150,6 +162,8 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                                         .add(value);
                                                   }
                                                 });
+                                                print(
+                                                    listServiceSelected.length);
                                               },
                                               items: snapshot.data.map((value) {
                                                 return DropdownMenuItem(
@@ -180,20 +194,6 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(
                             height: 20,
                           ),
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Text(widget.rescue.problems.first.name),
-                                  SizedBox(
-                                    height: 30,
-                                  ),
-                                  Spacer(),
-                                  Text(widget.rescue.problems.first.price),
-                                ],
-                              ),
-                            ],
-                          ),
                           if (listServiceSelected.isNotEmpty)
                             Column(
                               children: listServiceSelected.map((e) {
@@ -215,48 +215,6 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(
                             height: 240,
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
-                          //   child: SizedBox(
-                          //     width: 390,
-                          //     height: 52,
-                          //     child: ElevatedButton(
-                          //       onPressed: () {},
-                          //       child: Text(
-                          //         "Thêm Hoá Đơn",
-                          //         style: TextStyle(
-                          //             color: Colors.white, fontSize: 18),
-                          //       ),
-                          //       style: ElevatedButton.styleFrom(
-                          //         primary: Colors.blueGrey[800],
-                          //         shape: RoundedRectangleBorder(
-                          //             borderRadius:
-                          //                 BorderRadius.all(Radius.circular(6))),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          //   child: SizedBox(
-                          //     width: 390,
-                          //     height: 52,
-                          //     child: ElevatedButton(
-                          //       onPressed: () {},
-                          //       child: Text(
-                          //         "Huỷ Yêu Cầu",
-                          //         style: TextStyle(
-                          //             color: Colors.white, fontSize: 18),
-                          //       ),
-                          //       style: ElevatedButton.styleFrom(
-                          //         primary: Colors.red[800],
-                          //         shape: RoundedRectangleBorder(
-                          //             borderRadius:
-                          //                 BorderRadius.all(Radius.circular(6))),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                         ],
                       ),
                     ),

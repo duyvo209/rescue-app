@@ -65,9 +65,11 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
           'time': DateTime.now().toIso8601String(),
           'store_name': event.storeName,
           'status': 0,
+          'checkout': 0,
           'lat_store': event.lat,
           'lng_store': event.long,
-          'problems': [event.problem]
+          'problems': [event.problem],
+          'service': [],
         }).then((value) {
           print("success");
         });
@@ -118,5 +120,33 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         'total': event.total,
       });
     }
+
+    if (event is UpdateCheckout) {
+      await FirebaseFirestore.instance
+          .collection('request')
+          .doc(event.requestId)
+          .update({
+        'checkout': 1,
+      });
+    }
+
+    if (event is UpdateStatus) {
+      await FirebaseFirestore.instance
+          .collection('request')
+          .doc(event.requestId)
+          .update({
+        'status': 1,
+      });
+    }
+
+    // if (event is CheckOut) {
+    //   await FirebaseFirestore.instance
+    //       .collection('request')
+    //       .doc(event.requestId)
+    //       .update({
+    //     'total': event.total,
+    //     'status': 1,
+    //   });
+    // }
   }
 }

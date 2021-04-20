@@ -1,6 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/order/order_bloc.dart';
+import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
+import 'package:rescue/models/Services.dart';
 import 'package:rescue/screens//RateScreen.dart';
+
+double getTotalPrice(List<Services> service) {
+  return service
+      .map((e) => double.tryParse(e.price))
+      .toList()
+      .reduce((value, element) => value + element);
+}
 
 class CheckOutScreen extends StatefulWidget {
   final Rescue detailStore;
@@ -71,7 +82,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               children: <Widget>[
                 Text('Thanh toán'),
                 Spacer(),
-                Text('Chờ thanh toán'),
+                Text('${widget.detailStore.checkout}'),
               ],
             ),
             SizedBox(
@@ -113,7 +124,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               height: 20,
             ),
             Column(
-                children: widget.detailStore.problems.map((e) {
+                children: widget.detailStore.service.map((e) {
               return Row(
                 children: <Widget>[
                   Text('${e.name}'),
@@ -147,7 +158,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 ),
                 Spacer(),
                 Text(
-                  '580.000 đ',
+                  '${getTotalPrice(widget.detailStore.service).toStringAsFixed(0)} đ',
                   style: TextStyle(fontSize: 18),
                 ),
               ],
@@ -162,6 +173,19 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
+                    // BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                    //   storeId: widget.detailStore.idStore,
+                    //   userId: widget.detailStore.idUser,
+                    //   total: getTotalPrice(widget.detailStore.service)
+                    //       .toStringAsFixed(0),
+                    //   checkout: 1,
+                    // ));
+                    BlocProvider.of<RequestBloc>(context).add(
+                      UpdateCheckout(
+                        requestId: widget.detailStore.idRequest,
+                        checkout: 1,
+                      ),
+                    );
                     Navigator.push(
                         context,
                         new MaterialPageRoute(

@@ -168,6 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFFF2F2F2),
                                 borderRadius: BorderRadius.circular(12.0)),
                             child: TextFormField(
+                              obscureText: true,
                               controller: _passwordController,
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(

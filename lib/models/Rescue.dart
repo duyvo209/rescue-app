@@ -1,4 +1,5 @@
 import 'package:rescue/models/Service.dart';
+import 'package:rescue/models/Services.dart';
 import 'package:rescue/models/UserInfo.dart';
 import 'dart:math' show cos, sqrt, asin;
 
@@ -7,7 +8,7 @@ class Rescue {
   String idStore;
   String storeName;
   List<Service> problems;
-  List<String> service = [];
+  List<Services> service = [];
   DateTime time;
   String desc;
   double lat;
@@ -18,7 +19,9 @@ class Rescue {
   String address;
   String idRequest;
   static const status_new = 0;
+  static const checkout_new = 0;
   int status;
+  int checkout;
   UserInfo userInfo;
 
   Rescue.newRescue(
@@ -37,6 +40,7 @@ class Rescue {
       this.service,
       this.userInfo})
       : status = status_new,
+        checkout = checkout_new,
         time = DateTime.now();
 
   Rescue(
@@ -47,6 +51,7 @@ class Rescue {
       this.service,
       this.time,
       this.status,
+      this.checkout,
       this.desc,
       this.lat,
       this.long,
@@ -66,9 +71,12 @@ class Rescue {
         problems: (json['problems'] as List)
             .map((e) => Service.fromFireStore(e))
             .toList(),
-        service: json['service'],
+        service: (json['service'] as List)
+            .map((e) => Services.fromFireStore(e))
+            .toList(),
         time: DateTime.parse(json['time']),
         status: json['status'],
+        checkout: json['checkout'],
         desc: json['json'],
         lat: json['lat'],
         long: json['long'],
@@ -89,6 +97,7 @@ class Rescue {
       'service': service,
       'time': time,
       'status': status,
+      'checkout': checkout,
       'desc': desc,
       'lat': lat,
       'long': long,

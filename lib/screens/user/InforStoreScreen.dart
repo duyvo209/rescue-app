@@ -6,7 +6,7 @@ import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Store.dart';
-import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+// import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class InforStoreScreen extends StatefulWidget {
   final Store store;
@@ -115,7 +115,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
               child: FlatButton(
                 padding: EdgeInsets.only(right: 270),
                 onPressed: () async {
-                  await FlutterPhoneDirectCaller.callNumber(widget.store.phone);
+                  // await FlutterPhoneDirectCaller.callNumber(widget.store.phone);
                 },
                 child: Text(
                   "${widget.store.phone}",

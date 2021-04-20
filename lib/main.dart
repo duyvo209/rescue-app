@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rescue/blocs/invoice/invoice_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
+import 'package:rescue/blocs/order/order_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/signup/signup_bloc.dart';
 import 'package:rescue/blocs/signupStore/signupstore_bloc.dart';
@@ -13,7 +13,34 @@ import 'package:rescue/screens/IntroScreen.dart';
 import 'blocs/auth/authencation_bloc.dart';
 import 'blocs/user/user_bloc.dart';
 
+class SimpleBlocObserver extends BlocObserver {
+  @override
+  void onEvent(Bloc bloc, Object event) {
+    print(event);
+    super.onEvent(bloc, event);
+  }
+
+  @override
+  void onChange(Cubit cubit, Change change) {
+    print(change);
+    super.onChange(cubit, change);
+  }
+
+  @override
+  void onTransition(Bloc bloc, Transition transition) {
+    print(transition);
+    super.onTransition(bloc, transition);
+  }
+
+  @override
+  void onError(Cubit cubit, Object error, StackTrace stackTrace) {
+    print(error);
+    super.onError(cubit, error, stackTrace);
+  }
+}
+
 void main() async {
+  Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -71,7 +98,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => StoreBloc()),
           BlocProvider(create: (context) => SignupstoreBloc()),
           BlocProvider(create: (context) => RequestBloc()),
-          BlocProvider(create: (context) => InvoiceBloc()),
+          BlocProvider(create: (context) => OrderBloc()),
           BlocProvider(
               create: (context) => AuthencationBloc(
                   loginBloc: BlocProvider.of<LoginBloc>(context),

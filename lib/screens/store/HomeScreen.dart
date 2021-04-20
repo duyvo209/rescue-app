@@ -46,7 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
     BlocProvider.of<StoreBloc>(context)
         .add(GetStore(FirebaseAuth.instance.currentUser.uid));
 
-    BlocProvider.of<RequestBloc>(context).add(GetRequest());
+    BlocProvider.of<RequestBloc>(context)
+        .add(GetRequest(idStore: FirebaseAuth.instance.currentUser.uid));
 
     _kGooglePlex = CameraPosition(
       // target: LatLng(10.7915178, 106.7271422),
@@ -464,6 +465,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                             FlatButton(
                                               color: Colors.white70,
                                               onPressed: () {
+                                                BlocProvider.of<RequestBloc>(
+                                                        context)
+                                                    .add(
+                                                  UpdateStatus(
+                                                    status: 1,
+                                                    requestId: e.idRequest,
+                                                  ),
+                                                );
+
                                                 Navigator.push(
                                                     context,
                                                     new MaterialPageRoute(

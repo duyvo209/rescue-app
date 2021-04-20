@@ -35,7 +35,7 @@ dependencies:
   flutter_bloc: ^6.0.6
   equatable: ^1.2.5
   loading_overlay: ^0.2.1
-  flutter_secure_storage: ^3.3.5
+  flutter_secure_storage: 3.3.5
   cached_network_image: ^2.3.3
   http: ^0.12.2
   google_maps_flutter: ^1.2.0
@@ -57,7 +57,7 @@ dependencies:
 
   expandable: ^4.1.4
 
-  flutter_phone_direct_caller: any
+  # flutter_phone_direct_caller: any
 
 dev_dependencies:
   flutter_test:

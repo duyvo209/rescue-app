@@ -131,14 +131,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   }
 
   List<ChatMessage> chatMessage = [
-    ChatMessage(message: "Ê Duy", type: MessageType.Receiver),
-    ChatMessage(
-        message: "Nay buồn quá đi nhậu k ?", type: MessageType.Receiver),
-    ChatMessage(
-        message: "T đang làm luận văn, k kịp rồi nản quá",
-        type: MessageType.Sender),
-    ChatMessage(message: "Đi đi, t chỉ cho", type: MessageType.Receiver),
-    ChatMessage(message: "OK, vậy đi", type: MessageType.Sender),
+    ChatMessage(message: "?", type: MessageType.Receiver),
+    ChatMessage(message: "?", type: MessageType.Receiver),
+    ChatMessage(message: "?", type: MessageType.Sender),
+    ChatMessage(message: "?", type: MessageType.Receiver),
+    ChatMessage(message: "?", type: MessageType.Sender),
   ];
 
   List<SendMenuItems> menuItems = [

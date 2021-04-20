@@ -61,3 +61,29 @@ class UpdateService extends RequestEvent {
 
   UpdateService({this.service, this.requestId, this.total});
 }
+
+class UpdateCheckout extends RequestEvent {
+  final String requestId;
+  final int status;
+  final int checkout;
+
+  UpdateCheckout({this.requestId, this.status, this.checkout});
+}
+
+class UpdateStatus extends RequestEvent {
+  final String requestId;
+  final int status;
+
+  UpdateStatus({
+    this.requestId,
+    this.status,
+  });
+}
+
+// class CheckOut extends RequestEvent {
+//   final String total;
+//   final String status;
+//   final String requestId;
+
+//   CheckOut({this.total, this.status, this.requestId});
+// }

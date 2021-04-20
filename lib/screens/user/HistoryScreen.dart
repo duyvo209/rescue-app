@@ -69,6 +69,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                 Spacer(),
                                 RaisedButton(
                                   onPressed: () {
+                                    state.request[index].service
+                                        .forEach((element) {
+                                      print(element.name);
+                                    });
                                     Navigator.push(
                                         context,
                                         new MaterialPageRoute(
