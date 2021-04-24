@@ -45,3 +45,5 @@ class GetListService extends StoreEvent {
 
   GetListService(this.idStore);
 }
+
+class GetListServiceAllStore extends StoreEvent {}

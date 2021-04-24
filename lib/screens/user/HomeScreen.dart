@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
@@ -14,6 +15,7 @@ import 'package:rescue/configs/configs.dart';
 import 'package:rescue/screens/user/ChatScreen.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/user/InforStoreScreen.dart';
+import 'package:rescue/screens/user/ProblemScreen.dart';
 import 'package:rescue/screens/user/ProfileScreen.dart';
 import 'package:rescue/screens/IntroScreen.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -42,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Set<Polyline> _polylines = {};
   List<LatLng> polylineCoordinates = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -54,11 +57,11 @@ class _HomeScreenState extends State<HomeScreen> {
     BlocProvider.of<UserBloc>(context)
         .add(GetUser(FirebaseAuth.instance.currentUser.uid));
 
-    _kGooglePlex = CameraPosition(
-      // target: LatLng(10.7915178, 106.7271422),
-      target: LatLng(10.02545, 105.77621),
-      zoom: 14.4746,
-    );
+    // _kGooglePlex = CameraPosition(
+    //   // target: LatLng(10.7915178, 106.7271422),
+    //   target: LatLng(10.02545, 105.77621),
+    //   zoom: 14.4746,
+    // );
 
     /// add origin marker origin marker
     // _addMarker(
@@ -77,8 +80,28 @@ class _HomeScreenState extends State<HomeScreen> {
     // _getPolyline();
 
     setCustomMarker();
-
+    _getCurrentLocation();
     super.initState();
+  }
+
+  _getCurrentLocation() async {
+    try {
+      Location location = new Location();
+      var data = await location.getLocation();
+      setState(() {
+        _kGooglePlex = CameraPosition(
+          // target: LatLng(10.7915178, 106.7271422),
+          target: LatLng(data.latitude, data.longitude),
+          zoom: 14.4746,
+        );
+        _isLoading = false;
+      });
+    } catch (e) {
+      print(e.toString());
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void setCustomMarker() async {
@@ -376,153 +399,173 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        body: Container(
-          constraints: BoxConstraints.expand(),
-          color: Colors.white,
-          child: Stack(
-            children: <Widget>[
-              GoogleMap(
-                mapType: MapType.normal,
-                initialCameraPosition: _kGooglePlex,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: false,
-                tiltGesturesEnabled: true,
-                compassEnabled: true,
-                scrollGesturesEnabled: true,
-                zoomGesturesEnabled: true,
-                markers: _marker,
-                onMapCreated: _onMapCreated,
-                polylines: _polylines,
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(25, 580, 0, 0),
-                child: SizedBox(
-                  width: 360,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      BlocBuilder<StoreBloc, StoreState>(
-                          builder: (context, state) {
-                        return Column(
-                            children: state.listStore.map((e) {
-                          return Text('${e.name}');
-                        }).toList());
-                      });
-                    },
-                    child: Text(
-                      "Tìm kiếm cửa hàng gần bạn".tr().toString(),
-                      style:
-                          TextStyle(color: Colors.blueGrey[800], fontSize: 18),
+        body: _isLoading
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Container(
+                constraints: BoxConstraints.expand(),
+                color: Colors.white,
+                child: Stack(
+                  children: <Widget>[
+                    GoogleMap(
+                      mapType: MapType.normal,
+                      initialCameraPosition: _kGooglePlex,
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      tiltGesturesEnabled: true,
+                      compassEnabled: true,
+                      scrollGesturesEnabled: true,
+                      zoomGesturesEnabled: true,
+                      markers: _marker,
+                      onMapCreated: _onMapCreated,
+                      polylines: _polylines,
                     ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.white.withOpacity(0.7),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(25, 580, 0, 0),
+                      child: SizedBox(
+                        width: 360,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            // BlocBuilder<StoreBloc, StoreState>(
+                            //     builder: (context, state) {
+                            //   return Column(
+                            //       children: state.listStore.map((e) {
+                            //     return Text('${e.name}');
+                            //   }).toList());
+                            // });
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new ProblemScreen()));
+                          },
+                          child: Text(
+                            'Vấn đề của bạn là gì ?',
+                            style: TextStyle(
+                                color: Colors.blueGrey[800], fontSize: 18),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white.withOpacity(0.7),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6))),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: BlocBuilder<StoreBloc, StoreState>(
-                      builder: (context, state) {
-                    // List<Store> temp = state.listStore.map((e) => e);
-                    state.listStore.sort((a, b) => a
-                        .getM(10.02545, 105.77621)
-                        .compareTo(b.getM(10.02545, 105.77621)));
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                          children: state.listStore.map((e) {
-                        double m = e.getM(10.02545, 105.77621);
-                        // calculateDistance(10.02545, 105.77621, e.lat, e.long);
-                        return Container(
-                            height: 140,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            margin: EdgeInsets.only(
-                                left: 20, right: 20, bottom: 35),
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey[800],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(
-                                        builder: (context) => InforStoreScreen(
-                                              store: e,
-                                            )));
-                              },
+                    Positioned.fill(
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: BlocBuilder<StoreBloc, StoreState>(
+                            builder: (context, state) {
+                          // List<Store> temp = state.listStore.map((e) => e);
+                          if (state.listStore != null &&
+                              state.listStore.isNotEmpty) {
+                            state.listStore.sort((a, b) => a
+                                .getM(10.02545, 105.77621)
+                                .compareTo(b.getM(10.02545, 105.77621)));
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
                               child: Row(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 100,
-                                    child: Image.asset('assets/2.jpeg',
-                                        fit: BoxFit.cover),
+                                  children: state.listStore.map((e) {
+                                double m = e.getM(10.02545, 105.77621);
+                                // calculateDistance(10.02545, 105.77621, e.lat, e.long);
+                                return Container(
+                                    height: 140,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.8,
+                                    margin: EdgeInsets.only(
+                                        left: 20, right: 20, bottom: 35),
+                                    padding: EdgeInsets.all(20),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
+                                      color: Colors.blueGrey[800],
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${e.name}',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(
-                                          "${e.address.toString()}",
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(
-                                          'Cách bạn ${m.toString().substring(0, 4)} km',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        Container(
-                                            height: 35,
-                                            // color: Colors.red,
-                                            child: IconButton(
-                                              icon: Icon(
-                                                Icons.arrow_forward,
-                                                color: Colors.white,
-                                              ),
-                                              onPressed: () {
-                                                setPolylines(e.lat, e.long);
-                                              },
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ));
-                      }).toList()),
-                    );
-                  }),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            new MaterialPageRoute(
+                                                builder: (context) =>
+                                                    InforStoreScreen(
+                                                      store: e,
+                                                    )));
+                                      },
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 100,
+                                            height: 100,
+                                            child: Image.asset('assets/2.jpeg',
+                                                fit: BoxFit.cover),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  '${e.name}',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.white),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  "${e.address.toString()}",
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(
+                                                  'Cách bạn ${m.toString().substring(0, 4)} km',
+                                                  style: TextStyle(
+                                                      color: Colors.white),
+                                                ),
+                                                Container(
+                                                    height: 35,
+                                                    // color: Colors.red,
+                                                    child: IconButton(
+                                                      icon: Icon(
+                                                        Icons.arrow_forward,
+                                                        color: Colors.white,
+                                                      ),
+                                                      onPressed: () {
+                                                        setPolylines(
+                                                            e.lat, e.long);
+                                                      },
+                                                    )),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ));
+                              }).toList()),
+                            );
+                          }
+                          return Container();
+                        }),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }

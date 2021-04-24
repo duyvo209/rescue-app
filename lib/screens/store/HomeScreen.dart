@@ -16,6 +16,7 @@ import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/store/ProfileScreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:rescue/utils/helper.dart';
 import '../IntroScreen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -388,14 +389,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topCenter,
                 child: BlocBuilder<RequestBloc, RequestState>(
                   builder: (context, state) {
-                    state.listRescue.sort((a, b) => a
-                        .getM(10.0281188, 105.7736494)
-                        .compareTo(b.getM(10.0281188, 105.7736494)));
+                    state.listRescue.sort((a, b) =>
+                        a.getM(a.lat, a.long).compareTo(b.getM(b.lat, b.long)));
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: state.request.map((e) {
-                          double m = e.getM(10.0281188, 105.7736494);
+                          var store =
+                              BlocProvider.of<StoreBloc>(context).state.store;
+                          double m = Helper.getDistanceBetween(
+                              e.latUser, e.lngUser, store.lat, store.long);
                           return Container(
                             height: 180,
                             width: MediaQuery.of(context).size.width * 0.8,
@@ -447,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           height: 5,
                                         ),
                                         Text(
-                                          'Cách bạn ${m.toString().substring(0, 4)} km',
+                                          'Cách bạn ${m.toStringAsFixed(2)} km',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(

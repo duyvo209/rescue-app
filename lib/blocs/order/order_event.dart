@@ -8,6 +8,8 @@ class NewOrderEvent extends OrderEvent {
   final String orderId;
   final String total;
   final int checkout;
+  final UserInfo userInfo;
+  final DateTime time;
 
   NewOrderEvent({
     this.userId,
@@ -15,6 +17,8 @@ class NewOrderEvent extends OrderEvent {
     this.orderId,
     this.total,
     this.checkout,
+    this.userInfo,
+    this.time,
   });
 
   @override

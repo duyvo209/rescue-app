@@ -43,6 +43,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Expanded(
                   child: ListView(
                     children: List.generate(state.request.length, (index) {
+                      print("status ${state.request[index].status}");
                       return Container(
                         margin: const EdgeInsets.only(
                             bottom: 10, left: 20, right: 20),
@@ -73,6 +74,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                         .forEach((element) {
                                       print(element.name);
                                     });
+                                    print(
+                                        "state ${state.request[index].toMap()}");
                                     Navigator.push(
                                         context,
                                         new MaterialPageRoute(
@@ -94,22 +97,21 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               height: 5,
                             ),
                             Text(
-                              '${state.request[index].time}',
+                              '${state.request[index].time.toString().substring(0, 10).split('-').reversed.join('/')}',
                               style: TextStyle(color: Colors.white),
                             ),
                             SizedBox(
                               height: 5,
                             ),
-                            if (state.request[index].status == 0)
-                              Text(
-                                'Chưa xác nhận',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            if (state.request[index].status == 1)
-                              Text(
-                                'Đã xác nhận',
-                                style: TextStyle(color: Colors.white),
-                              ),
+                            state.request[index].status == 0
+                                ? Text(
+                                    'Chưa xác nhận',
+                                    style: TextStyle(color: Colors.white),
+                                  )
+                                : Text(
+                                    'Đã xác nhận',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
                           ],
                         ),
                       );

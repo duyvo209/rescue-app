@@ -125,6 +125,32 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
     //         .get();
     //   } catch (e) {}
     // }
+
+    if (event is GetListServiceAllStore) {
+      try {
+        yield state.copyWith(
+          storeLoading: true,
+          storeError: '',
+          storeSuccess: false,
+        );
+        var result = await FirebaseFirestore.instance
+            .collection('store')
+            .doc()
+            .collection('service')
+            .snapshots()
+            .first;
+        var listService = result.docs.map((e) {
+          var service = Store.fromFireStore(e.data());
+          return service;
+        }).toList();
+        yield state.copyWith(listStore: listService);
+      } catch (e) {
+        yield state.copyWith(
+          storeLoading: false,
+          storeError: e.toString(),
+        );
+      }
+    }
   }
 
   Stream<List<Service>> getListService(String storeId) {

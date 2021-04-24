@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/feedback/feedback_bloc.dart';
+import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/utils/rating.dart';
 
-class RateScreen extends StatefulWidget {
+class FeedbackScreen extends StatefulWidget {
+  final Rescue feedback;
+  FeedbackScreen(this.feedback);
   @override
-  _RateScreenState createState() => _RateScreenState();
+  _FeedbackScreenState createState() => _FeedbackScreenState();
 }
 
-class _RateScreenState extends State<RateScreen> {
+class _FeedbackScreenState extends State<FeedbackScreen> {
+  final TextEditingController _commentController = new TextEditingController();
   int _rating;
+  @override
+  void initState() {
+    BlocProvider.of<FeedbackBloc>(context).add(GetListFeedback());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -74,6 +86,7 @@ class _RateScreenState extends State<RateScreen> {
               Container(
                 padding: EdgeInsets.fromLTRB(50, 10, 50, 0),
                 child: TextFormField(
+                  controller: _commentController,
                   maxLines: null,
                   keyboardType: TextInputType.multiline,
                   decoration: InputDecoration(
@@ -88,7 +101,17 @@ class _RateScreenState extends State<RateScreen> {
                   width: 335,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      BlocProvider.of<FeedbackBloc>(context).add(
+                        AddFeedback(
+                          storeId: widget.feedback.idStore,
+                          userId: widget.feedback.idUser,
+                          userInfo: widget.feedback.userInfo,
+                          rating: _rating,
+                          comment: _commentController.text,
+                        ),
+                      );
+                    },
                     child: Text(
                       "Đăng",
                       style: TextStyle(color: Colors.white, fontSize: 18),

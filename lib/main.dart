@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/feedback/feedback_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/order/order_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
@@ -99,6 +100,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => SignupstoreBloc()),
           BlocProvider(create: (context) => RequestBloc()),
           BlocProvider(create: (context) => OrderBloc()),
+          BlocProvider(create: (context) => FeedbackBloc()),
           BlocProvider(
               create: (context) => AuthencationBloc(
                   loginBloc: BlocProvider.of<LoginBloc>(context),
