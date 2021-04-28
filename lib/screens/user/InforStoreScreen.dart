@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:rescue/blocs/feedback/feedback_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
@@ -21,19 +22,23 @@ class InforStoreScreen extends StatefulWidget {
 
 class _InforStoreScreenState extends State<InforStoreScreen> {
   var user;
+  GlobalKey<ScaffoldState> ratingKey = GlobalKey();
   @override
   void initState() {
     user = BlocProvider.of<LoginBloc>(context).state.user;
+    BlocProvider.of<FeedbackBloc>(context).add(GetListFeedback());
+    sumrating = 0;
     super.initState();
   }
 
   Service serviceSelected;
-  int rating;
-
+  double rating;
+  int sumrating = 0;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FeedbackBloc, FeedbackState>(
       builder: (context, state) {
+        //  print(state.listFeedback[0].rating);
         return Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -257,53 +262,68 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                     horizontal: 20,
                     vertical: 10,
                   ),
-                  child: Row(children: [
-                    Text(
-                      'Đánh giá',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    SizedBox(
-                      width: 5,
-                    ),
-                    Text(
-                      '5/5',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  ]),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 0,
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        size: 30,
-                        color: Colors.orange,
-                      ),
-                      Icon(
-                        Icons.star,
-                        size: 30,
-                        color: Colors.orange,
-                      ),
-                      Icon(
-                        Icons.star,
-                        size: 30,
-                        color: Colors.orange,
-                      ),
-                      Icon(
-                        Icons.star,
-                        size: 30,
-                        color: Colors.orange,
-                      ),
-                      Icon(
-                        Icons.star,
-                        size: 30,
-                        color: Colors.orange,
-                      ),
-                    ],
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('feedback')
+                        .where('storeId', isEqualTo: widget.store.idStore)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        sumrating = 0;
+                        rating = 0;
+                        return Column(
+                          children: [
+                            Row(
+                              children: [
+                                Row(
+                                  children: snapshot.data.docs.map((feedback) {
+                                    sumrating += feedback['rating'];
+                                    rating = sumrating / snapshot.data.size;
+                                    return Row();
+                                  }).toList(),
+                                ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Đánh giá',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      '${rating.toString()} / 5.0',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              children: [
+                                RatingBarIndicator(
+                                  rating: rating,
+                                  itemBuilder: (context, index) => Icon(
+                                    Icons.star,
+                                    color: Colors.orange,
+                                  ),
+                                  itemCount: 5,
+                                  itemSize: 30.0,
+                                  unratedColor: Colors.amber.withAlpha(50),
+                                  direction: Axis.horizontal,
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+                      return Container();
+                    },
                   ),
                 ),
                 Padding(
@@ -325,6 +345,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                     stream: FirebaseFirestore.instance
                         .collection('feedback')
                         .where('storeId', isEqualTo: widget.store.idStore)
+                        .orderBy('time', descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
@@ -500,79 +521,6 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                       return Container();
                     },
                   ),
-                  // children: state.listFeedback.map((feedback) {
-                  //   return Column(
-                  //     children: [
-                  //       Row(
-                  //         children: [
-                  //           CircleAvatar(
-                  //             radius: 15,
-                  //             backgroundColor: Colors.grey[300],
-                  //             child: ClipOval(
-                  //               child: new SizedBox(
-                  //                 width: 40,
-                  //                 height: 40,
-                  //                 child: CachedNetworkImage(
-                  //                     imageUrl: feedback.userInfo.imageUser),
-                  //               ),
-                  //             ),
-                  //           ),
-                  //           SizedBox(
-                  //             width: 10,
-                  //           ),
-                  //           Text('${feedback.userInfo.name}',
-                  //               style: TextStyle(fontSize: 16)),
-                  //         ],
-                  //       ),
-                  //       SizedBox(
-                  //         height: 5,
-                  //       ),
-                  //       Row(
-                  //         children: [
-                  //           Icon(
-                  //             Icons.star,
-                  //             size: 16,
-                  //             color: Colors.orange,
-                  //           ),
-                  //           Icon(
-                  //             Icons.star,
-                  //             size: 16,
-                  //             color: Colors.orange,
-                  //           ),
-                  //           Icon(
-                  //             Icons.star,
-                  //             size: 16,
-                  //             color: Colors.orange,
-                  //           ),
-                  //           Icon(
-                  //             Icons.star,
-                  //             size: 16,
-                  //             color: Colors.orange,
-                  //           ),
-                  //           Icon(
-                  //             Icons.star,
-                  //             size: 16,
-                  //             color: Colors.orange,
-                  //           ),
-                  //           SizedBox(
-                  //             width: 10,
-                  //           ),
-                  //           Text('23/04/2021'),
-                  //         ],
-                  //       ),
-                  //       SizedBox(
-                  //         height: 5,
-                  //       ),
-                  //       Text(
-                  //         '${feedback.comment}',
-                  //         maxLines: 2,
-                  //       ),
-                  //       SizedBox(
-                  //         height: 50,
-                  //       )
-                  //     ],
-                  //   );
-                  // }).toList(),
                 ),
               ],
             ));

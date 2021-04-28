@@ -180,6 +180,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
+                    _showDialog(context);
                     BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
                       storeId: widget.detailStore.idStore,
                       userId: widget.detailStore.idUser,
@@ -195,11 +196,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         checkout: 1,
                       ),
                     );
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) =>
-                                FeedbackScreen(widget.detailStore)));
                   },
                   child: Text(
                     "Xác Nhận Hoá Đơn",
@@ -237,4 +233,28 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       ),
     );
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text('Xác nhận hoá đơn thành công !'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) =>
+                              FeedbackScreen(widget.detailStore)),
+                    );
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }

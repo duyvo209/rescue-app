@@ -102,15 +102,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   height: 52,
                   child: ElevatedButton(
                     onPressed: () {
-                      BlocProvider.of<FeedbackBloc>(context).add(
-                        AddFeedback(
-                          storeId: widget.feedback.idStore,
-                          userId: widget.feedback.idUser,
-                          userInfo: widget.feedback.userInfo,
-                          rating: _rating,
-                          comment: _commentController.text,
-                        ),
-                      );
+                      _showDialog(context);
+                      // BlocProvider.of<FeedbackBloc>(context).add(
+                      //   AddFeedback(
+                      //     storeId: widget.feedback.idStore,
+                      //     userId: widget.feedback.idUser,
+                      //     userInfo: widget.feedback.userInfo,
+                      //     rating: _rating,
+                      //     comment: _commentController.text,
+                      //   ),
+                      // );
                     },
                     child: Text(
                       "Đăng",
@@ -138,4 +139,22 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ),
     );
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text('Cám ơn bạn đã phản hồi về cửa hàng của chúng tôi !'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }
