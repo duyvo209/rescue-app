@@ -12,6 +12,7 @@ import 'package:rescue/configs/configs.dart';
 import 'package:rescue/screens/store/ChatScreen.dart';
 import 'package:rescue/screens/store/ConfirmScreen.dart';
 import 'package:rescue/screens/store/ServiceScreen.dart';
+import 'package:rescue/screens/store/ChatTest.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/store/ProfileScreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -80,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
             state.request.forEach((element) {
               _marker.add(Marker(
                 markerId: MarkerId('${element.idUser}'),
-                position: LatLng(element.latUser, element.lngUser),
+                position: LatLng(element.lat, element.long),
                 icon: iconMarker,
                 infoWindow: InfoWindow(
                   title: '${element.userInfo.name}',
@@ -97,8 +98,10 @@ class _HomeScreenState extends State<HomeScreen> {
   setPolylines(latitude, longitude) async {
     polylineCoordinates.clear();
     PolylineResult resultPoly =
-        await polylinePoints?.getRouteBetweenCoordinates(GOOGLE_API_KEY,
-            PointLatLng(10.03088, 105.76904), PointLatLng(latitude, longitude));
+        await polylinePoints?.getRouteBetweenCoordinates(
+            GOOGLE_API_KEY,
+            PointLatLng(10.0281188, 105.7736494),
+            PointLatLng(latitude, longitude));
     List<PointLatLng> result = resultPoly?.points;
 
     if (result.isNotEmpty) {
@@ -125,7 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
           state.request.forEach((element) {
             _marker.add(Marker(
               markerId: MarkerId('${element.userInfo.email}'),
-              position: LatLng(10.02545, 105.7762),
+              position: LatLng(element.latUser, element.lngUser),
               icon: iconMarker,
               infoWindow: InfoWindow(
                 title: '${element.userInfo.name}',
@@ -158,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) => new ChatScreen()));
+                        builder: (context) => new ChatTest()));
               },
             )
           ],
@@ -389,8 +392,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.topCenter,
                 child: BlocBuilder<RequestBloc, RequestState>(
                   builder: (context, state) {
-                    state.listRescue.sort((a, b) =>
-                        a.getM(a.lat, a.long).compareTo(b.getM(b.lat, b.long)));
+                    state.listRescue.sort((a, b) => a
+                        .getM(a.latUser, a.lngUser)
+                        .compareTo(b.getM(b.latUser, b.lngUser)));
                     return SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
@@ -400,7 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           double m = Helper.getDistanceBetween(
                               e.latUser, e.lngUser, store.lat, store.long);
                           return Container(
-                            height: 180,
+                            height: 220,
                             width: MediaQuery.of(context).size.width * 0.8,
                             margin:
                                 EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -415,7 +419,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Container(
                                     width: 100,
-                                    height: 150,
+                                    height: 180,
                                     child: CachedNetworkImage(
                                         imageUrl: e.userInfo.imageUser,
                                         fit: BoxFit.cover),
@@ -459,6 +463,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Text(
                                           '${e.problems.first.name}',
                                           style: TextStyle(color: Colors.white),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Container(
+                                          height: 35,
+                                          child: IconButton(
+                                              icon: Icon(
+                                                Icons.arrow_forward,
+                                                color: Colors.white,
+                                              ),
+                                              onPressed: () {
+                                                setPolylines(
+                                                    e.latUser, e.lngUser);
+                                              }),
                                         ),
                                         SizedBox(
                                           height: 5,

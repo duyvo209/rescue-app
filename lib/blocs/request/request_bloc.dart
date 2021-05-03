@@ -121,6 +121,13 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       });
     }
 
+    if (event is DeleteService) {
+      await FirebaseFirestore.instance
+          .collection('request')
+          .doc(event.requestId)
+          .delete();
+    }
+
     if (event is UpdateCheckout) {
       await FirebaseFirestore.instance
           .collection('request')

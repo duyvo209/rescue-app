@@ -103,15 +103,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       _showDialog(context);
-                      // BlocProvider.of<FeedbackBloc>(context).add(
-                      //   AddFeedback(
-                      //     storeId: widget.feedback.idStore,
-                      //     userId: widget.feedback.idUser,
-                      //     userInfo: widget.feedback.userInfo,
-                      //     rating: _rating,
-                      //     comment: _commentController.text,
-                      //   ),
-                      // );
+                      BlocProvider.of<FeedbackBloc>(context).add(
+                        AddFeedback(
+                          storeId: widget.feedback.idStore,
+                          userId: widget.feedback.idUser,
+                          userInfo: widget.feedback.userInfo,
+                          rating: _rating,
+                          comment: _commentController.text,
+                        ),
+                      );
                     },
                     child: Text(
                       "Đăng",

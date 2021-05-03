@@ -28,6 +28,12 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
             .doc(event.userId)
             .get();
         UserInfo b = UserInfo.fromFireStore(user.data());
+        // var query =
+        //     await FirebaseFirestore.instance.collection('feedback').get();
+        // var listFeedback =
+        //     query.docs.map((e) => Feedback.fromFireStore(e.data())).toList();
+        // var check =
+        //     listFeedback.any((element) => element.userId == event.userId);
         await FirebaseFirestore.instance.collection('feedback').doc().set({
           'userId': event.userId,
           'storeId': event.storeId,

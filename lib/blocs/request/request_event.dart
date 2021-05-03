@@ -62,6 +62,12 @@ class UpdateService extends RequestEvent {
   UpdateService({this.service, this.requestId, this.total});
 }
 
+class DeleteService extends RequestEvent {
+  final String requestId;
+
+  DeleteService({this.requestId});
+}
+
 class UpdateCheckout extends RequestEvent {
   final String requestId;
   final int status;

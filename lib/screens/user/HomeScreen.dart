@@ -13,6 +13,7 @@ import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/configs/configs.dart';
 import 'package:rescue/screens/user/ChatScreen.dart';
+import 'package:rescue/screens/user/ChatTest.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/user/InforStoreScreen.dart';
 import 'package:rescue/screens/user/ProblemScreen.dart';
@@ -209,15 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) => new ChatScreen()));
+                        builder: (context) => new ChatTest()));
               },
             )
           ],
         ),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () {},
-        // ),
-
         drawerEdgeDragWidth: 0,
         drawer: Drawer(
           child: ListView(
@@ -459,7 +456,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         alignment: Alignment.bottomCenter,
                         child: BlocBuilder<StoreBloc, StoreState>(
                             builder: (context, state) {
-                          // List<Store> temp = state.listStore.map((e) => e);
                           if (state.listStore != null &&
                               state.listStore.isNotEmpty) {
                             state.listStore.sort((a, b) => a

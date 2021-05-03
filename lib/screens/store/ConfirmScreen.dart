@@ -119,7 +119,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(height: 15),
                           Row(
                             children: <Widget>[
-                              Text('Bị gì ?'),
+                              Text('Vấn đề ?'),
                               Spacer(),
                               Text(
                                 '${widget.rescue.problems.first.name}',
@@ -291,13 +291,15 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   onPressed: () {
-                                    BlocProvider.of<RequestBloc>(context)
-                                        .add(UpdateService(
-                                      requestId: widget.rescue.idRequest,
-                                      service: listServiceSelected,
-                                      total: getTotalPrice(listServiceSelected)
-                                          .toStringAsFixed(0),
-                                    ));
+                                    BlocProvider.of<RequestBloc>(context).add(
+                                      UpdateService(
+                                        requestId: widget.rescue.idRequest,
+                                        service: listServiceSelected,
+                                        total:
+                                            getTotalPrice(listServiceSelected)
+                                                .toStringAsFixed(0),
+                                      ),
+                                    );
                                   },
                                   textColor: Colors.white,
                                   color: Colors.blueGrey[800],
@@ -334,7 +336,13 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    // BlocProvider.of<RequestBloc>(context).add(
+                                    //   DeleteService(
+                                    //     requestId: widget.rescue.idRequest,
+                                    //   ),
+                                    // );
+                                  },
                                   textColor: Colors.white,
                                   color: Colors.red[900],
                                   child: Text(

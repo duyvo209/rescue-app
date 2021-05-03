@@ -58,6 +58,7 @@ dependencies:
   expandable: ^4.1.4
 
   autocomplete_textfield: ^1.7.3
+  flutter_typeahead: any
   flutter_rating_bar: any
 
   # flutter_phone_direct_caller: any
