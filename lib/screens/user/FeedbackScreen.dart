@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/feedback/feedback_bloc.dart';
@@ -37,103 +39,269 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           iconTheme: IconThemeData(color: Colors.white),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Rating((rating) {
-                setState(() {
-                  _rating = rating;
-                });
-              }, 5),
-              SizedBox(
-                height: 20,
-              ),
-              if (_rating != null && _rating != 0 && _rating == 1)
-                SizedBox(
-                  height: 44,
-                  child: Text('???', style: TextStyle(fontSize: 18)),
-                ),
-              if (_rating != null && _rating != 0 && _rating == 2)
-                SizedBox(
-                  height: 44,
-                  child:
-                      Text('Nữa đi, khùng hả', style: TextStyle(fontSize: 18)),
-                ),
-              if (_rating != null && _rating != 0 && _rating == 3)
-                SizedBox(
-                  height: 44,
-                  child: Text('Ây za, nữa đi', style: TextStyle(fontSize: 18)),
-                ),
-              if (_rating != null && _rating != 0 && _rating == 4)
-                SizedBox(
-                  height: 44,
-                  child:
-                      Text('Cho 5 sao luông', style: TextStyle(fontSize: 18)),
-                ),
-              if (_rating != null && _rating != 0 && _rating == 5)
-                SizedBox(
-                  height: 44,
-                  child: Text('Wá đã', style: TextStyle(fontSize: 18)),
-                ),
-              if (_rating == null &&
-                  _rating == 0 &&
-                  _rating != 1 &&
-                  _rating != 2 &&
-                  _rating != 3 &&
-                  _rating != 4 &&
-                  _rating != 5)
-                SizedBox.shrink(),
-              Container(
-                padding: EdgeInsets.fromLTRB(50, 10, 50, 0),
-                child: TextFormField(
-                  controller: _commentController,
-                  maxLines: null,
-                  keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Bình luận',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(0, 50, 0, 0),
-                child: SizedBox(
-                  width: 335,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showDialog(context);
-                      BlocProvider.of<FeedbackBloc>(context).add(
-                        AddFeedback(
-                          storeId: widget.feedback.idStore,
-                          userId: widget.feedback.idUser,
-                          userInfo: widget.feedback.userInfo,
-                          rating: _rating,
-                          comment: _commentController.text,
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "Đăng",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.blueGrey[800],
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(6))),
-                    ),
-                  ),
-                ),
-              ),
-
-              // SizedBox(
-              //     height: 44,
-              //     // child: (_rating != null && _rating != 0)
-              //     //     ? Text("You selected $_rating rating",
-              //     //         style: TextStyle(fontSize: 18))
-              //     //     : SizedBox.shrink())
-              //     child: Text();
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    padding: EdgeInsets.fromLTRB(50, 10, 50, 0),
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('feedback')
+                          .where('userId',
+                              isEqualTo: FirebaseAuth.instance.currentUser.uid)
+                          .where('storeId', isEqualTo: widget.feedback.idStore)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          if (snapshot.data.docs.isEmpty) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Rating((rating) {
+                                    setState(() {
+                                      _rating = rating;
+                                    });
+                                  }, 5),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  if (_rating != null &&
+                                      _rating != 0 &&
+                                      _rating == 1)
+                                    SizedBox(
+                                      height: 44,
+                                      child: Text('???',
+                                          style: TextStyle(fontSize: 18)),
+                                    ),
+                                  if (_rating != null &&
+                                      _rating != 0 &&
+                                      _rating == 2)
+                                    SizedBox(
+                                      height: 44,
+                                      child: Text('Nữa đi, khùng hả',
+                                          style: TextStyle(fontSize: 18)),
+                                    ),
+                                  if (_rating != null &&
+                                      _rating != 0 &&
+                                      _rating == 3)
+                                    SizedBox(
+                                      height: 44,
+                                      child: Text('Ây za, nữa đi',
+                                          style: TextStyle(fontSize: 18)),
+                                    ),
+                                  if (_rating != null &&
+                                      _rating != 0 &&
+                                      _rating == 4)
+                                    SizedBox(
+                                      height: 44,
+                                      child: Text('Cho 5 sao luông',
+                                          style: TextStyle(fontSize: 18)),
+                                    ),
+                                  if (_rating != null &&
+                                      _rating != 0 &&
+                                      _rating == 5)
+                                    SizedBox(
+                                      height: 44,
+                                      child: Text('Wá đã',
+                                          style: TextStyle(fontSize: 18)),
+                                    ),
+                                  if (_rating == null &&
+                                      _rating == 0 &&
+                                      _rating != 1 &&
+                                      _rating != 2 &&
+                                      _rating != 3 &&
+                                      _rating != 4 &&
+                                      _rating != 5)
+                                    SizedBox.shrink(),
+                                  TextFormField(
+                                    controller: _commentController,
+                                    maxLines: null,
+                                    keyboardType: TextInputType.multiline,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: 'Bình luận',
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 50, 0, 0),
+                                    child: SizedBox(
+                                      width: 335,
+                                      height: 52,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          _showDialog(context);
+                                          BlocProvider.of<FeedbackBloc>(context)
+                                              .add(
+                                            AddFeedback(
+                                              storeId: widget.feedback.idStore,
+                                              userId: widget.feedback.idUser,
+                                              userInfo:
+                                                  widget.feedback.userInfo,
+                                              rating: _rating,
+                                              comment: _commentController.text,
+                                            ),
+                                          );
+                                        },
+                                        child: Text(
+                                          "Đăng",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 18),
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          primary: Colors.blueGrey[800],
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(6))),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return Center(
+                              child: Column(
+                                children: snapshot.data.docs
+                                    .map((DocumentSnapshot feedback) {
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          (feedback['rating'] == 1)
+                                              ? Icon(
+                                                  Icons.star,
+                                                  size: 40,
+                                                  color: Colors.orange,
+                                                )
+                                              : Text(''),
+                                          (feedback['rating'] == 2)
+                                              ? Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(''),
+                                          (feedback['rating'] == 3)
+                                              ? Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(''),
+                                          (feedback['rating'] == 4)
+                                              ? Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(''),
+                                          (feedback['rating'] == 5)
+                                              ? Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                    Icon(
+                                                      Icons.star,
+                                                      size: 40,
+                                                      color: Colors.orange,
+                                                    ),
+                                                  ],
+                                                )
+                                              : Text(''),
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      TextFormField(
+                                        maxLines: null,
+                                        readOnly: true,
+                                        keyboardType: TextInputType.multiline,
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          hintText: '${feedback['comment']}',
+                                          hintMaxLines: 10,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }).toList(),
+                              ),
+                            );
+                          }
+                        }
+                        return Container();
+                      },
+                    )),
+              ],
+            ),
           ),
         ),
       ),
@@ -145,7 +313,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       builder: (context) => AlertDialog(
             title:
                 Text('Thành công', style: TextStyle(color: Colors.green[600])),
-            content: Text('Cám ơn bạn đã phản hồi về cửa hàng của chúng tôi !'),
+            content: Text('Cám ơn bạn đã góp ý về cửa hàng của chúng tôi !'),
             actions: [
               FlatButton(
                   onPressed: () {

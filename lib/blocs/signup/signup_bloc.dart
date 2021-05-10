@@ -42,7 +42,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
           await fireStore.collection('users').doc(user.user.uid).set({
             'name': event.name,
             'email': event.email,
-            'type': '1',
           });
           yield state.copyWith(
             signupLoading: false,

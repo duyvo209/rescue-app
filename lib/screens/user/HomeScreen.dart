@@ -1,18 +1,21 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/configs/configs.dart';
-import 'package:rescue/screens/user/ChatScreen.dart';
+// import 'package:rescue/screens/user/ChatDetailTest.dart';
+// import 'package:rescue/screens/user/ChatScreen.dart';
 import 'package:rescue/screens/user/ChatTest.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/user/InforStoreScreen.dart';
@@ -169,6 +172,10 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  double rating;
+  int sumrating = 0;
+  int size;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<StoreBloc, StoreState>(
@@ -205,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.message),
+              icon: Icon(Icons.messenger_rounded),
               onPressed: () {
                 Navigator.push(
                     context,
@@ -232,12 +239,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         accountName: Text('${state.user?.name}'),
                         currentAccountPicture: ClipRRect(
                           borderRadius: BorderRadius.circular(70),
-                          child: CachedNetworkImage(
-                            imageUrl: '${state.user.imageUser}',
-                            width: 70,
-                            height: 70,
-                            fit: BoxFit.cover,
-                          ),
+                          child: state.user.imageUser != null
+                              ? CachedNetworkImage(
+                                  imageUrl: '${state.user.imageUser}',
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                )
+                              : Text(''),
                         ));
                   });
                 }
@@ -419,19 +428,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       polylines: _polylines,
                     ),
                     Container(
-                      padding: const EdgeInsets.fromLTRB(25, 580, 0, 0),
+                      padding: const EdgeInsets.fromLTRB(30, 555, 30, 0),
+                      // color: Colors.red,
                       child: SizedBox(
-                        width: 360,
+                        width: MediaQuery.of(context).size.width * 1,
                         height: 50,
                         child: ElevatedButton(
                           onPressed: () {
-                            // BlocBuilder<StoreBloc, StoreState>(
-                            //     builder: (context, state) {
-                            //   return Column(
-                            //       children: state.listStore.map((e) {
-                            //     return Text('${e.name}');
-                            //   }).toList());
-                            // });
                             Navigator.push(
                                 context,
                                 new MaterialPageRoute(
@@ -468,7 +471,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 double m = e.getM(10.02545, 105.77621);
                                 // calculateDistance(10.02545, 105.77621, e.lat, e.long);
                                 return Container(
-                                    height: 140,
+                                    height: 160,
                                     width:
                                         MediaQuery.of(context).size.width * 0.8,
                                     margin: EdgeInsets.only(
@@ -491,8 +494,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Row(
                                         children: [
                                           Container(
-                                            width: 100,
-                                            height: 100,
+                                            width: 110,
+                                            height: 120,
                                             child: Image.asset('assets/2.jpeg',
                                                 fit: BoxFit.cover),
                                             decoration: BoxDecoration(
@@ -533,8 +536,92 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   style: TextStyle(
                                                       color: Colors.white),
                                                 ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
                                                 Container(
-                                                    height: 35,
+                                                  child: StreamBuilder<
+                                                      QuerySnapshot>(
+                                                    stream: FirebaseFirestore
+                                                        .instance
+                                                        .collection('feedback')
+                                                        .where('storeId',
+                                                            isEqualTo:
+                                                                e.idStore)
+                                                        .snapshots(),
+                                                    builder:
+                                                        (context, snapshot) {
+                                                      if (snapshot.hasData) {
+                                                        sumrating = 0;
+                                                        rating = 0;
+                                                        return Column(
+                                                          children: [
+                                                            Row(
+                                                              children: snapshot
+                                                                  .data.docs
+                                                                  .map(
+                                                                      (feedback) {
+                                                                sumrating +=
+                                                                    feedback[
+                                                                        'rating'];
+                                                                rating =
+                                                                    sumrating /
+                                                                        snapshot
+                                                                            .data
+                                                                            .size;
+                                                                size = snapshot
+                                                                    .data.size;
+                                                                return Row();
+                                                              }).toList(),
+                                                            ),
+                                                            Row(
+                                                              children: [
+                                                                RatingBarIndicator(
+                                                                  rating:
+                                                                      rating,
+                                                                  itemBuilder:
+                                                                      (context,
+                                                                              index) =>
+                                                                          Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .amber,
+                                                                  ),
+                                                                  itemCount: 5,
+                                                                  itemSize:
+                                                                      20.0,
+                                                                  unratedColor: Colors
+                                                                      .amber
+                                                                      .withAlpha(
+                                                                          50),
+                                                                  direction: Axis
+                                                                      .horizontal,
+                                                                ),
+                                                                Spacer(),
+                                                                size == null
+                                                                    ? Text(
+                                                                        '0 đánh giá',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white),
+                                                                      )
+                                                                    : Text(
+                                                                        '${size.toString()} đánh giá',
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.white),
+                                                                      ),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        );
+                                                      }
+                                                      return Container();
+                                                    },
+                                                  ),
+                                                ),
+                                                Container(
+                                                    height: 30,
                                                     // color: Colors.red,
                                                     child: IconButton(
                                                       icon: Icon(

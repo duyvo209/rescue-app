@@ -4,7 +4,7 @@ import 'package:loading_overlay/loading_overlay.dart';
 // import 'package:rescue/blocs/auth/authencation_bloc.dart';
 
 import 'package:rescue/blocs/login/login_bloc.dart';
-import 'package:rescue/screens/user/ForgotPassScreen.dart';
+import 'package:rescue/screens/ForgotPassScreen.dart';
 import 'package:rescue/screens/store/HomeScreen.dart';
 import 'package:rescue/screens/store/SignupStoreScreen.dart';
 import 'package:easy_localization/easy_localization.dart';

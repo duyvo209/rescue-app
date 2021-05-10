@@ -72,10 +72,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                   onPressed: () {
                                     state.request[index].service
                                         .forEach((element) {
-                                      print(element.name);
+                                      // print(element.name);
                                     });
-                                    print(
-                                        "state ${state.request[index].toMap()}");
+                                    // print(
+                                    //     "state ${state.request[index].toMap()}");
                                     Navigator.push(
                                         context,
                                         new MaterialPageRoute(
@@ -86,7 +86,36 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                 )));
                                   },
                                   child: Text('Xem chi tiết'),
-                                )
+                                ),
+                                SizedBox(
+                                  width: 6,
+                                ),
+                                state.request[index].status == 0
+                                    ? SizedBox(
+                                        width: 35,
+                                        height: 36.5,
+                                        child: RaisedButton(
+                                          onPressed: () {
+                                            _showDialog(context);
+                                            BlocProvider.of<RequestBloc>(
+                                                    context)
+                                                .add(
+                                              DeleteService(
+                                                  requestId: state
+                                                      .request[index]
+                                                      .idRequest),
+                                            );
+                                          },
+                                          color: Colors.red[900],
+                                          child: Text(
+                                            "X",
+                                            textAlign: TextAlign.center,
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        ),
+                                      )
+                                    : Container(),
                               ],
                             ),
                             Text(
@@ -125,4 +154,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
       },
     );
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text('Bạn thật sự muốn huỷ yêu cầu cứu hộ ?'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }

@@ -5,6 +5,7 @@ import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Services.dart';
 import 'package:rescue/screens/user/FeedbackScreen.dart';
+import 'package:rescue/utils/helper.dart';
 
 double getTotalPrice(List<Services> service) {
   return service
@@ -23,6 +24,18 @@ class CheckOutScreen extends StatefulWidget {
 class _CheckOutScreenState extends State<CheckOutScreen> {
   @override
   Widget build(BuildContext context) {
+    double m = Helper.getDistanceBetween(
+        widget.detailStore.latUser,
+        widget.detailStore.lngUser,
+        widget.detailStore.lat,
+        widget.detailStore.long);
+    var priceService = 0.0;
+    if (m < 2.0) {
+      priceService = 20000.0;
+    } else {
+      priceService =
+          20000.0 + ((double.parse(m.toStringAsFixed(0)) - 2.0) * 5000.0);
+    }
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -73,7 +86,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               children: <Widget>[
                 Text('Xác nhận'),
                 Spacer(),
-                Text('${widget.detailStore.status}'),
+                widget.detailStore.status == 0
+                    ? Text('Chưa xác nhận')
+                    : Text('Đã xác nhận')
+                // Text('${widget.detailStore.status}'),
               ],
             ),
             SizedBox(
@@ -83,7 +99,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               children: <Widget>[
                 Text('Thanh toán'),
                 Spacer(),
-                Text('${widget.detailStore.checkout}'),
+                // Text('${widget.detailStore.checkout}'),
+                widget.detailStore.checkout == 0
+                    ? Text('Chưa thanh toán')
+                    : Text('Đã thanh toán')
               ],
             ),
             SizedBox(
@@ -137,39 +156,46 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               );
             }).toList()),
             SizedBox(
-              height: 20,
+              height: 10,
             ),
-            // Row(
-            //   children: <Widget>[
-            //     Text('Phí cứu hộ'),
-            //     Spacer(),
-            //     Text(
-            //       '500.000 đ',
-            //     ),
-            //   ],
-            // ),
+            Column(
+              children: [
+                Row(
+                  children: [
+                    Text('Phí dịch vụ'),
+                    Spacer(),
+                    Text(priceService.toStringAsFixed(0) + " đ")
+                  ],
+                ),
+              ],
+            ),
             SizedBox(
               height: 80,
             ),
-            Row(
-              children: <Widget>[
-                Text(
-                  'Tổng:',
-                  style: TextStyle(fontSize: 18),
-                ),
-                Spacer(),
-                if (widget.detailStore.service.isNotEmpty)
+            Column(
+                children: widget.detailStore.service.map((e) {
+              var totalPriceAll = 0.0;
+              totalPriceAll = double.parse(e.price) + priceService;
+              return Row(
+                children: [
                   Text(
-                    '${getTotalPrice(widget.detailStore.service).toStringAsFixed(0)} đ',
+                    'Tổng:',
                     style: TextStyle(fontSize: 18),
                   ),
-                if (widget.detailStore.service.isEmpty)
-                  Text(
-                    '0 đ',
-                    style: TextStyle(fontSize: 18),
-                  ),
-              ],
-            ),
+                  Spacer(),
+                  if (widget.detailStore.service.isNotEmpty)
+                    Text(
+                      '${totalPriceAll.toStringAsFixed(0)} đ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  if (widget.detailStore.service.isEmpty)
+                    Text(
+                      '0 đ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                ],
+              );
+            }).toList()),
             SizedBox(
               height: 80,
             ),
@@ -181,21 +207,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     _showDialog(context);
-                    BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
-                      storeId: widget.detailStore.idStore,
-                      userId: widget.detailStore.idUser,
-                      total: getTotalPrice(widget.detailStore.service)
-                          .toStringAsFixed(0),
-                      userInfo: widget.detailStore.userInfo,
-                      checkout: 1,
-                    ));
+                    // BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                    //   storeId: widget.detailStore.idStore,
+                    //   userId: widget.detailStore.idUser,
+                    //   total: getTotalPrice(widget.detailStore.service)
+                    //       .toStringAsFixed(0),
+                    //   userInfo: widget.detailStore.userInfo,
+                    //   checkout: 1,
+                    // ));
 
-                    BlocProvider.of<RequestBloc>(context).add(
-                      UpdateCheckout(
-                        requestId: widget.detailStore.idRequest,
-                        checkout: 1,
-                      ),
-                    );
+                    // BlocProvider.of<RequestBloc>(context).add(
+                    //   UpdateCheckout(
+                    //     requestId: widget.detailStore.idRequest,
+                    //     checkout: 1,
+                    //   ),
+                    // );
                   },
                   child: Text(
                     "Xác Nhận Hoá Đơn",

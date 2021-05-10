@@ -6,6 +6,7 @@ import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Service.dart';
+import 'package:rescue/utils/helper.dart';
 
 double getTotalPrice(List<Service> service) {
   return service
@@ -37,11 +38,24 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
   Service listService;
 
   var totalPrice = 0;
+  var priceService = 0.0;
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StoreBloc, StoreState>(
       builder: (context, state) {
+        double m = Helper.getDistanceBetween(widget.rescue.latUser,
+            widget.rescue.lngUser, widget.rescue.lat, widget.rescue.long);
+        var priceMove = 0.0;
+        if (m < 2.0) {
+          priceMove = 20000.0;
+        } else {
+          priceMove =
+              20000.0 + ((double.parse(m.toStringAsFixed(0)) - 2.0) * 5000.0);
+        }
+        // var phidichvu = 0.0;
+        // phidichvu = (totalPriceAll * 5 / 100) - priceService;
+
         return Scaffold(
             appBar: AppBar(
               centerTitle: true,
@@ -119,7 +133,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(height: 15),
                           Row(
                             children: <Widget>[
-                              Text('Vấn đề ?'),
+                              Text('Vấn đề'),
                               Spacer(),
                               Text(
                                 '${widget.rescue.problems.first.name}',
@@ -204,11 +218,53 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                       height: 30,
                                     ),
                                     Spacer(),
-                                    Text(e.price),
+                                    Text(e.price + " đ"),
+                                    // IconButton(
+                                    //   icon: Icon(Icons.delete),
+                                    //   alignment: Alignment.centerLeft,
+                                    //   iconSize: 18,
+                                    //   onPressed: () {},
+                                    // )
                                   ],
                                 );
                               }).toList(),
                             ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Text('Phí di chuyển'),
+                                  Spacer(),
+                                  Text(priceMove.toStringAsFixed(0) + " đ")
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              StreamBuilder<List<Service>>(
+                                  stream: BlocProvider.of<StoreBloc>(context)
+                                      .getListService(widget.rescue.idStore),
+                                  builder: (context, snapshot) {
+                                    if (listServiceSelected.isNotEmpty) {
+                                      priceService =
+                                          getTotalPrice(listServiceSelected) *
+                                              10 /
+                                              100;
+                                    }
+                                    return Row(
+                                      children: [
+                                        Text('Phí dịch vụ (10%)'),
+                                        Spacer(),
+                                        Text(priceService.toStringAsFixed(0) +
+                                            ' đ'),
+                                      ],
+                                    );
+                                  }),
+                            ],
+                          ),
                           SizedBox(
                             height: 120,
                           ),
@@ -226,6 +282,12 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                 stream: BlocProvider.of<StoreBloc>(context)
                     .getListService(widget.rescue.idStore),
                 builder: (context, snapshot) {
+                  var totalPriceAll = 0.0;
+                  if (listServiceSelected.isNotEmpty) {
+                    totalPriceAll = getTotalPrice(listServiceSelected) +
+                        priceMove +
+                        priceService;
+                  }
                   return Container(
                     height: 200,
                     decoration: BoxDecoration(
@@ -264,7 +326,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                   if (listServiceSelected.isNotEmpty)
                                     TextSpan(
                                       text:
-                                          '${getTotalPrice(listServiceSelected).toStringAsFixed(0)}',
+                                          '${totalPriceAll.toStringAsFixed(0) + " đ"}',
                                       style: TextStyle(
                                           fontSize: 20, color: Colors.black),
                                     ),
@@ -291,13 +353,12 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   onPressed: () {
+                                    _showDialog(context);
                                     BlocProvider.of<RequestBloc>(context).add(
                                       UpdateService(
                                         requestId: widget.rescue.idRequest,
                                         service: listServiceSelected,
-                                        total:
-                                            getTotalPrice(listServiceSelected)
-                                                .toStringAsFixed(0),
+                                        total: totalPriceAll.toStringAsFixed(0),
                                       ),
                                     );
                                   },
@@ -320,7 +381,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                             ),
                             Text.rich(
                               TextSpan(
-                                text: "dvRescue",
+                                text: "${widget.rescue.storeName}",
                                 // '${getTotalPrice(listServiceSelected).toStringAsFixed(0)}',
                                 style: TextStyle(
                                     fontSize: 20, color: Colors.black),
@@ -337,11 +398,12 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   onPressed: () {
-                                    // BlocProvider.of<RequestBloc>(context).add(
-                                    //   DeleteService(
-                                    //     requestId: widget.rescue.idRequest,
-                                    //   ),
-                                    // );
+                                    _showDialogCancel(context);
+                                    BlocProvider.of<RequestBloc>(context).add(
+                                      DeleteService(
+                                        requestId: widget.rescue.idRequest,
+                                      ),
+                                    );
                                   },
                                   textColor: Colors.white,
                                   color: Colors.red[900],
@@ -361,4 +423,39 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
       },
     );
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text('Xác nhận hoá đơn thành công !'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
+
+  _showDialogCancel(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text('Thành công', style: TextStyle(color: Colors.red[600])),
+            content: Text('Bạn có thật sự muốn huỷ yêu cầu ?'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }

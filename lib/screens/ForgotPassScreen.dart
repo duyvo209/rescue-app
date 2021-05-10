@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
-import 'package:rescue/screens/user/LoginScreen.dart';
 
 class ForgotPassScreen extends StatefulWidget {
   @override
@@ -73,16 +72,12 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
                     height: 52,
                     child: ElevatedButton(
                       onPressed: () {
-                        // BlocProvider.of<LoginBloc>(context).add(
-                        //   ResetPass(email: _emailController.text),
-                        // );
+                        BlocProvider.of<LoginBloc>(context).add(
+                          ResetPass(email: _emailController.text),
+                        );
                         FirebaseAuth.instance
                             .sendPasswordResetEmail(email: email);
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => LoginScreen()));
+                        _showDialog(context);
                       },
                       child: Text(
                         "Submit",
@@ -99,10 +94,6 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
                 InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        new MaterialPageRoute(
-                            builder: (context) => LoginScreen()));
                   },
                   child: Text(
                     'Return to Login ?',
@@ -116,4 +107,23 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
       },
     );
   }
+
+  _showDialog(BuildContext context) => showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Thành công', style: TextStyle(color: Colors.green[600])),
+            content: Text(
+                'Yêu cầu của bạn đã được gửi đi, vui lòng kiểm tra lại email sau ít phút !'),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'OK',
+                    style: TextStyle(color: Colors.blueGrey[800]),
+                  ))
+            ],
+          ));
 }

@@ -22,7 +22,6 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   }
 
   getGroupChatId() async {
-    // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     userId = FirebaseAuth.instance.currentUser.uid;
     String anotherUserId = widget.docs['idStore'];
     if (userId.compareTo(anotherUserId) > 0) {
@@ -122,22 +121,6 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                     ),
                   ),
                 ),
-
-                // Row(
-                //   children: <Widget>[
-                //     Expanded(
-                //       child: TextField(
-                //         controller: textEditingController,
-                //       ),
-                //     ),
-                //     IconButton(
-                //         icon: Icon(Icons.send),
-                //         onPressed: () {
-                //           sendMsg();
-                //           textEditingController.clear();
-                //         })
-                //   ],
-                // )
               ],
             );
           } else {
@@ -160,12 +143,12 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
           .collection('messages')
           .doc(groupChatId)
           .collection(groupChatId)
-          .doc(DateTime.now().millisecondsSinceEpoch.toString());
+          .doc(DateTime.now().toIso8601String());
       FirebaseFirestore.instance.runTransaction((transaction) async {
         await transaction.set(ref, {
           'senderId': userId,
           'anotherUserId': widget.docs['idStore'],
-          'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+          'timestamp': DateTime.now().toIso8601String(),
           'content': msg,
           'type': 'text',
         });
@@ -178,22 +161,6 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   }
 
   buildItem(doc) {
-    // return Padding(
-    //   padding: EdgeInsets.only(
-    //       top: 8.0,
-    //       left: ((doc['senderId'] == userId ? 64 : 0)),
-    //       right: ((doc['senderId'] == userId ? 0 : 64))),
-    //   child: Container(
-    //     width: MediaQuery.of(context).size.width,
-    //     padding: const EdgeInsets.all(8.0),
-    //     decoration: BoxDecoration(
-    //         color: ((doc['senderId'] == userId)
-    //             ? Colors.grey
-    //             : Colors.greenAccent),
-    //         borderRadius: BorderRadius.circular(8.0)),
-    //     child: Text('${doc['content']}'),
-    //   ),
-    // );
     return Container(
       padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
       child: Align(
@@ -207,7 +174,24 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                 : Colors.white),
           ),
           padding: EdgeInsets.all(16),
-          child: Text('${doc['content']}'),
+          // child: Text(
+          //   '${doc['content']}\n${doc['timestamp'].toString().substring(11, 16)}',
+          //   textAlign:
+          //       (doc['senderId'] == userId ? TextAlign.right : TextAlign.left),
+          // ),
+          child: RichText(
+            text: TextSpan(
+                text: '${doc['content']}',
+                style: TextStyle(color: Colors.black),
+                children: [
+                  TextSpan(
+                      text:
+                          '\n${doc['timestamp'].toString().substring(11, 16)}',
+                      style: TextStyle(color: Colors.black54, fontSize: 13)),
+                ]),
+            textAlign:
+                (doc['senderId'] == userId ? TextAlign.right : TextAlign.left),
+          ),
         ),
       ),
     );

@@ -87,7 +87,7 @@ class _ChatTestState extends State<ChatTest> {
                             height: 6,
                           ),
                           Text(
-                            'aaa',
+                            doc['phone'],
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey.shade500),
                           ),

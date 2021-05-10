@@ -31,7 +31,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future getImage() async {
     var image = await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
-      _image = File(image.path);
+      if (image != null) {
+        _image = File(image.path);
+      }
       print('Image Path $_image');
     });
   }

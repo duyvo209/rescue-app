@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:rescue/models/Store.dart';
+import 'package:rescue/screens/user/InforStoreScreen.dart';
 
 class ProblemScreen extends StatefulWidget {
   @override
@@ -90,6 +92,10 @@ class _ProblemScreenState extends State<ProblemScreen> {
     return listStoreQuery;
   }
 
+  double rating;
+  int sumrating = 0;
+  int size;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -142,63 +148,145 @@ class _ProblemScreenState extends State<ProblemScreen> {
                       .getM(10.02545, 105.77621)
                       .compareTo(b.getM(10.02545, 105.77621)));
                   double m = e.getM(10.02545, 105.77621);
-                  return Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(
-                            bottom: 0, left: 20, right: 20),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
-                        decoration: BoxDecoration(
-                            color: Colors.blueGrey[800],
-                            borderRadius: BorderRadius.circular(8.0)),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 100,
-                              height: 100,
-                              child: Image.asset('assets/2.jpeg',
-                                  fit: BoxFit.cover),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${e.name}',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    "${e.address}",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Text(
-                                    'Cách bạn ${m.toString().substring(0, 4)} km',
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) => InforStoreScreen(
+                                    store: e,
+                                  )));
+                    },
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
                         ),
-                      ),
-                    ],
+                        Container(
+                          height: 140,
+                          margin: const EdgeInsets.only(
+                              bottom: 0, left: 20, right: 20),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16.0, vertical: 8.0),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey[800],
+                              borderRadius: BorderRadius.circular(8.0)),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 100,
+                                height: 100,
+                                child: Image.asset('assets/2.jpeg',
+                                    fit: BoxFit.cover),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      '${e.name}',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "${e.address}",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      'Cách bạn ${m.toString().substring(0, 4)} km',
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      child: StreamBuilder<QuerySnapshot>(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('feedback')
+                                            .where('storeId',
+                                                isEqualTo: e.idStore)
+                                            .snapshots(),
+                                        builder: (context, snapshot) {
+                                          if (snapshot.hasData) {
+                                            sumrating = 0;
+                                            rating = 0;
+                                            return Column(
+                                              children: [
+                                                Row(
+                                                  children: snapshot.data.docs
+                                                      .map((feedback) {
+                                                    sumrating +=
+                                                        feedback['rating'];
+                                                    rating = sumrating /
+                                                        snapshot.data.size;
+                                                    size = snapshot.data.size;
+                                                    return Row();
+                                                  }).toList(),
+                                                ),
+                                                Row(
+                                                  children: [
+                                                    RatingBarIndicator(
+                                                      rating: rating,
+                                                      itemBuilder:
+                                                          (context, index) =>
+                                                              Icon(
+                                                        Icons.star,
+                                                        color: Colors.amber,
+                                                      ),
+                                                      itemCount: 5,
+                                                      itemSize: 20.0,
+                                                      unratedColor: Colors.amber
+                                                          .withAlpha(50),
+                                                      direction:
+                                                          Axis.horizontal,
+                                                    ),
+                                                    Spacer(),
+                                                    size == null
+                                                        ? Text(
+                                                            '0 đánh giá',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          )
+                                                        : Text(
+                                                            '${size.toString()} đánh giá',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white),
+                                                          ),
+                                                  ],
+                                                ),
+                                              ],
+                                            );
+                                          }
+                                          return Container();
+                                        },
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }).toList(),
               ),

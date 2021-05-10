@@ -82,6 +82,7 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
         var data = await FirebaseFirestore.instance
             .collection('request')
             .where('idUser', isEqualTo: user.uid)
+            .orderBy('time', descending: true)
             .snapshots()
             .first;
         print(data);

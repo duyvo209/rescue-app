@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rescue/screens/store/LoginStoreScreen.dart';
-import 'user/LoginScreen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:rescue/screens/user/LoginScreen.dart';
 
 class IntroScreen extends StatefulWidget {
   @override

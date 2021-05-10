@@ -13,7 +13,7 @@ class SignupStore extends SignupstoreEvent {
   final String password;
   final String phone;
   final String address;
-  final String time;
+  // final String time;
   final String uid;
   final double lat;
   final double long;
@@ -25,7 +25,7 @@ class SignupStore extends SignupstoreEvent {
     @required this.password,
     @required this.phone,
     @required this.address,
-    @required this.time,
+    // @required this.time,
     @required this.lat,
     @required this.long,
     this.status,

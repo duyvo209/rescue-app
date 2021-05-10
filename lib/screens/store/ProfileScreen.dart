@@ -61,11 +61,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? _addressController.text = ""
                         : _addressController.text = state.store.address;
 
-                    state.store.time == null
-                        // ignore: unnecessary_statements
-                        ? _timeController.text == ""
-                        // ignore: unnecessary_statements
-                        : _timeController.text == state.store.time;
+                    // state.store.time == null
+                    //     // ignore: unnecessary_statements
+                    //     ? _timeController.text == ""
+                    //     // ignore: unnecessary_statements
+                    //     : _timeController.text == state.store.time;
 
                     return Column(
                       children: [
@@ -105,23 +105,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     fontSize: 20, color: Colors.black)),
                           ),
                         ),
-                        SizedBox(
-                          height: 35,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 5, right: 5),
-                          child: TextField(
-                            controller: _timeController,
-                            decoration: InputDecoration(
-                                contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText:
-                                    'Giờ mở cửa - đóng cửa'.tr().toString(),
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
-                                hintStyle: TextStyle(
-                                    fontSize: 20, color: Colors.black)),
-                          ),
-                        ),
+                        // SizedBox(
+                        //   height: 35,
+                        // ),
+                        // Padding(
+                        //   padding: EdgeInsets.only(left: 5, right: 5),
+                        //   child: TextField(
+                        //     controller: _timeController,
+                        //     decoration: InputDecoration(
+                        //         contentPadding: EdgeInsets.only(bottom: 5),
+                        //         labelText:
+                        //             'Giờ mở cửa - đóng cửa'.tr().toString(),
+                        //         floatingLabelBehavior:
+                        //             FloatingLabelBehavior.always,
+                        //         hintStyle: TextStyle(
+                        //             fontSize: 20, color: Colors.black)),
+                        //   ),
+                        // ),
                         SizedBox(
                           height: 35,
                         ),

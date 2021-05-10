@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -9,11 +10,9 @@ import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/configs/configs.dart';
-import 'package:rescue/screens/store/ChatScreen.dart';
+import 'package:rescue/screens/store/ChatDetailTest.dart';
 import 'package:rescue/screens/store/ConfirmScreen.dart';
-import 'package:rescue/screens/store/ServiceScreen.dart';
 import 'package:rescue/screens/store/ChatTest.dart';
-import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/store/ProfileScreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
             state.request.forEach((element) {
               _marker.add(Marker(
                 markerId: MarkerId('${element.idUser}'),
-                position: LatLng(element.lat, element.long),
+                position: LatLng(element.latUser, element.lngUser),
                 icon: iconMarker,
                 infoWindow: InfoWindow(
                   title: '${element.userInfo.name}',
@@ -156,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.message),
+              icon: Icon(Icons.messenger_rounded),
               onPressed: () {
                 Navigator.push(
                     context,
@@ -220,47 +219,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Icon(Icons.person),
               ),
               SizedBox(height: 10),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new HistoryScreen()));
-                },
-                title: Text(
-                  'Cứu hộ',
-                  style: TextStyle(fontSize: 16),
-                ),
-                leading: Icon(Icons.history),
-              ),
-              SizedBox(height: 10),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new ServiceScreen()));
-                },
-                title: Text(
-                  'Dịch vụ',
-                  style: TextStyle(fontSize: 16),
-                ),
-                leading: Icon(Icons.history),
-              ),
-              SizedBox(height: 10),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new HistoryScreen()));
-                },
-                title: Text(
-                  'Hoá đơn',
-                  style: TextStyle(fontSize: 16),
-                ),
-                leading: Icon(Icons.history),
-              ),
+              // ListTile(
+              //   onTap: () {
+              //     Navigator.push(
+              //         context,
+              //         new MaterialPageRoute(
+              //             builder: (context) => new ServiceScreen()));
+              //   },
+              //   title: Text(
+              //     'Dịch vụ',
+              //     style: TextStyle(fontSize: 16),
+              //   ),
+              //   leading: Icon(Icons.history),
+              // ),
+              // SizedBox(height: 10),
               ExpansionTile(
                 title: Text(
                   'Ngôn ngữ'.tr().toString(),
@@ -508,20 +480,35 @@ class _HomeScreenState extends State<HomeScreen> {
                                               ),
                                             ),
                                             Spacer(),
-                                            FlatButton(
-                                              color: Colors.white70,
-                                              onPressed: () {
-                                                // Navigator.push(
-                                                //     context,
-                                                //     new MaterialPageRoute(
-                                                //         builder: (context) =>
-                                                //             ComfirmScreen()));
+                                            StreamBuilder(
+                                              stream: FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(e.idUser)
+                                                  .snapshots(),
+                                              builder: (context, snapshot) {
+                                                if (snapshot.hasData) {
+                                                  return FlatButton(
+                                                    color: Colors.white70,
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        new MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              new ChatDetailTest(
+                                                            docs: snapshot.data,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: Text(
+                                                      'Nhắn tin',
+                                                      style: TextStyle(
+                                                          color: Colors.black),
+                                                    ),
+                                                  );
+                                                }
+                                                return Container();
                                               },
-                                              child: Text(
-                                                'Nhắn tin',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
                                             ),
                                           ],
                                         )

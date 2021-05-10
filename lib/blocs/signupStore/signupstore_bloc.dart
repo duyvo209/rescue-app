@@ -33,7 +33,7 @@ class SignupstoreBloc extends Bloc<SignupstoreEvent, SignupstoreState> {
             'email': event.email,
             'phone': event.phone,
             'address': event.address,
-            'time': event.time,
+            // 'time': event.time,
             'lat': event.lat,
             'long': event.long,
             'idStore': user.user.uid,

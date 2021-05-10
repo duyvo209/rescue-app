@@ -138,15 +138,15 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
     return null;
   }
 
-  String _timeError() {
-    if (first) {
-      return null;
-    }
-    if (email == '') {
-      return 'Time is invalid';
-    }
-    return null;
-  }
+  // String _timeError() {
+  //   if (first) {
+  //     return null;
+  //   }
+  //   if (email == '') {
+  //     return 'Time is invalid';
+  //   }
+  //   return null;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -384,34 +384,34 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                               ),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
-                            child: Container(
-                              margin: EdgeInsets.symmetric(
-                                  horizontal: 4.0, vertical: 4.0),
-                              decoration: BoxDecoration(
-                                  color: Color(0xFFF2F2F2),
-                                  borderRadius: BorderRadius.circular(12.0)),
-                              child: TextFormField(
-                                controller: _timeController,
-                                textInputAction: TextInputAction.next,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText:
-                                      "Giờ mở cửa - đóng cửa".tr().toString(),
-                                  errorText: _timeError(),
-                                  contentPadding: EdgeInsets.symmetric(
-                                      horizontal: 24, vertical: 20),
-                                ),
-                                validator: (String value) {
-                                  if (value.isEmpty) {
-                                    return "a";
-                                  }
-                                  return null;
-                                },
-                              ),
-                            ),
-                          ),
+                          // Padding(
+                          //   padding: const EdgeInsets.fromLTRB(0, 0, 0, 5),
+                          //   child: Container(
+                          //     margin: EdgeInsets.symmetric(
+                          //         horizontal: 4.0, vertical: 4.0),
+                          //     decoration: BoxDecoration(
+                          //         color: Color(0xFFF2F2F2),
+                          //         borderRadius: BorderRadius.circular(12.0)),
+                          //     child: TextFormField(
+                          //       controller: _timeController,
+                          //       textInputAction: TextInputAction.next,
+                          //       decoration: InputDecoration(
+                          //         border: InputBorder.none,
+                          //         hintText:
+                          //             "Giờ mở cửa - đóng cửa".tr().toString(),
+                          //         errorText: _timeError(),
+                          //         contentPadding: EdgeInsets.symmetric(
+                          //             horizontal: 24, vertical: 20),
+                          //       ),
+                          //       validator: (String value) {
+                          //         if (value.isEmpty) {
+                          //           return "a";
+                          //         }
+                          //         return null;
+                          //       },
+                          //     ),
+                          //   ),
+                          // ),
                           SizedBox(
                             height: 30,
                           ),
@@ -427,7 +427,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                 password: _passwordController.text,
                                 phone: _phoneController.text,
                                 address: _addressController.text,
-                                time: _timeController.text,
+                                // time: _timeController.text,
                                 lat: place?.lat,
                                 long: place?.long,
                                 status: '0',

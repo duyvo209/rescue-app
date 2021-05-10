@@ -27,7 +27,8 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
           storeError: '',
           storeSuccess: false,
         );
-        var result = await FirebaseFirestore.instance.collection('store').get();
+        var result =
+            await FirebaseFirestore.instance.collection('store').limit(5).get();
         yield state.copyWith(
             storeLoading: false,
             storeSuccess: true,

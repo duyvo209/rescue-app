@@ -290,42 +290,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             ),
                           ),
-                          // Padding(
-                          //   padding: const EdgeInsets.fromLTRB(0, 30, 0, 30),
-                          //   child: SizedBox(
-                          //     width: 360,
-                          //     height: 52,
-                          //     child: ElevatedButton(
-                          //       onPressed: () async {
-                          //         setState(() {
-                          //           first = false;
-                          //         });
-                          //         BlocProvider.of<SignupBloc>(context).add(
-                          //           Signup(
-                          //               name: _nameController.text,
-                          //               email: _emailController.text,
-                          //               password: _passwordController.text,
-                          //               uid: widget.uid),
-                          //         );
-                          //         await Navigator.push(
-                          //             context,
-                          //             new MaterialPageRoute(
-                          //                 builder: (context) => LoginScreen()));
-                          //       },
-                          //       child: Text(
-                          //         "Sign Up",
-                          //         style: TextStyle(
-                          //             color: Colors.white, fontSize: 18),
-                          //       ),
-                          //       style: ElevatedButton.styleFrom(
-                          //         primary: Colors.blueGrey[800],
-                          //         shape: RoundedRectangleBorder(
-                          //             borderRadius:
-                          //                 BorderRadius.all(Radius.circular(6))),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           SizedBox(
                             height: 20,
                           )
@@ -341,4 +305,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
+  // _showDialog(BuildContext context) => showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //           title:
+  //               Text('Thành công', style: TextStyle(color: Colors.green[600])),
+  //           content: Text('Đăng ký tài khoản thành công !'),
+  //           actions: [
+  //             FlatButton(
+  //                 onPressed: () {
+  //                   Navigator.pop(context);
+  //                   // Navigator.push(
+  //                   //   context,
+  //                   //   new MaterialPageRoute(
+  //                   //       builder: (context) =>
+  //                   //           FeedbackScreen(widget.detailStore)),
+  //                   // );
+  //                 },
+  //                 child: Text(
+  //                   'OK',
+  //                   style: TextStyle(color: Colors.blueGrey[800]),
+  //                 ))
+  //           ],
+  //         ));
 }
