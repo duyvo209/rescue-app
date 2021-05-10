@@ -44,7 +44,9 @@ class StoreState extends Equatable {
   }
 
   StoreState copyWithService(List<Service> service) {
-    return StoreState(listService: listService ?? this.listService);
+    return StoreState(
+        store: store ?? this.store,
+        listService: listService ?? this.listService);
   }
 
   @override

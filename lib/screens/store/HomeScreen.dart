@@ -124,16 +124,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<RequestBloc, RequestState>(
       listener: (_, state) {
         if (state.request.isNotEmpty) {
-          state.request.forEach((element) {
-            _marker.add(Marker(
-              markerId: MarkerId('${element.userInfo.email}'),
-              position: LatLng(element.latUser, element.lngUser),
-              icon: iconMarker,
-              infoWindow: InfoWindow(
-                title: '${element.userInfo.name}',
-                snippet: '${element.userInfo.address}',
-              ),
-            ));
+          setState(() {
+            state.request.forEach((element) {
+              _marker.add(Marker(
+                markerId: MarkerId('${element.userInfo.email}'),
+                position: LatLng(element.latUser, element.lngUser),
+                icon: iconMarker,
+                infoWindow: InfoWindow(
+                  title: '${element.userInfo.name}',
+                  snippet: '${element.userInfo.address}',
+                ),
+              ));
+            });
           });
         }
       },

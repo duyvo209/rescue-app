@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/order/order_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
+import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
+import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Services.dart';
 import 'package:rescue/screens/user/FeedbackScreen.dart';
 import 'package:rescue/utils/helper.dart';
@@ -29,11 +31,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         widget.detailStore.lngUser,
         widget.detailStore.lat,
         widget.detailStore.long);
-    var priceService = 0.0;
+    var priceMove = 0.0;
     if (m < 2.0) {
-      priceService = 20000.0;
+      priceMove = 20000.0;
     } else {
-      priceService =
+      priceMove =
           20000.0 + ((double.parse(m.toStringAsFixed(0)) - 2.0) * 5000.0);
     }
     return Scaffold(
@@ -162,11 +164,25 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               children: [
                 Row(
                   children: [
-                    Text('Phí dịch vụ'),
+                    Text('Phí di chuyển'),
                     Spacer(),
-                    Text(priceService.toStringAsFixed(0) + " đ")
+                    Text(priceMove.toStringAsFixed(0) + " đ")
                   ],
                 ),
+                SizedBox(
+                  height: 10,
+                ),
+                Column(
+                    children: widget.detailStore.service.map((e) {
+                  double priceService = double.parse(e.price) * 10 / 100;
+                  return Row(
+                    children: [
+                      Text('Phí dịch vụ (10%)'),
+                      Spacer(),
+                      Text(priceService.toStringAsFixed(0) + " đ"),
+                    ],
+                  );
+                }).toList()),
               ],
             ),
             SizedBox(
@@ -174,8 +190,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
             ),
             Column(
                 children: widget.detailStore.service.map((e) {
+              var priceService = double.parse(e.price) * 10 / 100;
               var totalPriceAll = 0.0;
-              totalPriceAll = double.parse(e.price) + priceService;
+              totalPriceAll = double.parse(e.price) + priceMove + priceService;
               return Row(
                 children: [
                   Text(

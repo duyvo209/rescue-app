@@ -115,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {});
-    setMapPins();
+    // setMapPins();
     // setPolylines();
   }
 
@@ -124,16 +124,18 @@ class _HomeScreenState extends State<HomeScreen> {
       BlocListener<StoreBloc, StoreState>(
         listener: (_, state) {
           if (state.listStore.isNotEmpty) {
-            state.listStore.forEach((element) {
-              _marker.add(Marker(
-                markerId: MarkerId('${element.email}'),
-                position: LatLng(element.lat, element.long),
-                icon: iconMarker,
-                infoWindow: InfoWindow(
-                  title: '${element.name}',
-                  snippet: '${element.address}',
-                ),
-              ));
+            setState(() {
+              state.listStore.forEach((element) {
+                _marker.add(Marker(
+                  markerId: MarkerId('${element.email}'),
+                  position: LatLng(element.lat, element.long),
+                  icon: iconMarker,
+                  infoWindow: InfoWindow(
+                    title: '${element.name}',
+                    snippet: '${element.address}',
+                  ),
+                ));
+              });
             });
           }
         },
@@ -181,16 +183,18 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocListener<StoreBloc, StoreState>(
       listener: (_, state) {
         if (state.listStore.isNotEmpty) {
-          state.listStore.forEach((element) {
-            _marker.add(Marker(
-              markerId: MarkerId('${element.email}'),
-              position: LatLng(element.lat, element.long),
-              icon: iconMarker,
-              infoWindow: InfoWindow(
-                title: '${element.name}',
-                snippet: '${element.address}',
-              ),
-            ));
+          setState(() {
+            state.listStore.forEach((element) {
+              _marker.add(Marker(
+                markerId: MarkerId('${element.email}'),
+                position: LatLng(element.lat, element.long),
+                icon: iconMarker,
+                infoWindow: InfoWindow(
+                  title: '${element.name}',
+                  snippet: '${element.address}',
+                ),
+              ));
+            });
           });
         }
       },
