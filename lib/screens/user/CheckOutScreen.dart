@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/order/order_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
-import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
-import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Services.dart';
 import 'package:rescue/screens/user/FeedbackScreen.dart';
 import 'package:rescue/utils/helper.dart';
@@ -158,7 +156,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               );
             }).toList()),
             SizedBox(
-              height: 10,
+              height: 20,
             ),
             Column(
               children: [
@@ -170,7 +168,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   ],
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Column(
                     children: widget.detailStore.service.map((e) {
@@ -214,7 +212,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               );
             }).toList()),
             SizedBox(
-              height: 80,
+              height: 50,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
@@ -224,21 +222,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                 child: ElevatedButton(
                   onPressed: () {
                     _showDialog(context);
-                    // BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
-                    //   storeId: widget.detailStore.idStore,
-                    //   userId: widget.detailStore.idUser,
-                    //   total: getTotalPrice(widget.detailStore.service)
-                    //       .toStringAsFixed(0),
-                    //   userInfo: widget.detailStore.userInfo,
-                    //   checkout: 1,
-                    // ));
+                    BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                      storeId: widget.detailStore.idStore,
+                      userId: widget.detailStore.idUser,
+                      total: getTotalPrice(widget.detailStore.service)
+                          .toStringAsFixed(0),
+                      userInfo: widget.detailStore.userInfo,
+                      checkout: 1,
+                    ));
 
-                    // BlocProvider.of<RequestBloc>(context).add(
-                    //   UpdateCheckout(
-                    //     requestId: widget.detailStore.idRequest,
-                    //     checkout: 1,
-                    //   ),
-                    // );
+                    BlocProvider.of<RequestBloc>(context).add(
+                      UpdateCheckout(
+                        requestId: widget.detailStore.idRequest,
+                        checkout: 1,
+                      ),
+                    );
                   },
                   child: Text(
                     "Xác Nhận Hoá Đơn",

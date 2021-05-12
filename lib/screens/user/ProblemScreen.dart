@@ -208,9 +208,23 @@ class _ProblemScreenState extends State<ProblemScreen> {
                                     SizedBox(
                                       height: 5,
                                     ),
-                                    Text(
-                                      'Cách bạn ${m.toString().substring(0, 4)} km',
-                                      style: TextStyle(color: Colors.white),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Cách bạn ${m.toString().substring(0, 4)} km',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                        SizedBox(width: 5),
+                                        InkWell(
+                                            child: Text(
+                                              '--->',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            onTap: () {
+                                              Navigator.pop(context, e);
+                                            })
+                                      ],
                                     ),
                                     SizedBox(
                                       height: 5,

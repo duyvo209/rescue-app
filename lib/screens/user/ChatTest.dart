@@ -68,7 +68,6 @@ class _ChatTestState extends State<ChatTest> {
               child: Row(
                 children: <Widget>[
                   CircleAvatar(
-                    // backgroundImage: AssetImage(widget.image),
                     backgroundImage: NetworkImage(
                         "https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"),
                     maxRadius: 30,
@@ -86,6 +85,22 @@ class _ChatTestState extends State<ChatTest> {
                           SizedBox(
                             height: 6,
                           ),
+                          // StreamBuilder(
+                          //   stream: FirebaseFirestore.instance
+                          //       .collection('messages')
+                          //       .doc()
+                          //       .collection('')
+                          //       .snapshots(),
+                          //   builder: (context, snapshot) {
+                          //     if (snapshot.hasData) {
+                          //       return Column(
+                          //         children: snapshot.data.docs.map((e) {
+                          //           return Text('');
+                          //         }),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                           Text(
                             doc['phone'],
                             style: TextStyle(

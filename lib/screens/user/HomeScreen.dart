@@ -438,11 +438,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: MediaQuery.of(context).size.width * 1,
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async {
+                            var store = await Navigator.push(
                                 context,
                                 new MaterialPageRoute(
                                     builder: (context) => new ProblemScreen()));
+                            setPolylines(store.lat, store.long);
                           },
                           child: Text(
                             'Vấn đề của bạn là gì ?',

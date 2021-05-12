@@ -211,26 +211,36 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           if (listServiceSelected.isNotEmpty)
                             Column(
                               children: listServiceSelected.map((e) {
-                                return Row(
+                                return Column(
                                   children: [
-                                    Text(e.name),
-                                    SizedBox(
-                                      height: 30,
+                                    Row(
+                                      children: [
+                                        Text(e.name),
+                                        SizedBox(
+                                          height: 40,
+                                        ),
+                                        Spacer(),
+                                        Text(e.price + " đ"),
+                                        SizedBox(width: 10),
+                                        InkWell(
+                                            onTap: () {
+                                              setState(() {
+                                                listServiceSelected.remove(e);
+                                              });
+                                            },
+                                            child: Text(
+                                              'X',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
+                                            )),
+                                      ],
                                     ),
-                                    Spacer(),
-                                    Text(e.price + " đ"),
-                                    // IconButton(
-                                    //   icon: Icon(Icons.delete),
-                                    //   alignment: Alignment.centerLeft,
-                                    //   iconSize: 18,
-                                    //   onPressed: () {},
-                                    // )
                                   ],
                                 );
                               }).toList(),
                             ),
                           SizedBox(
-                            height: 5,
+                            height: 10,
                           ),
                           Column(
                             children: [
@@ -242,7 +252,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                 ],
                               ),
                               SizedBox(
-                                height: 10,
+                                height: 20,
                               ),
                               StreamBuilder<List<Service>>(
                                   stream: BlocProvider.of<StoreBloc>(context)

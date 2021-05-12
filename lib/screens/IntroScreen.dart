@@ -36,12 +36,15 @@ class _IntroScreenState extends State<IntroScreen> {
               child: Column(
                 // crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Image.asset('assets/vespaa.png'),
+                  SizedBox(height: 30),
+                  Image.asset(
+                    'assets/cong.png',
+                  ),
                   Text(
                     "dvRescue",
                     style: TextStyle(
                       fontSize: 30,
-                      color: Colors.blue[900],
+                      color: Colors.blueGrey[900],
                     ),
                     textAlign: TextAlign.center,
                   ),

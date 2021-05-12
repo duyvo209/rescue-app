@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setCustomMarker() async {
     iconMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/motoicon.png');
+        ImageConfiguration(), 'assets/man.png');
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -221,20 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 leading: Icon(Icons.person),
               ),
               SizedBox(height: 10),
-              // ListTile(
-              //   onTap: () {
-              //     Navigator.push(
-              //         context,
-              //         new MaterialPageRoute(
-              //             builder: (context) => new ServiceScreen()));
-              //   },
-              //   title: Text(
-              //     'Dịch vụ',
-              //     style: TextStyle(fontSize: 16),
-              //   ),
-              //   leading: Icon(Icons.history),
-              // ),
-              // SizedBox(height: 10),
               ExpansionTile(
                 title: Text(
                   'Ngôn ngữ'.tr().toString(),
