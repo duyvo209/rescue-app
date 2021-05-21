@@ -46,4 +46,12 @@ class GetListService extends StoreEvent {
   GetListService(this.idStore);
 }
 
+class UpdateLocation extends StoreEvent {
+  final String storeId;
+  final double lat;
+  final double lng;
+
+  UpdateLocation({this.storeId, this.lat, this.lng});
+}
+
 class GetListServiceAllStore extends StoreEvent {}

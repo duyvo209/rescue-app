@@ -27,8 +27,11 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
           storeError: '',
           storeSuccess: false,
         );
-        var result =
-            await FirebaseFirestore.instance.collection('store').limit(5).get();
+        var result = await FirebaseFirestore.instance
+            .collection('store')
+            .where('status', isEqualTo: 1)
+            .limit(5)
+            .get();
         yield state.copyWith(
             storeLoading: false,
             storeSuccess: true,
@@ -151,6 +154,19 @@ class StoreBloc extends Bloc<StoreEvent, StoreState> {
           storeError: e.toString(),
         );
       }
+    }
+
+    if (event is UpdateLocation) {
+      try {
+        // ignore: unused_local_variable
+        var update = await FirebaseFirestore.instance
+            .collection('store')
+            .doc(event.storeId)
+            .update({
+          'lat': event.lat,
+          'long': event.lng,
+        });
+      } catch (e) {}
     }
   }
 

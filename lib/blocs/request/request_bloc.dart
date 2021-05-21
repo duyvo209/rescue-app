@@ -99,6 +99,26 @@ class RequestBloc extends Bloc<RequestEvent, RequestState> {
       }
     }
 
+    // if (event is GetListRequest) {
+    //   try {
+    //     var user = BlocProvider.of<LoginBloc>(event.context).state.user;
+    //     var data = await FirebaseFirestore.instance
+    //         .collection('request')
+    //         .where('idUser', isEqualTo: user.uid)
+    //         .orderBy('time', descending: true)
+    //         .get();
+    //     var listRes = data.docs.map((e) {
+    //       var res = Rescue.fromFireStore(e.data());
+    //       var idRes = e.id;
+    //       res.setRequestId(idRes);
+    //       return res;
+    //     }).toList();
+    //     yield state.copyWith(listRes);
+    //   } catch (e) {
+    //     print(e.toString());
+    //   }
+    // }
+
     if (event is GetRequest) {
       var result = await FirebaseFirestore.instance
           .collection('request')

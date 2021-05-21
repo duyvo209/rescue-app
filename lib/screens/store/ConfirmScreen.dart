@@ -7,6 +7,7 @@ import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/utils/helper.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 double getTotalPrice(List<Service> service) {
   return service
@@ -59,7 +60,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
         return Scaffold(
             appBar: AppBar(
               centerTitle: true,
-              title: Text('Xác nhận cứu hộ'),
+              title: Text('Xác nhận cứu hộ'.tr().toString()),
               backgroundColor: Colors.blueGrey[800],
               brightness: Brightness.light,
               elevation: 0,
@@ -91,7 +92,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                             height: 20,
                           ),
                           Text(
-                            'Thông tin khách hàng',
+                            'Thông tin khách hàng'.tr().toString(),
                             style: TextStyle(fontSize: 18),
                           ),
                           SizedBox(
@@ -99,7 +100,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           ),
                           Row(
                             children: <Widget>[
-                              Text('Tên khách hàng'),
+                              Text('Tên khách hàng'.tr().toString()),
                               Spacer(),
                               Text('${widget.rescue.userInfo.name}'),
                             ],
@@ -109,7 +110,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           ),
                           Row(
                             children: <Widget>[
-                              Text('Số điện thoại'),
+                              Text('Số điện thoại'.tr().toString()),
                               Spacer(),
                               Text('${widget.rescue.userInfo.phone}'),
                             ],
@@ -119,7 +120,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           ),
                           Row(
                             children: <Widget>[
-                              Text('Địa chỉ'),
+                              Text('Địa chỉ'.tr().toString()),
                               Spacer(),
                               Flexible(
                                 child: Text(
@@ -133,7 +134,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(height: 15),
                           Row(
                             children: <Widget>[
-                              Text('Vấn đề'),
+                              Text('Vấn đề'.tr().toString()),
                               Spacer(),
                               Text(
                                 '${widget.rescue.problems.first.name}',
@@ -152,7 +153,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                               return Row(
                                 children: [
                                   Text(
-                                    'Dịch vụ',
+                                    'Dịch vụ'.tr().toString(),
                                     style: TextStyle(fontSize: 18),
                                   ),
                                   IconButton(
@@ -162,9 +163,11 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                         context: context,
                                         builder: (BuildContext context) {
                                           return AlertDialog(
-                                            title: Text('Thêm dịch vụ'),
+                                            title: Text(
+                                                'Thêm dịch vụ'.tr().toString()),
                                             content: DropdownButton(
-                                              hint: Text('Dịch vụ'),
+                                              hint: Text(
+                                                  'Dịch vụ'.tr().toString()),
                                               underline: SizedBox(),
                                               isExpanded: true,
                                               // value: valueChoose,
@@ -200,9 +203,9 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           ),
                           Row(
                             children: <Widget>[
-                              Text('Tên'),
+                              Text('Tên dịch vụ'.tr().toString()),
                               Spacer(),
-                              Text('Đơn giá'),
+                              Text('Đơn giá'.tr().toString()),
                             ],
                           ),
                           SizedBox(
@@ -220,7 +223,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                           height: 40,
                                         ),
                                         Spacer(),
-                                        Text(e.price + " đ"),
+                                        Text(e.price + " VNĐ"),
                                         SizedBox(width: 10),
                                         InkWell(
                                             onTap: () {
@@ -246,9 +249,9 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                             children: [
                               Row(
                                 children: [
-                                  Text('Phí di chuyển'),
+                                  Text('Phí di chuyển'.tr().toString()),
                                   Spacer(),
-                                  Text(priceMove.toStringAsFixed(0) + " đ")
+                                  Text(priceMove.toStringAsFixed(0) + " VNĐ")
                                 ],
                               ),
                               SizedBox(
@@ -266,10 +269,11 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                     }
                                     return Row(
                                       children: [
-                                        Text('Phí dịch vụ (10%)'),
+                                        Text('Phí dịch vụ'.tr().toString() +
+                                            " (10%)"),
                                         Spacer(),
                                         Text(priceService.toStringAsFixed(0) +
-                                            ' đ'),
+                                            ' VNĐ'),
                                       ],
                                     );
                                   }),
@@ -329,14 +333,14 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                             ),
                             Text.rich(
                               TextSpan(
-                                text: "Tổng tiền: ",
+                                text: "Tổng tiền".tr().toString(),
                                 style: TextStyle(fontSize: 16),
                                 children: [
                                   // if (user != null)
                                   if (listServiceSelected.isNotEmpty)
                                     TextSpan(
                                       text:
-                                          '${totalPriceAll.toStringAsFixed(0) + " đ"}',
+                                          '${totalPriceAll.toStringAsFixed(0) + " VNĐ"}',
                                       style: TextStyle(
                                           fontSize: 20, color: Colors.black),
                                     ),
@@ -375,7 +379,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                   textColor: Colors.white,
                                   color: Colors.blueGrey[800],
                                   child: Text(
-                                    'Xác nhận',
+                                    'Xác nhận'.tr().toString(),
                                     style: TextStyle(fontSize: 15),
                                   ),
                                 ),
@@ -418,7 +422,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                   textColor: Colors.white,
                                   color: Colors.red[900],
                                   child: Text(
-                                    'Huỷ yêu cầu',
+                                    'Huỷ yêu cầu'.tr().toString(),
                                     style: TextStyle(fontSize: 15),
                                   ),
                                 ),

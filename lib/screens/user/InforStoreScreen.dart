@@ -11,6 +11,7 @@ import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Store.dart';
 import 'package:rescue/screens/user/ChatDetailTest.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class InforStoreScreen extends StatefulWidget {
   final Store store;
@@ -43,24 +44,13 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Thông tin cửa hàng'),
+            title: Text('Thông tin cửa hàng'.tr().toString()),
             backgroundColor: Colors.blueGrey[800],
             brightness: Brightness.light,
             elevation: 0,
             actionsIconTheme: IconThemeData(color: Colors.white),
             iconTheme: IconThemeData(color: Colors.white),
             actions: <Widget>[
-              // IconButton(
-              //   icon: Icon(Icons.message),
-              //   onPressed: () {
-              //     Navigator.push(
-              //         context,
-              //         new MaterialPageRoute(
-              //             builder: (context) => new ChatDetailTest(
-
-              //                 )));
-              //   },
-              // )
               StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('store')
@@ -196,7 +186,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                               borderRadius: BorderRadius.circular(15)),
                           child: DropdownButton<Service>(
                             hint: Text(
-                                '${serviceSelected?.name ?? "Vấn đề của bạn là gì ?"} '),
+                                '${serviceSelected?.name ?? "Vấn đề của bạn là gì ?".tr().toString()} '),
                             underline: SizedBox(),
                             isExpanded: true,
                             // value: serviceSelected,
@@ -241,7 +231,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                               color: Colors.red[900]),
                           child: Center(
                             child: Text(
-                              'Huỷ',
+                              'Huỷ'.tr().toString(),
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -278,7 +268,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                               color: Colors.blueGrey[800]),
                           child: Center(
                             child: Text(
-                              'Gửi Yêu Cầu',
+                              'Gửi Yêu Cầu'.tr().toString(),
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -322,7 +312,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                               Row(
                                 children: [
                                   Text(
-                                    'Đánh giá',
+                                    'Đánh giá'.tr().toString(),
                                     style: TextStyle(
                                       fontSize: 18,
                                     ),
@@ -369,7 +359,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                   vertical: 10,
                 ),
                 child: Text(
-                  'Bình luận',
+                  'Bình luận'.tr().toString(),
                   style: TextStyle(fontSize: 18),
                 ),
               ),

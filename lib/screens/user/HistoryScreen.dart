@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/screens/user/CheckOutScreen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HistoryScreen extends StatefulWidget {
   @override
@@ -26,7 +27,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Lịch sử cứu hộ'),
+            title: Text('Lịch sử cứu hộ'.tr().toString()),
             backgroundColor: Colors.blueGrey[800],
             brightness: Brightness.light,
             elevation: 0,
@@ -85,7 +86,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                                                       state.request[index],
                                                 )));
                                   },
-                                  child: Text('Xem chi tiết'),
+                                  child: Text('Xem chi tiết'.tr().toString()),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
                                 ),
                                 SizedBox(
                                   width: 6,
@@ -134,11 +137,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             ),
                             state.request[index].status == 0
                                 ? Text(
-                                    'Chưa xác nhận',
+                                    'Chưa xác nhận'.tr().toString(),
                                     style: TextStyle(color: Colors.white),
                                   )
                                 : Text(
-                                    'Đã xác nhận',
+                                    'Đã xác nhận'.tr().toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                           ],

@@ -14,8 +14,6 @@ import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/configs/configs.dart';
-// import 'package:rescue/screens/user/ChatDetailTest.dart';
-// import 'package:rescue/screens/user/ChatScreen.dart';
 import 'package:rescue/screens/user/ChatTest.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/user/InforStoreScreen.dart';
@@ -23,6 +21,7 @@ import 'package:rescue/screens/user/ProblemScreen.dart';
 import 'package:rescue/screens/user/ProfileScreen.dart';
 import 'package:rescue/screens/IntroScreen.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:badges/badges.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -216,14 +215,58 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.messenger_rounded),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new ChatTest()));
+                onPressed: () {
+                  setState(() {
+                    BlocProvider.of<StoreBloc>(context).add(GetListStore());
+                    _polylines.clear();
+                  });
+                },
+                icon: Icon(Icons.refresh)),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('messages')
+                  .where('userId',
+                      isEqualTo: FirebaseAuth.instance.currentUser.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data.docs.isNotEmpty) {
+                    return BlocBuilder<AuthencationBloc, AuthencationState>(
+                        builder: (context, authState) {
+                      return Badge(
+                        showBadge: authState is AuthenticationAuthenticated,
+                        badgeContent: Text(
+                          '${snapshot.data.docs.length}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        badgeColor: Colors.red[600],
+                        shape: BadgeShape.circle,
+                        position: BadgePosition.topStart(start: 25, top: 2.5),
+                        animationType: BadgeAnimationType.scale,
+                        child: IconButton(
+                          icon: Icon(Icons.messenger_rounded),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new ChatTest()));
+                          },
+                        ),
+                      );
+                    });
+                  }
+                }
+                return IconButton(
+                  icon: Icon(Icons.messenger_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new ChatTest()));
+                  },
+                );
               },
-            )
+            ),
           ],
         ),
         drawerEdgeDragWidth: 0,
@@ -289,6 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 10),
               ListTile(
                 onTap: () {
+                  Navigator.pop(context);
                   Navigator.push(
                       context,
                       new MaterialPageRoute(
@@ -446,7 +490,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             setPolylines(store.lat, store.long);
                           },
                           child: Text(
-                            'Vấn đề của bạn là gì ?',
+                            'Vấn đề của bạn là gì ?'.tr().toString(),
                             style: TextStyle(
                                 color: Colors.blueGrey[800], fontSize: 18),
                           ),
@@ -559,6 +603,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       if (snapshot.hasData) {
                                                         sumrating = 0;
                                                         rating = 0;
+
                                                         return Column(
                                                           children: [
                                                             Row(
@@ -605,13 +650,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 Spacer(),
                                                                 size == null
                                                                     ? Text(
-                                                                        '0 đánh giá',
+                                                                        '0'
+                                                                            .tr()
+                                                                            .toString(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Colors.white),
                                                                       )
                                                                     : Text(
-                                                                        '${size.toString()} đánh giá',
+                                                                        '${size.toString()} ' +
+                                                                            'đánh giá'.tr().toString(),
                                                                         style: TextStyle(
                                                                             color:
                                                                                 Colors.white),

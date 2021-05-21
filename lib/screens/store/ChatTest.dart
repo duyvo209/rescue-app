@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rescue/screens/store/ChatDetailTest.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChatTest extends StatefulWidget {
   @override
@@ -27,7 +29,7 @@ class _ChatTestState extends State<ChatTest> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Tin nhắn'),
+        title: Text('Tin nhắn'.tr().toString()),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -35,7 +37,10 @@ class _ChatTestState extends State<ChatTest> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('messages')
+            .where('storeId', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
@@ -50,14 +55,20 @@ class _ChatTestState extends State<ChatTest> {
     );
   }
 
-  buildItem(doc) {
+  buildItem(QueryDocumentSnapshot doc) {
     return GestureDetector(
       onTap: () {
+        String userId = doc.id
+            .replaceAll(' - ', '')
+            .replaceAll(FirebaseAuth.instance.currentUser.uid, '');
+
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ChatDetailTest(
-                      docs: doc,
+                      docs: doc.data(),
+                      userId: userId,
+                      userName: doc['user_name'],
                     )));
       },
       child: Container(
@@ -68,8 +79,7 @@ class _ChatTestState extends State<ChatTest> {
               child: Row(
                 children: <Widget>[
                   CircleAvatar(
-                    // backgroundImage: AssetImage(widget.image),
-                    backgroundImage: NetworkImage('${doc['image']}'),
+                    backgroundImage: NetworkImage('${doc['image_user']}'),
                     maxRadius: 30,
                   ),
                   SizedBox(
@@ -81,12 +91,12 @@ class _ChatTestState extends State<ChatTest> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(doc['name']),
+                          Text(doc['user_name']),
                           SizedBox(
                             height: 6,
                           ),
                           Text(
-                            doc['phone'],
+                            doc['last_messages'],
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey.shade500),
                           ),
@@ -97,14 +107,6 @@ class _ChatTestState extends State<ChatTest> {
                 ],
               ),
             ),
-            // Text(
-            //   widget.time,
-            //   style: TextStyle(
-            //       fontSize: 12,
-            //       color:
-            //           ? Colors.pink
-            //           : Colors.grey.shade500),
-            // ),
           ],
         ),
       ),

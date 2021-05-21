@@ -61,6 +61,10 @@ dependencies:
   flutter_typeahead: any
   flutter_rating_bar: any
 
+  stripe_payment: any
+
+  badges: any
+
   # flutter_phone_direct_caller: any
 
 dev_dependencies:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +17,7 @@ import 'package:rescue/screens/store/ChatTest.dart';
 import 'package:rescue/screens/store/ProfileScreen.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:rescue/screens/store/UpdateLocationScreen.dart';
 import 'package:rescue/utils/helper.dart';
 import '../IntroScreen.dart';
 
@@ -156,15 +158,51 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.messenger_rounded),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new ChatTest()));
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('messages')
+                  .where('storeId',
+                      isEqualTo: FirebaseAuth.instance.currentUser.uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if (snapshot.data.docs.isNotEmpty) {
+                    return BlocBuilder<AuthencationBloc, AuthencationState>(
+                        builder: (context, authState) {
+                      return Badge(
+                        showBadge: authState is AuthenticationAuthenticated,
+                        badgeContent: Text(
+                          '${snapshot.data.docs.length}',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        badgeColor: Colors.red[600],
+                        shape: BadgeShape.circle,
+                        position: BadgePosition.topStart(start: 25, top: 2.5),
+                        animationType: BadgeAnimationType.scale,
+                        child: IconButton(
+                          icon: Icon(Icons.messenger_rounded),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new ChatTest()));
+                          },
+                        ),
+                      );
+                    });
+                  }
+                }
+                return IconButton(
+                  icon: Icon(Icons.messenger_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new ChatTest()));
+                  },
+                );
               },
-            )
+            ),
           ],
         ),
         drawerEdgeDragWidth: 0,
@@ -219,6 +257,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 16),
                 ),
                 leading: Icon(Icons.person),
+              ),
+              SizedBox(height: 10),
+              ListTile(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new UpdateLocationScreen()));
+                },
+                title: Text(
+                  'Cập nhật vị trí'.tr().toString(),
+                  style: TextStyle(fontSize: 16),
+                ),
+                leading: Icon(Icons.location_on),
               ),
               SizedBox(height: 10),
               ExpansionTile(
@@ -364,7 +417,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           double m = Helper.getDistanceBetween(
                               e.latUser, e.lngUser, store.lat, store.long);
                           return Container(
-                            height: 220,
+                            height: 215,
                             width: MediaQuery.of(context).size.width * 0.8,
                             margin:
                                 EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -379,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 children: [
                                   Container(
                                     width: 100,
-                                    height: 180,
+                                    height: 170,
                                     child: CachedNetworkImage(
                                         imageUrl: e.userInfo.imageUser,
                                         fit: BoxFit.cover),
@@ -402,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               color: Colors.white),
                                         ),
                                         SizedBox(
-                                          height: 5,
+                                          height: 10,
                                         ),
                                         Text(
                                           '${e.userInfo.address}',
@@ -425,7 +478,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         SizedBox(
-                                          height: 5,
+                                          height: 2,
                                         ),
                                         Container(
                                           height: 35,
@@ -439,9 +492,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     e.latUser, e.lngUser);
                                               }),
                                         ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
+                                        // SizedBox(
+                                        //   height: 5,
+                                        // ),
                                         Row(
                                           children: [
                                             FlatButton(
@@ -464,7 +517,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 rescue: e)));
                                               },
                                               child: Text(
-                                                'Xác nhận',
+                                                'Xác nhận'.tr().toString(),
                                               ),
                                             ),
                                             Spacer(),
@@ -489,7 +542,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       );
                                                     },
                                                     child: Text(
-                                                      'Nhắn tin',
+                                                      'Nhắn tin'
+                                                          .tr()
+                                                          .toString(),
                                                       style: TextStyle(
                                                           color: Colors.black),
                                                     ),

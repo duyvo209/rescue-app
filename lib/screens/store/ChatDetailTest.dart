@@ -1,10 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChatDetailTest extends StatefulWidget {
   final docs;
-  const ChatDetailTest({Key key, this.docs}) : super(key: key);
+  final String userId;
+  final String userName;
+  const ChatDetailTest({Key key, this.docs, this.userId, this.userName})
+      : super(key: key);
   @override
   _ChatDetailTestState createState() => _ChatDetailTestState();
 }
@@ -24,7 +28,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   getGroupChatId() async {
     // SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     userId = FirebaseAuth.instance.currentUser.uid;
-    String anotherUserId = widget.docs.id;
+    String anotherUserId = widget.userId ?? widget.docs.id;
     if (userId.compareTo(anotherUserId) > 0) {
       groupChatId = '$anotherUserId - $userId';
     } else {
@@ -37,7 +41,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.docs['name']}'),
+        title: Text('${widget?.userName ?? widget.docs['name']}'),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -97,7 +101,8 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                           child: TextField(
                             controller: textEditingController,
                             decoration: InputDecoration(
-                                hintText: "Nhập tin nhắn...",
+                                hintText:
+                                    "Nhập tin nhắn".tr().toString() + " ...",
                                 hintStyle:
                                     TextStyle(color: Colors.grey.shade500),
                                 border: InputBorder.none),
@@ -122,22 +127,6 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                     ),
                   ),
                 ),
-
-                // Row(
-                //   children: <Widget>[
-                //     Expanded(
-                //       child: TextField(
-                //         controller: textEditingController,
-                //       ),
-                //     ),
-                //     IconButton(
-                //         icon: Icon(Icons.send),
-                //         onPressed: () {
-                //           sendMsg();
-                //           textEditingController.clear();
-                //         })
-                //   ],
-                // )
               ],
             );
           } else {
@@ -155,7 +144,15 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
 
   sendMsg() {
     String msg = textEditingController.text.trim();
+
     if (msg.isNotEmpty) {
+      FirebaseFirestore.instance
+          .collection('messages')
+          .doc(groupChatId)
+          .update({
+        'last_messages': msg,
+      });
+
       var ref = FirebaseFirestore.instance
           .collection('messages')
           .doc(groupChatId)
@@ -164,7 +161,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
       FirebaseFirestore.instance.runTransaction((transaction) async {
         await transaction.set(ref, {
           'senderId': userId,
-          'anotherUserId': widget.docs.id,
+          'anotherUserId': widget.userId ?? widget.docs.id,
           'timestamp': DateTime.now().toIso8601String(),
           'content': msg,
           'type': 'text',

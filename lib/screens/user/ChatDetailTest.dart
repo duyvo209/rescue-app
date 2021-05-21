@@ -1,10 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rescue/blocs/user/user_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChatDetailTest extends StatefulWidget {
   final docs;
-  const ChatDetailTest({Key key, this.docs}) : super(key: key);
+  final String storeId;
+  final String storeName;
+  const ChatDetailTest({Key key, this.docs, this.storeId, this.storeName})
+      : super(key: key);
   @override
   _ChatDetailTestState createState() => _ChatDetailTestState();
 }
@@ -23,7 +29,8 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
 
   getGroupChatId() async {
     userId = FirebaseAuth.instance.currentUser.uid;
-    String anotherUserId = widget.docs['idStore'];
+    String anotherUserId = widget.storeId ?? widget.docs['idStore'];
+
     if (userId.compareTo(anotherUserId) > 0) {
       groupChatId = '$userId - $anotherUserId';
     } else {
@@ -36,7 +43,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('${widget.docs['name']}'),
+        title: Text('${widget?.storeName ?? widget.docs['name']}'),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -96,7 +103,8 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                           child: TextField(
                             controller: textEditingController,
                             decoration: InputDecoration(
-                                hintText: "Nhập tin nhắn...",
+                                hintText:
+                                    "Nhập tin nhắn".tr().toString() + " ...",
                                 hintStyle:
                                     TextStyle(color: Colors.grey.shade500),
                                 border: InputBorder.none),
@@ -137,8 +145,25 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
   }
 
   sendMsg() {
+    var userName = BlocProvider.of<UserBloc>(context).state.user.name;
+    var imageUser = BlocProvider.of<UserBloc>(context).state.user.imageUser;
     String msg = textEditingController.text.trim();
     if (msg.isNotEmpty) {
+      FirebaseFirestore.instance.collection('messages').doc(groupChatId).set({
+        'user_name': userName,
+        'store_name': widget.storeName ?? widget.docs['name'],
+        'userId': FirebaseAuth.instance.currentUser.uid,
+        'storeId': widget.storeId ?? widget.docs.id,
+        'image_user': imageUser,
+      });
+
+      FirebaseFirestore.instance
+          .collection('messages')
+          .doc(groupChatId)
+          .update({
+        'last_messages': msg,
+      });
+
       var ref = FirebaseFirestore.instance
           .collection('messages')
           .doc(groupChatId)
@@ -147,7 +172,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
       FirebaseFirestore.instance.runTransaction((transaction) async {
         await transaction.set(ref, {
           'senderId': userId,
-          'anotherUserId': widget.docs['idStore'],
+          'anotherUserId': widget.storeId ?? widget.docs['idStore'],
           'timestamp': DateTime.now().toIso8601String(),
           'content': msg,
           'type': 'text',
@@ -174,11 +199,6 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                 : Colors.white),
           ),
           padding: EdgeInsets.all(16),
-          // child: Text(
-          //   '${doc['content']}\n${doc['timestamp'].toString().substring(11, 16)}',
-          //   textAlign:
-          //       (doc['senderId'] == userId ? TextAlign.right : TextAlign.left),
-          // ),
           child: RichText(
             text: TextSpan(
                 text: '${doc['content']}',

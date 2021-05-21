@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rescue/screens/user/ChatDetailTest.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChatTest extends StatefulWidget {
   @override
@@ -27,7 +29,7 @@ class _ChatTestState extends State<ChatTest> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Tin nhắn'),
+        title: Text('Tin nhắn'.tr().toString()),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -35,7 +37,10 @@ class _ChatTestState extends State<ChatTest> {
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('store').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('messages')
+            .where('userId', isEqualTo: FirebaseAuth.instance.currentUser.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return ListView.builder(
@@ -50,15 +55,22 @@ class _ChatTestState extends State<ChatTest> {
     );
   }
 
-  buildItem(doc) {
+  buildItem(QueryDocumentSnapshot doc) {
     return GestureDetector(
       onTap: () {
+        String storeId = doc.id
+            .replaceAll(' - ', '')
+            .replaceAll(FirebaseAuth.instance.currentUser.uid, '');
+
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ChatDetailTest(
-                      docs: doc,
-                    )));
+          context,
+          MaterialPageRoute(
+              builder: (context) => ChatDetailTest(
+                    storeId: storeId,
+                    storeName: doc['store_name'],
+                    docs: doc.data(),
+                  )),
+        );
       },
       child: Container(
         padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
@@ -81,28 +93,12 @@ class _ChatTestState extends State<ChatTest> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(doc['name']),
+                          Text('${doc['store_name']}'),
                           SizedBox(
                             height: 6,
                           ),
-                          // StreamBuilder(
-                          //   stream: FirebaseFirestore.instance
-                          //       .collection('messages')
-                          //       .doc()
-                          //       .collection('')
-                          //       .snapshots(),
-                          //   builder: (context, snapshot) {
-                          //     if (snapshot.hasData) {
-                          //       return Column(
-                          //         children: snapshot.data.docs.map((e) {
-                          //           return Text('');
-                          //         }),
-                          //       );
-                          //     }
-                          //   },
-                          // ),
                           Text(
-                            doc['phone'],
+                            doc['last_messages'],
                             style: TextStyle(
                                 fontSize: 14, color: Colors.grey.shade500),
                           ),
@@ -113,23 +109,9 @@ class _ChatTestState extends State<ChatTest> {
                 ],
               ),
             ),
-            // Text(
-            //   widget.time,
-            //   style: TextStyle(
-            //       fontSize: 12,
-            //       color:
-            //           ? Colors.pink
-            //           : Colors.grey.shade500),
-            // ),
           ],
         ),
       ),
-      // child: Card(
-      //   color: Colors.lightBlue,
-      //   child: Center(
-      //     child: Text(doc['name']),
-      //   ),
-      // ),
     );
   }
 }

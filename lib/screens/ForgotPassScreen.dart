@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ForgotPassScreen extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
         return Scaffold(
           appBar: AppBar(
             centerTitle: true,
-            title: Text('Reset Password'),
+            title: Text('Đặt lại mật khẩu'.tr().toString()),
             backgroundColor: Colors.blueGrey[800],
             brightness: Brightness.light,
             elevation: 0,
@@ -80,7 +81,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
                         _showDialog(context);
                       },
                       child: Text(
-                        "Submit",
+                        "Gửi".tr().toString(),
                         style: TextStyle(color: Colors.white, fontSize: 18),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -96,7 +97,7 @@ class _ForgotPassScreenState extends State<ForgotPassScreen> {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    'Return to Login ?',
+                    'Trở về trang đăng nhập'.tr().toString(),
                     style: TextStyle(color: Colors.blueGrey, fontSize: 15),
                   ),
                 ),

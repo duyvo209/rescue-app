@@ -6,6 +6,8 @@ import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Services.dart';
 import 'package:rescue/screens/user/FeedbackScreen.dart';
 import 'package:rescue/utils/helper.dart';
+import 'package:rescue/utils/stripe.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 double getTotalPrice(List<Services> service) {
   return service
@@ -22,6 +24,28 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
+  var totalPriceAll = 0.0;
+  double usd = 23000;
+
+  payViaNewCard(BuildContext context) async {
+    var totalCard = totalPriceAll / usd * 100;
+    print(totalCard.toStringAsFixed(0));
+    var response = await StripeService.payWithNewCard(
+        amount: totalCard.toStringAsFixed(0), currency: 'USD');
+
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text(response.message),
+      duration:
+          new Duration(milliseconds: response.success == true ? 1200 : 3000),
+    ));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    StripeService.init();
+  }
+
   @override
   Widget build(BuildContext context) {
     double m = Helper.getDistanceBetween(
@@ -39,7 +63,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Chi Tiết'),
+        title: Text('Chi tiết'.tr().toString()),
         backgroundColor: Colors.blueGrey[800],
         brightness: Brightness.light,
         elevation: 0,
@@ -48,228 +72,247 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       ),
       body: Container(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Thông tin chung',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('ID'),
-                Spacer(),
-                Text('${widget.detailStore.idRequest}'),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('Ngày'),
-                Spacer(),
-                Text(
-                    '${widget.detailStore.time.toString().substring(0, 10).split('-').reversed.join('/')}'),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('Xác nhận'),
-                Spacer(),
-                widget.detailStore.status == 0
-                    ? Text('Chưa xác nhận')
-                    : Text('Đã xác nhận')
-                // Text('${widget.detailStore.status}'),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('Thanh toán'),
-                Spacer(),
-                // Text('${widget.detailStore.checkout}'),
-                widget.detailStore.checkout == 0
-                    ? Text('Chưa thanh toán')
-                    : Text('Đã thanh toán')
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('Địa chỉ'),
-                Spacer(),
-                Flexible(
-                  child: Text(
-                    '${widget.detailStore.userInfo.address}',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Text(
-              'Dịch vụ',
-              style: TextStyle(fontSize: 18),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              children: <Widget>[
-                Text('Tên'),
-                Spacer(),
-                Text(
-                  'Tổng tiền',
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Column(
-                children: widget.detailStore.service.map((e) {
-              return Row(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
+              Text(
+                'Thông tin chung'.tr().toString(),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
                 children: <Widget>[
-                  Text('${e.name}'),
+                  Text('ID'),
+                  Spacer(),
+                  Text('${widget.detailStore.idRequest}'),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Text('Ngày'.tr().toString()),
                   Spacer(),
                   Text(
-                    '${e.price} đ',
+                      '${widget.detailStore.time.toString().substring(0, 10).split('-').reversed.join('/')}'),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Text('Xác nhận'.tr().toString()),
+                  Spacer(),
+                  widget.detailStore.status == 0
+                      ? Text('Chưa xác nhận'.tr().toString())
+                      : Text('Đã xác nhận'.tr().toString())
+                  // Text('${widget.detailStore.status}'),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Text('Thanh toán'.tr().toString()),
+                  Spacer(),
+                  // Text('${widget.detailStore.checkout}'),
+                  widget.detailStore.checkout == 0
+                      ? Text('Chưa thanh toán'.tr().toString())
+                      : Text('Đã thanh toán'.tr().toString())
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Text('Địa chỉ'.tr().toString()),
+                  Spacer(),
+                  Flexible(
+                    child: Text(
+                      '${widget.detailStore.userInfo.address}',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
-              );
-            }).toList()),
-            SizedBox(
-              height: 20,
-            ),
-            Column(
-              children: [
-                Row(
-                  children: [
-                    Text('Phí di chuyển'),
+              ),
+              SizedBox(
+                height: 40,
+              ),
+              Text(
+                'Dịch vụ'.tr().toString(),
+                style: TextStyle(fontSize: 18),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                children: <Widget>[
+                  Text('Tên dịch vụ'.tr().toString()),
+                  Spacer(),
+                  Text(
+                    'Tổng tiền'.tr().toString(),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
+                  children: widget.detailStore.service.map((e) {
+                return Row(
+                  children: <Widget>[
+                    Text('${e.name}'),
                     Spacer(),
-                    Text(priceMove.toStringAsFixed(0) + " đ")
+                    Text(
+                      '${e.price} VNĐ',
+                    ),
                   ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Column(
-                    children: widget.detailStore.service.map((e) {
-                  double priceService = double.parse(e.price) * 10 / 100;
-                  return Row(
-                    children: [
-                      Text('Phí dịch vụ (10%)'),
-                      Spacer(),
-                      Text(priceService.toStringAsFixed(0) + " đ"),
-                    ],
-                  );
-                }).toList()),
-              ],
-            ),
-            SizedBox(
-              height: 80,
-            ),
-            Column(
-                children: widget.detailStore.service.map((e) {
-              var priceService = double.parse(e.price) * 10 / 100;
-              var totalPriceAll = 0.0;
-              totalPriceAll = double.parse(e.price) + priceMove + priceService;
-              return Row(
+                );
+              }).toList()),
+              SizedBox(
+                height: 20,
+              ),
+              Column(
                 children: [
-                  Text(
-                    'Tổng:',
-                    style: TextStyle(fontSize: 18),
+                  Row(
+                    children: [
+                      Text('Phí di chuyển'.tr().toString()),
+                      Spacer(),
+                      Text(priceMove.toStringAsFixed(0) + " VNĐ")
+                    ],
                   ),
-                  Spacer(),
-                  if (widget.detailStore.service.isNotEmpty)
-                    Text(
-                      '${totalPriceAll.toStringAsFixed(0)} đ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                  if (widget.detailStore.service.isEmpty)
-                    Text(
-                      '0 đ',
-                      style: TextStyle(fontSize: 18),
-                    ),
-                ],
-              );
-            }).toList()),
-            SizedBox(
-              height: 50,
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
-              child: SizedBox(
-                width: 390,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {
-                    _showDialog(context);
-                    BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
-                      storeId: widget.detailStore.idStore,
-                      userId: widget.detailStore.idUser,
-                      total: getTotalPrice(widget.detailStore.service)
-                          .toStringAsFixed(0),
-                      userInfo: widget.detailStore.userInfo,
-                      checkout: 1,
-                    ));
-
-                    BlocProvider.of<RequestBloc>(context).add(
-                      UpdateCheckout(
-                        requestId: widget.detailStore.idRequest,
-                        checkout: 1,
-                      ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Column(
+                      children: widget.detailStore.service.map((e) {
+                    double priceService = double.parse(e.price) * 10 / 100;
+                    return Row(
+                      children: [
+                        Text('Phí dịch vụ'.tr().toString() + '(10%)'),
+                        Spacer(),
+                        Text(priceService.toStringAsFixed(0) + " VNĐ"),
+                      ],
                     );
-                  },
-                  child: Text(
-                    "Xác Nhận Hoá Đơn",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blueGrey[800],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(6))),
+                  }).toList()),
+                ],
+              ),
+              SizedBox(
+                height: 80,
+              ),
+              Column(
+                  children: widget.detailStore.service.map((e) {
+                var priceService = double.parse(e.price) * 10 / 100;
+
+                totalPriceAll =
+                    double.parse(e.price) + priceMove + priceService;
+                return Row(
+                  children: [
+                    Text(
+                      'Tổng tiền'.tr().toString(),
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    Spacer(),
+                    if (widget.detailStore.service.isNotEmpty)
+                      Text(
+                        '${totalPriceAll.toStringAsFixed(0)} VNĐ',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    if (widget.detailStore.service.isEmpty)
+                      Text(
+                        '0 VNĐ',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                  ],
+                );
+              }).toList()),
+              SizedBox(
+                height: 50,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 30, 0, 20),
+                child: SizedBox(
+                  width: 390,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _showDialog(context);
+                      BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                        storeId: widget.detailStore.idStore,
+                        userId: widget.detailStore.idUser,
+                        total: totalPriceAll.toStringAsFixed(0),
+                        userInfo: widget.detailStore.userInfo,
+                        checkout: 1,
+                      ));
+
+                      BlocProvider.of<RequestBloc>(context).add(
+                        UpdateCheckout(
+                          requestId: widget.detailStore.idRequest,
+                          checkout: 1,
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Xác Nhận Hoá Đơn".tr().toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blueGrey[800],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: SizedBox(
-                width: 390,
-                height: 52,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Thanh Toán PayPal",
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    primary: Colors.blueGrey[800],
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(6))),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: SizedBox(
+                  width: 390,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      payViaNewCard(context);
+
+                      BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                        storeId: widget.detailStore.idStore,
+                        userId: widget.detailStore.idUser,
+                        total: totalPriceAll.toStringAsFixed(0),
+                        userInfo: widget.detailStore.userInfo,
+                        checkout: 1,
+                      ));
+
+                      BlocProvider.of<RequestBloc>(context).add(
+                        UpdateCheckout(
+                          requestId: widget.detailStore.idRequest,
+                          checkout: 1,
+                        ),
+                      );
+                    },
+                    child: Text(
+                      "Thanh Toán Thẻ".tr().toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.blueGrey[800],
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(6))),
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
