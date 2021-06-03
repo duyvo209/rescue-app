@@ -14,6 +14,7 @@ import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:rescue/configs/configs.dart';
+import 'package:rescue/screens/user/ServiceScreen.dart';
 import 'package:rescue/screens/user/ChatTest.dart';
 import 'package:rescue/screens/user/HistoryScreen.dart';
 import 'package:rescue/screens/user/InforStoreScreen.dart';
@@ -219,6 +220,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   setState(() {
                     BlocProvider.of<StoreBloc>(context).add(GetListStore());
                     _polylines.clear();
+                    // BlocBuilder<StoreBloc, StoreState>(
+                    //     builder: (context, state) {
+                    //   return setPolylines(state.store.lat, state.store.long);
+                    // });
                   });
                 },
                 icon: Icon(Icons.refresh)),
@@ -302,8 +307,8 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 10),
               ListTile(
                 onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
+                  // Navigator.pop(context);
+                  Navigator.pushReplacement(
                       context,
                       new MaterialPageRoute(
                           builder: (context) => new HomeScreen()));
@@ -476,6 +481,36 @@ class _HomeScreenState extends State<HomeScreen> {
                       polylines: _polylines,
                     ),
                     Container(
+                      padding: const EdgeInsets.fromLTRB(30, 490, 30, 0),
+                      // color: Colors.red,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 1,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            var store = await Navigator.push(
+                                context,
+                                new MaterialPageRoute(
+                                    builder: (context) => new ServiceScreen()));
+                            if (store != null) {
+                              setPolylines(store.lat, store.long);
+                            }
+                          },
+                          child: Text(
+                            'Dịch vụ bạn cần là gì ?',
+                            style: TextStyle(
+                                color: Colors.blueGrey[800], fontSize: 18),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.white.withOpacity(0.7),
+                            shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(6))),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
                       padding: const EdgeInsets.fromLTRB(30, 555, 30, 0),
                       // color: Colors.red,
                       child: SizedBox(
@@ -487,7 +522,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 context,
                                 new MaterialPageRoute(
                                     builder: (context) => new ProblemScreen()));
-                            setPolylines(store.lat, store.long);
+                            if (store != null) {
+                              setPolylines(store.lat, store.long);
+                            }
                           },
                           child: Text(
                             'Vấn đề của bạn là gì ?'.tr().toString(),
@@ -648,7 +685,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                       .horizontal,
                                                                 ),
                                                                 Spacer(),
-                                                                size == null
+                                                                snapshot.data
+                                                                            .size ==
+                                                                        null
                                                                     ? Text(
                                                                         '0'
                                                                             .tr()
@@ -658,7 +697,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                                 Colors.white),
                                                                       )
                                                                     : Text(
-                                                                        '${size.toString()} ' +
+                                                                        '${snapshot.data.size} ' +
                                                                             'đánh giá'.tr().toString(),
                                                                         style: TextStyle(
                                                                             color:

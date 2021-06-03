@@ -18,7 +18,8 @@ double getTotalPrice(List<Services> service) {
 
 class CheckOutScreen extends StatefulWidget {
   final Rescue detailStore;
-  CheckOutScreen({this.detailStore});
+  final String id;
+  CheckOutScreen({this.detailStore, this.id});
   @override
   _CheckOutScreenState createState() => _CheckOutScreenState();
 }
@@ -26,6 +27,9 @@ class CheckOutScreen extends StatefulWidget {
 class _CheckOutScreenState extends State<CheckOutScreen> {
   var totalPriceAll = 0.0;
   double usd = 23000;
+  var totalPriceService = 0.0;
+  var totalPrice = 0.0;
+  var sum = 0.0;
 
   payViaNewCard(BuildContext context) async {
     var totalCard = totalPriceAll / usd * 100;
@@ -168,18 +172,23 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
               SizedBox(
                 height: 20,
               ),
-              Column(
-                  children: widget.detailStore.service.map((e) {
-                return Row(
-                  children: <Widget>[
-                    Text('${e.name}'),
-                    Spacer(),
-                    Text(
-                      '${e.price} VNĐ',
-                    ),
-                  ],
-                );
-              }).toList()),
+              SingleChildScrollView(
+                child: Column(
+                    children: widget.detailStore.service.map((e) {
+                  return Row(
+                    children: <Widget>[
+                      Text('${e.name}'),
+                      Spacer(),
+                      Text(
+                        '${e.price} VNĐ',
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                    ],
+                  );
+                }).toList()),
+              ),
               SizedBox(
                 height: 20,
               ),
@@ -193,50 +202,79 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   Column(
                       children: widget.detailStore.service.map((e) {
                     double priceService = double.parse(e.price) * 10 / 100;
+                    totalPriceService += priceService;
                     return Row(
                       children: [
-                        Text('Phí dịch vụ'.tr().toString() + '(10%)'),
-                        Spacer(),
-                        Text(priceService.toStringAsFixed(0) + " VNĐ"),
+                        // Text('Phí dịch vụ'.tr().toString() + '(10%)'),
+                        // Spacer(),
+                        // Text(totalPriceService.toStringAsFixed(0) + " VNĐ"),
                       ],
                     );
                   }).toList()),
+                  Row(
+                    children: [
+                      Text('Phí dịch vụ'.tr().toString() + ' (10%)'),
+                      Spacer(),
+                      Text(totalPriceService.toStringAsFixed(0) + " VNĐ"),
+                    ],
+                  )
                 ],
               ),
               SizedBox(
-                height: 80,
+                height: 50,
               ),
               Column(
                   children: widget.detailStore.service.map((e) {
                 var priceService = double.parse(e.price) * 10 / 100;
 
-                totalPriceAll =
-                    double.parse(e.price) + priceMove + priceService;
+                // totalPriceAll =
+                //     double.parse(e.price) + priceMove + priceService;
+                totalPriceAll = double.parse(e.price) + priceService;
+                totalPrice += totalPriceAll;
                 return Row(
                   children: [
-                    Text(
-                      'Tổng tiền'.tr().toString(),
-                      style: TextStyle(fontSize: 18),
-                    ),
-                    Spacer(),
-                    if (widget.detailStore.service.isNotEmpty)
-                      Text(
-                        '${totalPriceAll.toStringAsFixed(0)} VNĐ',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    if (widget.detailStore.service.isEmpty)
-                      Text(
-                        '0 VNĐ',
-                        style: TextStyle(fontSize: 18),
-                      ),
+                    // Text(
+                    //   'Tổng tiền'.tr().toString(),
+                    //   style: TextStyle(fontSize: 18),
+                    // ),
+                    // Spacer(),
+                    // if (widget.detailStore.service.isNotEmpty)
+                    //   Text(
+                    //     '${totalPriceAll.toStringAsFixed(0)} VNĐ',
+                    //     style: TextStyle(fontSize: 18),
+                    //   ),
+                    // if (widget.detailStore.service.isEmpty)
+                    //   Text(
+                    //     '0 VNĐ',
+                    //     style: TextStyle(fontSize: 18),
+                    //   ),
                   ],
                 );
               }).toList()),
+              Row(
+                children: [
+                  Text(
+                    'Tổng tiền'.tr().toString(),
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  Spacer(),
+                  if (widget.detailStore.service.isNotEmpty)
+                    Text(
+                      '${totalPrice.toInt() + priceMove.toInt()} VNĐ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  if (widget.detailStore.service.isEmpty)
+                    Text(
+                      '0 VNĐ',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                ],
+              ),
               SizedBox(
                 height: 50,
               ),
@@ -248,10 +286,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       _showDialog(context);
+                      var sum = totalPrice + priceMove;
                       BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
                         storeId: widget.detailStore.idStore,
                         userId: widget.detailStore.idUser,
-                        total: totalPriceAll.toStringAsFixed(0),
+                        total: sum.toStringAsFixed(0),
                         userInfo: widget.detailStore.userInfo,
                         checkout: 1,
                       ));
@@ -287,7 +326,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
                         storeId: widget.detailStore.idStore,
                         userId: widget.detailStore.idUser,
-                        total: totalPriceAll.toStringAsFixed(0),
+                        total: sum.toStringAsFixed(0),
                         userInfo: widget.detailStore.userInfo,
                         checkout: 1,
                       ));

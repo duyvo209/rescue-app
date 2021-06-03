@@ -333,7 +333,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                             ),
                             Text.rich(
                               TextSpan(
-                                text: "Tổng tiền".tr().toString(),
+                                text: "Tổng tiền ".tr().toString(),
                                 style: TextStyle(fontSize: 16),
                                 children: [
                                   // if (user != null)

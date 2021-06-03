@@ -1,5 +1,7 @@
 import 'dart:math' show cos, sqrt, asin;
 
+import 'package:rescue/models/Service.dart';
+
 class Store {
   String idStore;
   String name;
@@ -10,28 +12,31 @@ class Store {
   double lat;
   double long;
   double m;
-  Store(
-      {this.idStore,
-      this.name,
-      this.email,
-      this.phone,
-      this.address,
-      this.time,
-      this.lat,
-      this.long,
-      this.m});
+  List<Service> listService;
+  Store({
+    this.idStore,
+    this.name,
+    this.email,
+    this.phone,
+    this.address,
+    this.time,
+    this.lat,
+    this.long,
+    this.m,
+    this.listService,
+  });
 
   factory Store.fromFireStore(Map<String, dynamic> json) {
     return Store(
-      idStore: json['idStore'],
-      name: json['name'],
-      email: json['email'],
-      phone: json['phone'],
-      address: json['address'],
-      time: json['time'],
-      lat: json['lat'],
-      long: json['long'],
-    );
+        idStore: json['idStore'],
+        name: json['name'],
+        email: json['email'],
+        phone: json['phone'],
+        address: json['address'],
+        time: json['time'],
+        lat: json['lat'],
+        long: json['long'],
+        listService: json['list_service']);
   }
 
   // get  => null;
@@ -46,8 +51,24 @@ class Store {
       'time': time,
       'lat': lat,
       'long': long,
-      'm': m
+      'm': m,
+      // 'list_service': listService,
     };
+  }
+
+  Store copyWith({final List<Service> listService}) {
+    return Store(
+      listService: listService ?? this.listService,
+      idStore: idStore,
+      name: name,
+      email: email,
+      phone: phone,
+      address: address,
+      time: time,
+      lat: lat,
+      long: long,
+      m: m,
+    );
   }
 
   double getM(lat1, lon1) {

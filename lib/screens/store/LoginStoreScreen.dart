@@ -124,7 +124,13 @@ class _LoginStoreScreenState extends State<LoginStoreScreen> {
                         SizedBox(
                           height: 0,
                         ),
-                        Image.asset("assets/vespa.png"),
+                        Image.asset(
+                          "assets/store.png",
+                          height: 300,
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                           child: Text(

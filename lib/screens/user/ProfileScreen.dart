@@ -4,15 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/user/user_bloc.dart';
 import 'package:path/path.dart';
-import 'package:rescue/models/place_service.dart';
-import 'package:rescue/screens/user/AddressSreachScreen.dart';
-import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:file_picker/file_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -24,40 +22,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _phoneController = new TextEditingController();
   final TextEditingController _addressController = new TextEditingController();
 
-  String imageUser = '';
-  File _image;
-  Place place;
+  FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  UploadTask uploadedTasks;
+  File file;
 
-  Future getImage() async {
-    var image = await ImagePicker().getImage(source: ImageSource.gallery);
-    setState(() {
-      if (image != null) {
-        _image = File(image.path);
-      }
-      print('Image Path $_image');
-    });
+  Future selectFileToUpload() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+      if (result == null) return;
+      final path = result.files.single.path;
+      setState(() {
+        file = File(path);
+      });
+    } catch (e) {
+      print(e);
+    }
   }
 
-  Future uploadPic() async {
-    try {
-      String fileName = basename(_image.path);
-      Reference firebaseStorageRef =
-          FirebaseStorage.instance.ref().child(fileName);
-      UploadTask uploadTask = firebaseStorageRef.putFile(_image);
-      TaskSnapshot taskSnapshot = await uploadTask;
-      var downloadUrl = await taskSnapshot.ref.getDownloadURL();
-      String url = downloadUrl.toString();
-      setState(() {
-        print("Profile Picture uploaded");
-      });
-      return url;
-    } catch (e) {
-      print(e.toString());
-    }
+  Future upLoadFileToStorage() async {
+    if (file == null) return;
+
+    final fileName = basename(file.path);
+    final destination = '$fileName';
+
+    uploadedTasks = _firebaseStorage.ref().child(destination).putFile(file);
+    setState(() {});
+
+    if (uploadedTasks == null) return;
+
+    final snapshot = await uploadedTasks.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    // print('Download-Link: $urlDownload');
+    return urlDownload;
   }
 
   @override
   Widget build(BuildContext context) {
+    // final fileName = file != null ? basename(file.path) : '';
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -101,28 +103,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Center(
                           child: Stack(
                             children: [
-                              Align(
-                                alignment: Alignment.center,
-                                child: CircleAvatar(
-                                  radius: 75,
-                                  backgroundColor: Colors.blueGrey[800],
-                                  child: ClipOval(
-                                    child: new SizedBox(
-                                      width: 140.0,
-                                      height: 140.0,
-                                      child: (_image != null)
-                                          ? Image.file(
-                                              _image,
-                                              fit: BoxFit.fill,
-                                            )
-                                          : CachedNetworkImage(
-                                              imageUrl: state.user.imageUser,
-                                              fit: BoxFit.cover,
-                                            ),
+                              state.user.imageUser == null
+                                  ? Align(
+                                      alignment: Alignment.center,
+                                      child: CircleAvatar(
+                                        radius: 75,
+                                        backgroundColor: Colors.blueGrey[800],
+                                        child: ClipOval(
+                                          child: SizedBox(
+                                            width: 140.0,
+                                            height: 140.0,
+                                            child:
+                                                Image.asset('assets/noavt.png'),
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                  : Align(
+                                      alignment: Alignment.center,
+                                      child: CircleAvatar(
+                                        radius: 75,
+                                        backgroundColor: Colors.blueGrey[800],
+                                        child: ClipOval(
+                                            child: new SizedBox(
+                                          width: 140.0,
+                                          height: 140.0,
+                                          child: (file != null)
+                                              ? Image.asset(
+                                                  ((file.path)),
+                                                  fit: BoxFit.cover,
+                                                )
+                                              // ? Text(basename(file.path))
+                                              : CachedNetworkImage(
+                                                  imageUrl:
+                                                      state.user.imageUser,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                        )),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
                               Padding(
                                 padding: EdgeInsets.only(
                                   top: 100,
@@ -135,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     color: Colors.black45,
                                   ),
                                   onPressed: () {
-                                    getImage();
+                                    selectFileToUpload();
                                   },
                                 ),
                               ),
@@ -180,28 +199,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         GestureDetector(
                           onTap: () async {
-                            final sessionToken = Uuid().v4();
-                            final Suggestion result = await showSearch(
-                              context: context,
-                              delegate: AddressSearch(sessionToken),
-                            ).then((value) {
-                              _addressController.text = value.description;
-                              return value;
-                            });
-                            // This will change the text displayed in the TextField
-                            if (result != null) {
-                              final placeDetails =
-                                  await PlaceApiProvider(sessionToken)
-                                      .getPlaceDetailFromId(result.placeId);
-                              place = placeDetails;
+                            // final sessionToken = Uuid().v4();
+                            // final Suggestion result = await showSearch(
+                            //   context: context,
+                            //   delegate: AddressSearch(sessionToken),
+                            // ).then((value) {
+                            //   _addressController.text = value.description;
+                            //   return value;
+                            // });
+                            // // This will change the text displayed in the TextField
+                            // if (result != null) {
+                            //   final placeDetails =
+                            //       await PlaceApiProvider(sessionToken)
+                            //           .getPlaceDetailFromId(result.placeId);
+                            //   place = placeDetails;
 
-                              //print(placeDetails.);
-                            }
+                            //   //print(placeDetails.);
+                            // }
                           },
                           child: Padding(
                             padding: EdgeInsets.only(left: 5, right: 5),
                             child: TextField(
-                              enabled: false,
+                              // enabled: false,
                               controller: _addressController,
                               decoration: InputDecoration(
                                   contentPadding: EdgeInsets.only(bottom: 5),
@@ -253,7 +272,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () async {
-                        final url = await uploadPic();
+                        final url = await upLoadFileToStorage();
                         BlocProvider.of<UserBloc>(context).add(
                           UpdateUser(
                             FirebaseAuth.instance.currentUser.uid,
@@ -263,7 +282,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             url,
                           ),
                         );
-                        uploadPic();
                         Navigator.pop(context);
                       },
                       child: Container(

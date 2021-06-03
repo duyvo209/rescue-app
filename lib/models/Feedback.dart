@@ -4,6 +4,7 @@ class Feedback {
   String userId;
   String storeId;
   UserInfo userInfo;
+  String storeName;
   int rating;
   String comment;
 
@@ -11,6 +12,7 @@ class Feedback {
     this.userId,
     this.storeId,
     this.userInfo,
+    this.storeName,
     this.rating,
     this.comment,
   });
@@ -20,6 +22,7 @@ class Feedback {
       userId: json['userId'],
       storeId: json['storeId'],
       userInfo: json['user_info'],
+      storeName: json['store_name'],
       rating: json['rating'],
       comment: json['comment'],
     );
@@ -30,6 +33,7 @@ class Feedback {
       'userId': userId,
       'storeId': storeId,
       'user_info': userInfo,
+      'store_name': storeName,
       'rating': rating,
       'comment': comment,
     };

@@ -72,7 +72,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating == 1)
                                     SizedBox(
                                       height: 44,
-                                      child: Text('???',
+                                      child: Text('Bạn đã cho 1 sao',
                                           style: TextStyle(fontSize: 18)),
                                     ),
                                   if (_rating != null &&
@@ -80,7 +80,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating == 2)
                                     SizedBox(
                                       height: 44,
-                                      child: Text('Nữa đi, khùng hả',
+                                      child: Text('Bạn đã cho 2 sao',
                                           style: TextStyle(fontSize: 18)),
                                     ),
                                   if (_rating != null &&
@@ -88,7 +88,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating == 3)
                                     SizedBox(
                                       height: 44,
-                                      child: Text('Ây za, nữa đi',
+                                      child: Text('Bạn đã cho 3 sao',
                                           style: TextStyle(fontSize: 18)),
                                     ),
                                   if (_rating != null &&
@@ -96,7 +96,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating == 4)
                                     SizedBox(
                                       height: 44,
-                                      child: Text('Cho 5 sao luông',
+                                      child: Text('Bạn đã cho 4 sao',
                                           style: TextStyle(fontSize: 18)),
                                     ),
                                   if (_rating != null &&
@@ -104,7 +104,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating == 5)
                                     SizedBox(
                                       height: 44,
-                                      child: Text('Wá đã',
+                                      child: Text('Bạn đã cho 5 sao',
                                           style: TextStyle(fontSize: 18)),
                                     ),
                                   if (_rating == null &&
@@ -140,6 +140,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                               userId: widget.feedback.idUser,
                                               userInfo:
                                                   widget.feedback.userInfo,
+                                              storeName:
+                                                  widget.feedback.storeName,
                                               rating: _rating,
                                               comment: _commentController.text,
                                             ),

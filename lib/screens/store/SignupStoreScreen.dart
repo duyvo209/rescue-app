@@ -9,7 +9,7 @@ import 'package:rescue/screens/store/LoginStoreScreen.dart';
 import 'package:uuid/uuid.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-const kGoogleApiKey = "AIzaSyBHRMxpBKc25CMHY51h1jrnCCm6PjNs62s";
+// const kGoogleApiKey = "AIzaSyBLnQ6KLSCfkgMFDgbw1_jMzlo4fhXILss";
 
 // ignore: must_be_immutable
 class SignupStoreScreen extends StatefulWidget {
@@ -184,7 +184,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                           SizedBox(
                             height: 0,
                           ),
-                          Image.asset("assets/moto1.png"),
+                          Image.asset("assets/signup.png"),
                           Padding(
                             padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                             child: Text(
@@ -351,8 +351,6 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                                     await PlaceApiProvider(sessionToken)
                                         .getPlaceDetailFromId(result.placeId);
                                 place = placeDetails;
-
-                                //print(placeDetails.);
                               }
                             },
                             child: Padding(
@@ -458,7 +456,7 @@ class _SignupStoreScreenState extends State<SignupStoreScreen> {
                             ),
                           ),
                           SizedBox(
-                            height: 20,
+                            height: 50,
                           )
                         ],
                       ),

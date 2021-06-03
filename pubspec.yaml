@@ -64,6 +64,7 @@ dependencies:
   stripe_payment: any
 
   badges: any
+  file_picker: any
 
   # flutter_phone_direct_caller: any
 

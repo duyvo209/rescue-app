@@ -36,6 +36,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
   Service serviceSelected;
   double rating;
   int sumrating = 0;
+  final TextEditingController _reportController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FeedbackBloc, FeedbackState>(
@@ -186,7 +187,10 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                               borderRadius: BorderRadius.circular(15)),
                           child: DropdownButton<Service>(
                             hint: Text(
-                                '${serviceSelected?.name ?? "Vấn đề của bạn là gì ?".tr().toString()} '),
+                                '${serviceSelected?.name ?? "Chọn dịch vụ".tr().toString()}',
+                                style: TextStyle(
+                                  color: Colors.red[700],
+                                )),
                             underline: SizedBox(),
                             isExpanded: true,
                             // value: serviceSelected,
@@ -321,11 +325,11 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                                     width: 5,
                                   ),
                                   Text(
-                                    '${rating.toString()} / 5.0',
+                                    '${rating.toString().substring(0, 3)} / 5.0',
                                     style: TextStyle(fontSize: 18),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                           SizedBox(
@@ -403,6 +407,125 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                                     feedback['user_info.name'],
                                     style: TextStyle(fontSize: 16),
                                   ),
+                                  Spacer(),
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.report,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                            isScrollControlled: true,
+                                            backgroundColor: Colors.transparent,
+                                            context: context,
+                                            builder: (context) {
+                                              return Container(
+                                                height: 400,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  30),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  30)),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      offset: Offset(0, -15),
+                                                      blurRadius: 20,
+                                                      color: Color(0xFFDADADA)
+                                                          .withOpacity(0.15),
+                                                    ),
+                                                  ],
+                                                ),
+                                                child: Column(
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    Text.rich(
+                                                      TextSpan(
+                                                        text: "Báo cáo vi phạm",
+                                                        style: TextStyle(
+                                                            fontSize: 18),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 20,
+                                                    ),
+                                                    Container(
+                                                      padding: EdgeInsets.only(
+                                                          left: 20, right: 20),
+                                                      child: TextFormField(
+                                                        controller:
+                                                            _reportController,
+                                                        maxLines: 4,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .multiline,
+                                                        decoration:
+                                                            InputDecoration(
+                                                          border:
+                                                              OutlineInputBorder(),
+                                                          hintText:
+                                                              "Nhập báo cáo",
+                                                          hintStyle: TextStyle(
+                                                              color:
+                                                                  Colors.grey),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 30,
+                                                    ),
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        BlocProvider.of<
+                                                                    FeedbackBloc>(
+                                                                context)
+                                                            .add(
+                                                          UpdateReport(
+                                                            feedbackId:
+                                                                feedback.id,
+                                                            report:
+                                                                _reportController
+                                                                    .text,
+                                                          ),
+                                                        );
+                                                        Navigator.pop(context);
+                                                      },
+                                                      child: Container(
+                                                        height: 55,
+                                                        width: 395,
+                                                        decoration: BoxDecoration(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            6)),
+                                                            color: Colors
+                                                                .blueGrey[800]),
+                                                        child: Center(
+                                                          child: Text(
+                                                            'Gửi',
+                                                            style: TextStyle(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 18,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w500),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            });
+                                      })
                                 ],
                               ),
                               SizedBox(
@@ -539,7 +662,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                                           )
                                         : Text(
                                             feedback['comment'],
-                                            maxLines: 2,
+                                            maxLines: 4,
                                           ),
                                   ),
                                 ],

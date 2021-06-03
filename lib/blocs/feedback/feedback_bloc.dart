@@ -38,6 +38,7 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
           'userId': event.userId,
           'storeId': event.storeId,
           'user_info': b.toMap(),
+          'store_name': event.storeName,
           'rating': event.rating,
           'comment': event.comment,
           'time': DateTime.now().toIso8601String(),
@@ -81,6 +82,18 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
           feedbackError: e.toString(),
         );
       }
+    }
+
+    if (event is UpdateReport) {
+      try {
+        // ignore: unused_local_variable
+        var data = await FirebaseFirestore.instance
+            .collection('feedback')
+            .doc(event.feedbackId)
+            .update({
+          'report': event.report,
+        });
+      } catch (e) {}
     }
   }
 }

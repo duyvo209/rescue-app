@@ -176,7 +176,9 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
 
   buildItem(doc) {
     return Container(
-      padding: EdgeInsets.only(left: 16, right: 16, top: 10, bottom: 10),
+      padding: doc['senderId'] == userId
+          ? EdgeInsets.only(left: 90, right: 16, top: 10, bottom: 10)
+          : EdgeInsets.only(left: 16, right: 90, top: 10, bottom: 10),
       child: Align(
         alignment:
             doc['senderId'] == userId ? Alignment.topRight : Alignment.topLeft,
@@ -199,7 +201,7 @@ class _ChatDetailTestState extends State<ChatDetailTest> {
                       style: TextStyle(color: Colors.black54, fontSize: 13)),
                 ]),
             textAlign:
-                (doc['senderId'] == userId ? TextAlign.right : TextAlign.left),
+                (doc['senderId'] == userId ? TextAlign.left : TextAlign.left),
           ),
         ),
       ),

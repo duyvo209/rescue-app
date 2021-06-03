@@ -11,6 +11,7 @@ import 'package:rescue/blocs/auth/authencation_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/configs/configs.dart';
+import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/screens/store/ChatDetailTest.dart';
 import 'package:rescue/screens/store/ConfirmScreen.dart';
 import 'package:rescue/screens/store/ChatTest.dart';
@@ -86,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: iconMarker,
                 infoWindow: InfoWindow(
                   title: '${element.userInfo.name}',
-                  snippet: '${element.userInfo.address}',
+                  snippet:
+                      '${element.userInfo.phone}\n${element.problems.first.name}',
                 ),
               ));
             });
@@ -134,7 +136,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 icon: iconMarker,
                 infoWindow: InfoWindow(
                   title: '${element.userInfo.name}',
-                  snippet: '${element.userInfo.address}',
+                  snippet:
+                      '${element.userInfo.phone}\n${element.problems.first.name}',
                 ),
               ));
             });
@@ -403,171 +406,366 @@ class _HomeScreenState extends State<HomeScreen> {
               Positioned.fill(
                   child: Align(
                 alignment: Alignment.topCenter,
-                child: BlocBuilder<RequestBloc, RequestState>(
-                  builder: (context, state) {
-                    state.listRescue.sort((a, b) => a
-                        .getM(a.latUser, a.lngUser)
-                        .compareTo(b.getM(b.latUser, b.lngUser)));
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: state.request.map((e) {
-                          var store =
-                              BlocProvider.of<StoreBloc>(context).state.store;
-                          double m = Helper.getDistanceBetween(
-                              e.latUser, e.lngUser, store.lat, store.long);
-                          return Container(
-                            height: 215,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            margin:
-                                EdgeInsets.only(left: 20, right: 20, top: 20),
-                            padding: EdgeInsets.all(20),
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey[800],
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: GestureDetector(
-                              onTap: () {},
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 170,
-                                    child: CachedNetworkImage(
-                                        imageUrl: e.userInfo.imageUser,
-                                        fit: BoxFit.cover),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Flexible(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${e.userInfo.name}',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white),
+                child: StreamBuilder<List<Rescue>>(
+                  stream: FirebaseFirestore.instance
+                      .collection('request')
+                      .where('idStore',
+                          isEqualTo: FirebaseAuth.instance.currentUser.uid)
+                      .orderBy('time', descending: true)
+                      .snapshots()
+                      .asyncMap((event) => event.docs
+                          .map((e) => Rescue.fromFireStore(
+                              e.data()..addAll({'idRequest': e.id})))
+                          .toList()),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      var requests = snapshot.data;
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: requests.map((e) {
+                            var store =
+                                BlocProvider.of<StoreBloc>(context).state.store;
+                            if (store != null) {
+                              double m = Helper.getDistanceBetween(
+                                  e.latUser, e.lngUser, store.lat, store.long);
+                              return Container(
+                                height: 215,
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                margin: EdgeInsets.only(
+                                    left: 20, right: 20, top: 20),
+                                padding: EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: Colors.blueGrey[800],
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {},
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 170,
+                                        child: CachedNetworkImage(
+                                            imageUrl: e.userInfo.imageUser,
+                                            fit: BoxFit.cover),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
-                                        SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                          '${e.userInfo.address}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(
-                                          'Cách bạn ${m.toStringAsFixed(2)} km',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(
-                                          '${e.problems.first.name}',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                        SizedBox(
-                                          height: 2,
-                                        ),
-                                        Container(
-                                          height: 35,
-                                          child: IconButton(
-                                              icon: Icon(
-                                                Icons.arrow_forward,
-                                                color: Colors.white,
-                                              ),
-                                              onPressed: () {
-                                                setPolylines(
-                                                    e.latUser, e.lngUser);
-                                              }),
-                                        ),
-                                        // SizedBox(
-                                        //   height: 5,
-                                        // ),
-                                        Row(
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Flexible(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            FlatButton(
-                                              color: Colors.white70,
-                                              onPressed: () {
-                                                BlocProvider.of<RequestBloc>(
-                                                        context)
-                                                    .add(
-                                                  UpdateStatus(
-                                                    status: 1,
-                                                    requestId: e.idRequest,
-                                                  ),
-                                                );
-
-                                                Navigator.push(
-                                                    context,
-                                                    new MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            ComfirmScreen(
-                                                                rescue: e)));
-                                              },
-                                              child: Text(
-                                                'Xác nhận'.tr().toString(),
-                                              ),
+                                            Text(
+                                              '${e.userInfo.name}',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.white),
                                             ),
-                                            Spacer(),
-                                            StreamBuilder(
-                                              stream: FirebaseFirestore.instance
-                                                  .collection('users')
-                                                  .doc(e.idUser)
-                                                  .snapshots(),
-                                              builder: (context, snapshot) {
-                                                if (snapshot.hasData) {
-                                                  return FlatButton(
-                                                    color: Colors.white70,
-                                                    onPressed: () {
-                                                      Navigator.push(
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              '${e.userInfo.address}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              'Cách bạn ${m.toStringAsFixed(2)} km',
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              height: 5,
+                                            ),
+                                            Text(
+                                              '${e.problems.first.name}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              height: 2,
+                                            ),
+                                            Container(
+                                              height: 35,
+                                              child: IconButton(
+                                                  icon: Icon(
+                                                    Icons.arrow_forward,
+                                                    color: Colors.white,
+                                                  ),
+                                                  onPressed: () {
+                                                    setPolylines(
+                                                        e.latUser, e.lngUser);
+                                                  }),
+                                            ),
+                                            // SizedBox(
+                                            //   height: 5,
+                                            // ),
+                                            Row(
+                                              children: [
+                                                FlatButton(
+                                                  color: Colors.white70,
+                                                  onPressed: () {
+                                                    BlocProvider.of<
+                                                                RequestBloc>(
+                                                            context)
+                                                        .add(
+                                                      UpdateStatus(
+                                                        status: 1,
+                                                        requestId: e.idRequest,
+                                                      ),
+                                                    );
+
+                                                    Navigator.push(
                                                         context,
                                                         new MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              new ChatDetailTest(
-                                                            docs: snapshot.data,
-                                                          ),
+                                                            builder: (context) =>
+                                                                ComfirmScreen(
+                                                                    rescue:
+                                                                        e)));
+                                                  },
+                                                  child: Text(
+                                                    'Xác nhận'.tr().toString(),
+                                                  ),
+                                                ),
+                                                Spacer(),
+                                                StreamBuilder(
+                                                  stream: FirebaseFirestore
+                                                      .instance
+                                                      .collection('users')
+                                                      .doc(e.idUser)
+                                                      .snapshots(),
+                                                  builder: (context, snapshot) {
+                                                    if (snapshot.hasData) {
+                                                      return FlatButton(
+                                                        color: Colors.white70,
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            new MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  new ChatDetailTest(
+                                                                docs: snapshot
+                                                                    .data,
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                        child: Text(
+                                                          'Nhắn tin'
+                                                              .tr()
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              color:
+                                                                  Colors.black),
                                                         ),
                                                       );
-                                                    },
-                                                    child: Text(
-                                                      'Nhắn tin'
-                                                          .tr()
-                                                          .toString(),
-                                                      style: TextStyle(
-                                                          color: Colors.black),
-                                                    ),
-                                                  );
-                                                }
-                                                return Container();
-                                              },
-                                            ),
+                                                    }
+                                                    return Container();
+                                                  },
+                                                ),
+                                              ],
+                                            )
                                           ],
-                                        )
-                                      ],
-                                    ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    );
+                                ),
+                              );
+                            }
+                            return Container();
+                          }).toList(),
+                        ),
+                      );
+                    }
+                    return Container();
                   },
                 ),
-              )),
+              ))
+              // Positioned.fill(
+              //     child: Align(
+              //   alignment: Alignment.topCenter,
+              //   child: BlocBuilder<RequestBloc, RequestState>(
+              //     builder: (context, state) {
+              //       state.listRescue.sort((a, b) => a
+              //           .getM(a.latUser, a.lngUser)
+              //           .compareTo(b.getM(b.latUser, b.lngUser)));
+              //       return SingleChildScrollView(
+              //         scrollDirection: Axis.horizontal,
+              //         child: Row(
+              //           children: state.request.map((e) {
+              //             var store =
+              //                 BlocProvider.of<StoreBloc>(context).state.store;
+              //             double m = Helper.getDistanceBetween(
+              //                 e.latUser, e.lngUser, store.lat, store.long);
+              //             return Container(
+              //               height: 215,
+              //               width: MediaQuery.of(context).size.width * 0.8,
+              //               margin:
+              //                   EdgeInsets.only(left: 20, right: 20, top: 20),
+              //               padding: EdgeInsets.all(20),
+              //               decoration: BoxDecoration(
+              //                 color: Colors.blueGrey[800],
+              //                 borderRadius: BorderRadius.circular(6),
+              //               ),
+              //               child: GestureDetector(
+              //                 onTap: () {},
+              //                 child: Row(
+              //                   children: [
+              //                     Container(
+              //                       width: 100,
+              //                       height: 170,
+              //                       child: CachedNetworkImage(
+              //                           imageUrl: e.userInfo.imageUser,
+              //                           fit: BoxFit.cover),
+              //                       decoration: BoxDecoration(
+              //                         borderRadius: BorderRadius.circular(8),
+              //                       ),
+              //                     ),
+              //                     SizedBox(
+              //                       width: 10,
+              //                     ),
+              //                     Flexible(
+              //                       child: Column(
+              //                         crossAxisAlignment:
+              //                             CrossAxisAlignment.start,
+              //                         children: [
+              //                           Text(
+              //                             '${e.userInfo.name}',
+              //                             style: TextStyle(
+              //                                 fontSize: 16,
+              //                                 color: Colors.white),
+              //                           ),
+              //                           SizedBox(
+              //                             height: 10,
+              //                           ),
+              //                           Text(
+              //                             '${e.userInfo.address}',
+              //                             maxLines: 1,
+              //                             overflow: TextOverflow.ellipsis,
+              //                             style: TextStyle(color: Colors.white),
+              //                           ),
+              //                           SizedBox(
+              //                             height: 5,
+              //                           ),
+              //                           Text(
+              //                             'Cách bạn ${m.toStringAsFixed(2)} km',
+              //                             style: TextStyle(color: Colors.white),
+              //                           ),
+              //                           SizedBox(
+              //                             height: 5,
+              //                           ),
+              //                           Text(
+              //                             '${e.problems.first.name}',
+              //                             maxLines: 1,
+              //                             overflow: TextOverflow.ellipsis,
+              //                             style: TextStyle(color: Colors.white),
+              //                           ),
+              //                           SizedBox(
+              //                             height: 2,
+              //                           ),
+              //                           Container(
+              //                             height: 35,
+              //                             child: IconButton(
+              //                                 icon: Icon(
+              //                                   Icons.arrow_forward,
+              //                                   color: Colors.white,
+              //                                 ),
+              //                                 onPressed: () {
+              //                                   setPolylines(
+              //                                       e.latUser, e.lngUser);
+              //                                 }),
+              //                           ),
+              //                           // SizedBox(
+              //                           //   height: 5,
+              //                           // ),
+              //                           Row(
+              //                             children: [
+              //                               FlatButton(
+              //                                 color: Colors.white70,
+              //                                 onPressed: () {
+              //                                   BlocProvider.of<RequestBloc>(
+              //                                           context)
+              //                                       .add(
+              //                                     UpdateStatus(
+              //                                       status: 1,
+              //                                       requestId: e.idRequest,
+              //                                     ),
+              //                                   );
+
+              //                                   Navigator.push(
+              //                                       context,
+              //                                       new MaterialPageRoute(
+              //                                           builder: (context) =>
+              //                                               ComfirmScreen(
+              //                                                   rescue: e)));
+              //                                 },
+              //                                 child: Text(
+              //                                   'Xác nhận'.tr().toString(),
+              //                                 ),
+              //                               ),
+              //                               Spacer(),
+              //                               StreamBuilder(
+              //                                 stream: FirebaseFirestore.instance
+              //                                     .collection('users')
+              //                                     .doc(e.idUser)
+              //                                     .snapshots(),
+              //                                 builder: (context, snapshot) {
+              //                                   if (snapshot.hasData) {
+              //                                     return FlatButton(
+              //                                       color: Colors.white70,
+              //                                       onPressed: () {
+              //                                         Navigator.push(
+              //                                           context,
+              //                                           new MaterialPageRoute(
+              //                                             builder: (context) =>
+              //                                                 new ChatDetailTest(
+              //                                               docs: snapshot.data,
+              //                                             ),
+              //                                           ),
+              //                                         );
+              //                                       },
+              //                                       child: Text(
+              //                                         'Nhắn tin'
+              //                                             .tr()
+              //                                             .toString(),
+              //                                         style: TextStyle(
+              //                                             color: Colors.black),
+              //                                       ),
+              //                                     );
+              //                                   }
+              //                                   return Container();
+              //                                 },
+              //                               ),
+              //                             ],
+              //                           )
+              //                         ],
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //               ),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // )),
             ],
           ),
         ),

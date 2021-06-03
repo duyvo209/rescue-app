@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
         if (state.loginSuccess) {
           BlocProvider.of<AuthencationBloc>(context).add(LoggedIn());
-          Navigator.push(context,
+          Navigator.pushReplacement(context,
               new MaterialPageRoute(builder: (context) => HomeScreen()));
         }
       },

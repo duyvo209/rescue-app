@@ -38,7 +38,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 children: <Widget>[
                   SizedBox(height: 30),
                   Image.asset(
-                    'assets/cong.png',
+                    'assets/vespaa.png',
                   ),
                   Text(
                     "dvRescue",
