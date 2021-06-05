@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rescue/models/Problem.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Store.dart';
@@ -35,31 +36,39 @@ class _ProblemScreenState extends State<ProblemScreen> {
         return Problem(
           problemId: e.id,
           name: e.data()['name'],
-          services:
-              (e.data()['services'] as List).map((e) => e.toString()).toList(),
         );
       }).toList();
     });
   }
 
-  Future<List<Store>> _getListStore(List<String> serviceIds) async {
-    var result = await FirebaseFirestore.instance.collection('store').get();
-    var listStore =
-        result.docs.map((e) => Store.fromFireStore(e.data())).toList();
-    List<Store> listStoreHaveThisService = [];
-    for (int i = 0; i < listStore.length; i++) {
-      var collectionService = await FirebaseFirestore.instance
-          .collection('store')
-          .doc(listStore[i].idStore)
-          .collection('service')
-          .get();
-
-      if (collectionService.docs
-          .any((element) => serviceIds.contains(element.data()['name']))) {
-        listStoreHaveThisService.add(listStore[i]);
+  Future<List<Store>> _getListStore(String problemId) async {
+    try {
+      var listService =
+          await FirebaseFirestore.instance.collection('services').get();
+      var listServicesHaveThisProblem = listService.docs
+          .where((element) => element.data()['problem_id'] == problemId);
+      var result = await FirebaseFirestore.instance.collection('store').get();
+      var listStore =
+          result.docs.map((e) => Store.fromFireStore(e.data())).toList();
+      List<Store> listStoreHaveThisService = [];
+      for (int i = 0; i < listStore.length; i++) {
+        var collectionService = await FirebaseFirestore.instance
+            .collection('store')
+            .doc(listStore[i].idStore)
+            .collection('service')
+            .get();
+        if (listServicesHaveThisProblem.any((element1) => collectionService.docs
+            .any((element2) => element1.id == element2.data()['service_id']))) {
+          print("found");
+          listStoreHaveThisService.add(listStore[i]);
+        }
+        // listStoreHaveThisService.add(listStore[i]);
       }
+      return listStoreHaveThisService;
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
     }
-    return listStoreHaveThisService;
+    return [];
   }
 
   _sortByPrice() async {
@@ -141,7 +150,7 @@ class _ProblemScreenState extends State<ProblemScreen> {
                       showLoading = true;
                       showListStore = true; // neu bi loi thi xoa cai nay
                     });
-                    var result = await _getListStore(currentProblem.services);
+                    var result = await _getListStore(currentProblem.problemId);
                     setState(() {
                       listStore = result;
                       showListStore = true;

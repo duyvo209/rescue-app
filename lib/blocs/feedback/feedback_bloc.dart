@@ -95,5 +95,17 @@ class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
         });
       } catch (e) {}
     }
+
+    if (event is UpdateReportStore) {
+      try {
+        // ignore: unused_local_variable
+        var data = await FirebaseFirestore.instance
+            .collection('feedback')
+            .doc(event.feedbackId)
+            .update({
+          'report_store': event.reportStore,
+        });
+      } catch (e) {}
+    }
   }
 }

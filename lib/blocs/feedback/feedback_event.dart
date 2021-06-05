@@ -37,3 +37,10 @@ class UpdateReport extends FeedbackEvent {
 
   UpdateReport({this.feedbackId, this.report});
 }
+
+class UpdateReportStore extends FeedbackEvent {
+  final String feedbackId;
+  final String reportStore;
+
+  UpdateReportStore({this.feedbackId, this.reportStore});
+}

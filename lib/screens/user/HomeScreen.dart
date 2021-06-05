@@ -110,7 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void setCustomMarker() async {
     iconMarker = await BitmapDescriptor.fromAssetImage(
-        ImageConfiguration(), 'assets/motoicon.png');
+        ImageConfiguration(), 'assets/storeicon.png');
   }
 
   void _onMapCreated(GoogleMapController controller) {

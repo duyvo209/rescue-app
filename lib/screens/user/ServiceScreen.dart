@@ -25,8 +25,43 @@ class _ServiceScreenState extends State<ServiceScreen> {
   @override
   void initState() {
     super.initState();
-    _getListService();
+    // _getListService();
+    _getListServiceStream();
   }
+
+  // Future<List<String>> _getListService({String query}) async {
+  //   var snapshot = await FirebaseFirestore.instance.collection('store').get();
+  //   var ids = snapshot.docs.map((e) {
+  //     return e.id;
+  //   }).toList();
+  //   List<String> services = [];
+  //   for (int i = 0; i < ids.length; i++) {
+  //     var snapshotService = await FirebaseFirestore.instance
+  //         .collection('store')
+  //         .doc(ids[i])
+  //         .collection('service')
+  //         .get();
+  //     var listServiceId = snapshotService.docs.map((e) => e.id).toList();
+  //     for (int j = 0; j < listServiceId.length; j++) {
+  //       var result = await FirebaseFirestore.instance
+  //           .collection('store')
+  //           .doc(ids[i])
+  //           .collection('service')
+  //           .doc(listServiceId[j])
+  //           .get();
+  //       if (!services.contains(result.data()['name'])) {
+  //         services.add(result.data()['name']);
+  //       }
+  //     }
+  //   }
+  //   setState(() {
+  //     listProblems = services;
+  //   });
+
+  //   return services
+  //       .where((element) => element.toLowerCase().contains(query.toLowerCase()))
+  //       .toList();
+  // }
 
   Stream<List<Service>> _getListServiceStream() {
     return FirebaseFirestore.instance
@@ -35,47 +70,13 @@ class _ServiceScreenState extends State<ServiceScreen> {
         .asyncMap((event) {
       return event.docs.map((e) {
         return Service(
-          desc: e.data()['description'],
-          id: e.data()['id'],
+          desc: e.data()['problem'],
+          id: e.id,
           name: e.data()['name'],
           price: e.data()['price'],
         );
       }).toList();
     });
-  }
-
-  Future<List<String>> _getListService({String query}) async {
-    var snapshot = await FirebaseFirestore.instance.collection('store').get();
-    var ids = snapshot.docs.map((e) {
-      return e.id;
-    }).toList();
-    List<String> services = [];
-    for (int i = 0; i < ids.length; i++) {
-      var snapshotService = await FirebaseFirestore.instance
-          .collection('store')
-          .doc(ids[i])
-          .collection('service')
-          .get();
-      var listServiceId = snapshotService.docs.map((e) => e.id).toList();
-      for (int j = 0; j < listServiceId.length; j++) {
-        var result = await FirebaseFirestore.instance
-            .collection('store')
-            .doc(ids[i])
-            .collection('service')
-            .doc(listServiceId[j])
-            .get();
-        if (!services.contains(result.data()['name'])) {
-          services.add(result.data()['name']);
-        }
-      }
-    }
-    setState(() {
-      listProblems = services;
-    });
-
-    return services
-        .where((element) => element.toLowerCase().contains(query.toLowerCase()))
-        .toList();
   }
 
   Future<List<Store>> _getListStore({String query}) async {
@@ -98,7 +99,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
           .get();
 
       if (snapshotService.docs.any((element) =>
-          element.data()['name'].toString().toLowerCase() ==
+          element.data()['service_id'].toString().toLowerCase() ==
           query.toLowerCase())) {
         listStoreQuery
             .add(listStore.firstWhere((element) => element.idStore == ids[i]));
@@ -464,7 +465,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                     showListStore = true;
                                   });
                                   var list = await _getListStore(
-                                      query: services[index].name);
+                                      query: services[index].id);
                                   setState(() {
                                     listStore = list;
                                     showLoading = false;
