@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
 import 'package:rescue/blocs/store/store_bloc.dart';
+import 'package:rescue/models/PriceMoveStore.dart';
 import 'package:rescue/models/Rescue.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/utils/helper.dart';
@@ -25,14 +27,90 @@ class ComfirmScreen extends StatefulWidget {
 
 class _ComfirmScreenState extends State<ComfirmScreen> {
   var store;
+  List<Service> services = [];
 
+  var priceMove = 0.0;
+  // var xs = 0.0;
+  var priceListService = 0.0;
+  var percentService = 0.0;
+  var phiDichVu = 0.0;
   @override
   void initState() {
     store = BlocProvider.of<LoginBloc>(context).state.user;
     if (store != null) {
       BlocProvider.of<StoreBloc>(context).add(GetListService(store.uid));
     }
+    _initListServiceOfStore();
+    _calPriceMove();
+    // _calPriceListService();
+    _calPriceServiceStore();
     super.initState();
+  }
+
+  _initListServiceOfStore() async {
+    var listServiceIds = await FirebaseFirestore.instance
+        .collection('store')
+        .doc(widget.rescue.idStore)
+        .collection('service')
+        .get();
+    var listService =
+        await FirebaseFirestore.instance.collection('services').get();
+    listService.docs.forEach((element1) {
+      if (listServiceIds.docs
+          .any((element2) => element1.id == element2.data()['service_id'])) {
+        services.add(Service(
+          id: element1.id,
+          price: listServiceIds.docs
+              .firstWhere(
+                  (element) => element1.id == element.data()['service_id'])
+              .data()['price'],
+          name: element1.data()['name'],
+        ));
+      }
+    });
+
+    setState(() {});
+  }
+
+  _calPriceMove() async {
+    double m = Helper.getDistanceBetween(widget.rescue.latUser,
+        widget.rescue.lngUser, widget.rescue.lat, widget.rescue.long);
+    var data = await FirebaseFirestore.instance
+        .collection('store')
+        .doc(widget.rescue.idStore)
+        .collection('prices_move')
+        .get();
+
+    for (int i = 0; i < data.docs.length; i++) {
+      var priveMoveStore = PriceMoveStore(
+          price: data.docs[i].data()['price'],
+          from: double.tryParse(data.docs[i].data()['from'].toString()),
+          to: double.tryParse(data.docs[i].data()['to'].toString()));
+      if (priveMoveStore.from <= m && m <= priveMoveStore.to) {
+        priceMove = double.tryParse(priveMoveStore.price);
+      }
+    }
+    setState(() {});
+  }
+
+  _calPriceListService() {
+    setState(() {
+      priceListService = listServiceSelected
+          .map((e) => double.tryParse(e.price))
+          .toList()
+          .reduce((value, element) => value + element);
+    });
+  }
+
+  _calPriceServiceStore() async {
+    var data = await FirebaseFirestore.instance
+        .collection('store')
+        .doc(widget.rescue.idStore)
+        .get();
+
+    setState(() {
+      percentService = double.parse(data.data()['price_service'].toString());
+    });
   }
 
   List<Service> listServiceSelected = [];
@@ -45,17 +123,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<StoreBloc, StoreState>(
       builder: (context, state) {
-        double m = Helper.getDistanceBetween(widget.rescue.latUser,
-            widget.rescue.lngUser, widget.rescue.lat, widget.rescue.long);
-        var priceMove = 0.0;
-        if (m < 2.0) {
-          priceMove = 20000.0;
-        } else {
-          priceMove =
-              20000.0 + ((double.parse(m.toStringAsFixed(0)) - 2.0) * 5000.0);
-        }
-        // var phidichvu = 0.0;
-        // phidichvu = (totalPriceAll * 5 / 100) - priceService;
+        var priceSum = priceListService + priceMove + phiDichVu;
 
         return Scaffold(
             appBar: AppBar(
@@ -134,7 +202,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(height: 15),
                           Row(
                             children: <Widget>[
-                              Text('Vấn đề'.tr().toString()),
+                              Text('Dịch vụ'.tr().toString()),
                               Spacer(),
                               Text(
                                 '${widget.rescue.problems.first.name}',
@@ -146,57 +214,51 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                           SizedBox(
                             height: 40,
                           ),
-                          StreamBuilder<List<Service>>(
-                            stream: BlocProvider.of<StoreBloc>(context)
-                                .getListService(widget.rescue.idStore),
-                            builder: (context, snapshot) {
-                              return Row(
-                                children: [
-                                  Text(
-                                    'Dịch vụ'.tr().toString(),
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  IconButton(
-                                    icon: Icon(Icons.add),
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text(
-                                                'Thêm dịch vụ'.tr().toString()),
-                                            content: DropdownButton(
-                                              hint: Text(
-                                                  'Dịch vụ'.tr().toString()),
-                                              underline: SizedBox(),
-                                              isExpanded: true,
-                                              // value: valueChoose,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  if (!listServiceSelected
-                                                      .contains(value)) {
-                                                    listServiceSelected
-                                                        .add(value);
-                                                  }
-                                                });
-                                                print(
-                                                    listServiceSelected.length);
-                                              },
-                                              items: snapshot.data.map((value) {
-                                                return DropdownMenuItem(
-                                                    value: value,
-                                                    child:
-                                                        Text('${value.name}'));
-                                              }).toList(),
-                                            ),
-                                          );
-                                        },
+                          Row(
+                            children: [
+                              Text(
+                                'Dịch vụ'.tr().toString(),
+                                style: TextStyle(fontSize: 18),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.add),
+                                onPressed: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                            'Thêm dịch vụ'.tr().toString()),
+                                        content: DropdownButton(
+                                          hint: Text('Dịch vụ'.tr().toString()),
+                                          underline: SizedBox(),
+                                          isExpanded: true,
+                                          // value: valueChoose,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              if (!listServiceSelected
+                                                  .contains(value)) {
+                                                listServiceSelected.add(value);
+                                                _calPriceListService();
+                                                phiDichVu = percentService *
+                                                    priceListService;
+                                              }
+                                            });
+
+                                            print(listServiceSelected.length);
+                                          },
+                                          items: services.map((value) {
+                                            return DropdownMenuItem(
+                                                value: value,
+                                                child: Text('${value.name}'));
+                                          }).toList(),
+                                        ),
                                       );
                                     },
-                                  ),
-                                ],
-                              );
-                            },
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                           SizedBox(
                             height: 20,
@@ -257,26 +319,25 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                               SizedBox(
                                 height: 20,
                               ),
-                              StreamBuilder<List<Service>>(
-                                  stream: BlocProvider.of<StoreBloc>(context)
-                                      .getListService(widget.rescue.idStore),
-                                  builder: (context, snapshot) {
-                                    if (listServiceSelected.isNotEmpty) {
-                                      priceService =
-                                          getTotalPrice(listServiceSelected) *
-                                              10 /
-                                              100;
-                                    }
-                                    return Row(
-                                      children: [
-                                        Text('Phí dịch vụ'.tr().toString() +
-                                            " (10%)"),
-                                        Spacer(),
-                                        Text(priceService.toStringAsFixed(0) +
-                                            ' VNĐ'),
-                                      ],
-                                    );
-                                  }),
+                              // StreamBuilder<List<Service>>(
+                              //     stream: BlocProvider.of<StoreBloc>(context)
+                              //         .getListService(widget.rescue.idStore),
+                              //     builder: (context, snapshot) {
+                              //       if (listServiceSelected.isNotEmpty) {
+                              //         priceService =
+                              //             getTotalPrice(listServiceSelected) *
+                              //                 10 /
+                              //                 100;
+                              //       }
+                              Row(
+                                children: [
+                                  Text(
+                                      'Phí dịch vụ'.tr().toString() + " (10%)"),
+                                  Spacer(),
+                                  Text(phiDichVu.toStringAsFixed(0) + ' VNĐ'),
+                                ],
+                              ),
+                              // }),
                             ],
                           ),
                           SizedBox(
@@ -340,7 +401,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                   if (listServiceSelected.isNotEmpty)
                                     TextSpan(
                                       text:
-                                          '${totalPriceAll.toStringAsFixed(0) + " VNĐ"}',
+                                          '${priceSum.toStringAsFixed(0) + " VNĐ"}',
                                       style: TextStyle(
                                           fontSize: 20, color: Colors.black),
                                     ),

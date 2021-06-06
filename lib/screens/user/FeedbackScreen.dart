@@ -72,153 +72,313 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                       _rating != 0 &&
                                       _rating == 1)
                                     SizedBox(
-                                        height: 130,
-                                        child: Padding(
+                                      height: 130,
+                                      child: Padding(
                                           padding: EdgeInsets.only(
                                               left: 0, right: 0, top: 0),
-                                          child: Wrap(
-                                            direction: Axis.horizontal,
-                                            spacing: 10,
-                                            children: [
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (choice.contains(
-                                                        'Dịch vụ chưa tốt')) {
-                                                      choice.remove(
-                                                          'Dịch vụ chưa tốt');
-                                                      _commentController.text =
-                                                          '';
-                                                    } else {
-                                                      choice.add(
-                                                          'Dịch vụ chưa tốt');
-                                                      _commentController.text =
-                                                          'Dịch vụ chưa tốt';
-                                                    }
-                                                  });
-                                                },
-                                                child: ChoiceChip(
-                                                  label: Text(
-                                                    'Dịch vụ chưa tốt',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                  selected: choice.contains(
-                                                      'Dịch vụ chưa tốt'),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (choice.contains(
-                                                        'Không đáng tiền')) {
-                                                      choice.remove(
-                                                          'Không đáng tiền');
-                                                      _commentController.text =
-                                                          '';
-                                                    } else {
-                                                      choice.add(
-                                                          'Không đáng tiền');
-                                                      _commentController.text =
-                                                          'Không đáng tiền';
-                                                    }
-                                                  });
-                                                },
-                                                child: ChoiceChip(
-                                                  label: Text(
-                                                    'Không đáng tiền',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                  selected: choice.contains(
-                                                      'Không đáng tiền'),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (choice.contains(
-                                                        'Chậm chạp')) {
-                                                      choice
-                                                          .remove('Chậm chạp');
-                                                      _commentController.text =
-                                                          '';
-                                                    } else {
-                                                      choice.add('Chậm chạp');
-                                                      _commentController.text =
-                                                          'Chậm chạp';
-                                                    }
-                                                  });
-                                                },
-                                                child: ChoiceChip(
-                                                  label: Text(
-                                                    'Chậm chạp',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                  selected: choice
-                                                      .contains('Chậm chạp'),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    if (choice
-                                                        .contains('Mắc')) {
-                                                      choice.remove('Mắc');
-                                                      _commentController.text =
-                                                          '';
-                                                    } else {
-                                                      choice.add('Mắc');
-                                                      _commentController.text =
-                                                          'Mắc';
-                                                    }
-                                                  });
-                                                },
-                                                child: ChoiceChip(
-                                                  label: Text(
-                                                    'Mắc',
-                                                    style: TextStyle(
-                                                        color: Colors.black),
-                                                  ),
-                                                  selected:
-                                                      choice.contains('Mắc'),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )),
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('feedback')
+                                                .where('storeId',
+                                                    isEqualTo:
+                                                        widget.feedback.idStore)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Wrap(
+                                                  children: snapshot.data.docs
+                                                      .map(
+                                                          (DocumentSnapshot e) {
+                                                    return Wrap(
+                                                      children: [
+                                                        e['rating'] == 1
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    if (choice
+                                                                        .contains(
+                                                                            '${e['comment']}')) {
+                                                                      choice.remove(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                          .text = '';
+                                                                    } else {
+                                                                      choice.add(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                              .text =
+                                                                          '${e['comment']}';
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    ChoiceChip(
+                                                                  label: Text(
+                                                                      '${e['comment']}'),
+                                                                  selected: choice
+                                                                      .contains(
+                                                                          '${e['comment']}'),
+                                                                ),
+                                                              )
+                                                            : Text('')
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          )),
+                                    ),
                                   if (_rating != null &&
                                       _rating != 0 &&
                                       _rating == 2)
                                     SizedBox(
-                                      height: 44,
-                                      child: Text('Bạn đã cho 2 sao',
-                                          style: TextStyle(fontSize: 18)),
+                                      height: 130,
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 0, right: 0, top: 0),
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('feedback')
+                                                .where('storeId',
+                                                    isEqualTo:
+                                                        widget.feedback.idStore)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Wrap(
+                                                  children: snapshot.data.docs
+                                                      .map(
+                                                          (DocumentSnapshot e) {
+                                                    return Wrap(
+                                                      children: [
+                                                        e['rating'] == 2
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    if (choice
+                                                                        .contains(
+                                                                            '${e['comment']}')) {
+                                                                      choice.remove(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                          .text = '';
+                                                                    } else {
+                                                                      choice.add(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                              .text =
+                                                                          '${e['comment']}';
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    ChoiceChip(
+                                                                  label: Text(
+                                                                      '${e['comment']}'),
+                                                                  selected: choice
+                                                                      .contains(
+                                                                          '${e['comment']}'),
+                                                                ),
+                                                              )
+                                                            : Text('')
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          )),
                                     ),
                                   if (_rating != null &&
                                       _rating != 0 &&
                                       _rating == 3)
                                     SizedBox(
-                                      height: 44,
-                                      child: Text('Bạn đã cho 3 sao',
-                                          style: TextStyle(fontSize: 18)),
+                                      height: 130,
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 0, right: 0, top: 0),
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('feedback')
+                                                .where('storeId',
+                                                    isEqualTo:
+                                                        widget.feedback.idStore)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Wrap(
+                                                  children: snapshot.data.docs
+                                                      .map(
+                                                          (DocumentSnapshot e) {
+                                                    return Wrap(
+                                                      children: [
+                                                        e['rating'] == 3
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    if (choice
+                                                                        .contains(
+                                                                            '${e['comment']}')) {
+                                                                      choice.remove(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                          .text = '';
+                                                                    } else {
+                                                                      choice.add(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                              .text =
+                                                                          '${e['comment']}';
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    ChoiceChip(
+                                                                  label: Text(
+                                                                      '${e['comment']}'),
+                                                                  selected: choice
+                                                                      .contains(
+                                                                          '${e['comment']}'),
+                                                                ),
+                                                              )
+                                                            : Text('')
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          )),
                                     ),
                                   if (_rating != null &&
                                       _rating != 0 &&
                                       _rating == 4)
                                     SizedBox(
-                                      height: 44,
-                                      child: Text('Bạn đã cho 4 sao',
-                                          style: TextStyle(fontSize: 18)),
+                                      height: 130,
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 0, right: 0, top: 0),
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('feedback')
+                                                .where('storeId',
+                                                    isEqualTo:
+                                                        widget.feedback.idStore)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Wrap(
+                                                  children: snapshot.data.docs
+                                                      .map(
+                                                          (DocumentSnapshot e) {
+                                                    return Wrap(
+                                                      children: [
+                                                        e['rating'] == 4
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    if (choice
+                                                                        .contains(
+                                                                            '${e['comment']}')) {
+                                                                      choice.remove(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                          .text = '';
+                                                                    } else {
+                                                                      choice.add(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                              .text =
+                                                                          '${e['comment']}';
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    ChoiceChip(
+                                                                  label: Text(
+                                                                      '${e['comment']}'),
+                                                                  selected: choice
+                                                                      .contains(
+                                                                          '${e['comment']}'),
+                                                                ),
+                                                              )
+                                                            : Text('')
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          )),
                                     ),
                                   if (_rating != null &&
                                       _rating != 0 &&
                                       _rating == 5)
                                     SizedBox(
-                                      height: 44,
-                                      child: Text('Bạn đã cho 5 sao',
-                                          style: TextStyle(fontSize: 18)),
+                                      height: 130,
+                                      child: Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 0, right: 0, top: 0),
+                                          child: StreamBuilder<QuerySnapshot>(
+                                            stream: FirebaseFirestore.instance
+                                                .collection('feedback')
+                                                .where('storeId',
+                                                    isEqualTo:
+                                                        widget.feedback.idStore)
+                                                .snapshots(),
+                                            builder: (context, snapshot) {
+                                              if (snapshot.hasData) {
+                                                return Wrap(
+                                                  children: snapshot.data.docs
+                                                      .map(
+                                                          (DocumentSnapshot e) {
+                                                    return Wrap(
+                                                      children: [
+                                                        e['rating'] == 5 &&
+                                                                e['comment'] !=
+                                                                    'Nội dung này đã bị ẩn'
+                                                            ? GestureDetector(
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    if (choice
+                                                                        .contains(
+                                                                            '${e['comment']}')) {
+                                                                      choice.remove(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                          .text = '';
+                                                                    } else {
+                                                                      choice.add(
+                                                                          '${e['comment']}');
+                                                                      _commentController
+                                                                              .text =
+                                                                          '${e['comment']}';
+                                                                    }
+                                                                  });
+                                                                },
+                                                                child:
+                                                                    ChoiceChip(
+                                                                  label: Text(
+                                                                      '${e['comment']}'),
+                                                                  selected: choice
+                                                                      .contains(
+                                                                          '${e['comment']}'),
+                                                                ),
+                                                              )
+                                                            : Text('')
+                                                      ],
+                                                    );
+                                                  }).toList(),
+                                                );
+                                              }
+                                              return Container();
+                                            },
+                                          )),
                                     ),
                                   if (_rating == null &&
                                       _rating == 0 &&

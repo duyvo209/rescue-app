@@ -53,7 +53,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void initState() {
     StripeService.init();
     _calPriceMove();
-    _calPriceService();
+    _calPriceServiceStore();
     _calPriceListService();
 
     super.initState();
@@ -90,7 +90,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         .reduce((value, element) => value + element);
   }
 
-  _calPriceService() async {
+  _calPriceServiceStore() async {
     var data = await FirebaseFirestore.instance
         .collection('store')
         .doc(widget.detailStore.idStore)

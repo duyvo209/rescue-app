@@ -8,7 +8,6 @@ import 'package:rescue/blocs/feedback/feedback_bloc.dart';
 import 'package:rescue/blocs/login/login_bloc.dart';
 import 'package:rescue/blocs/reportStore/report_bloc.dart';
 import 'package:rescue/blocs/request/request_bloc.dart';
-import 'package:rescue/blocs/store/store_bloc.dart';
 import 'package:rescue/models/Service.dart';
 import 'package:rescue/models/Store.dart';
 import 'package:rescue/screens/user/ChatDetailTest.dart';

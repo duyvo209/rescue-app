@@ -29,40 +29,6 @@ class _ServiceScreenState extends State<ServiceScreen> {
     _getListServiceStream();
   }
 
-  // Future<List<String>> _getListService({String query}) async {
-  //   var snapshot = await FirebaseFirestore.instance.collection('store').get();
-  //   var ids = snapshot.docs.map((e) {
-  //     return e.id;
-  //   }).toList();
-  //   List<String> services = [];
-  //   for (int i = 0; i < ids.length; i++) {
-  //     var snapshotService = await FirebaseFirestore.instance
-  //         .collection('store')
-  //         .doc(ids[i])
-  //         .collection('service')
-  //         .get();
-  //     var listServiceId = snapshotService.docs.map((e) => e.id).toList();
-  //     for (int j = 0; j < listServiceId.length; j++) {
-  //       var result = await FirebaseFirestore.instance
-  //           .collection('store')
-  //           .doc(ids[i])
-  //           .collection('service')
-  //           .doc(listServiceId[j])
-  //           .get();
-  //       if (!services.contains(result.data()['name'])) {
-  //         services.add(result.data()['name']);
-  //       }
-  //     }
-  //   }
-  //   setState(() {
-  //     listProblems = services;
-  //   });
-
-  //   return services
-  //       .where((element) => element.toLowerCase().contains(query.toLowerCase()))
-  //       .toList();
-  // }
-
   Stream<List<Service>> _getListServiceStream() {
     return FirebaseFirestore.instance
         .collection('services')
@@ -101,31 +67,19 @@ class _ServiceScreenState extends State<ServiceScreen> {
       if (snapshotService.docs.any((element) =>
           element.data()['service_id'].toString().toLowerCase() ==
           query.toLowerCase())) {
-        listStoreQuery
-            .add(listStore.firstWhere((element) => element.idStore == ids[i]));
+        listStoreQuery.add(listStore
+            .firstWhere((element) => element.idStore == ids[i])
+            .copyWith(
+                listService: snapshotService.docs.map((e) {
+              return Service(
+                  id: e.data()['service_id'], price: e.data()['price']);
+            }).toList()));
       }
     }
     return listStoreQuery;
   }
 
   _sortByPrice() async {
-    for (int i = 0; i < listStore.length; i++) {
-      var collectionService = await FirebaseFirestore.instance
-          .collection('store')
-          .doc(listStore[i].idStore)
-          .collection('service')
-          .get();
-      var services = collectionService.docs.map((e) {
-        return Service(
-          id: e.id,
-          name: e.data()['name'],
-          price: e.data()['price'],
-          desc: e.data()['desc'],
-        );
-      }).toList();
-
-      listStore[i] = listStore[i].copyWith(listService: services);
-    }
     listStore.sort((a, b) {
       var serviceA = a.listService
           .firstWhere((element) => currentService.id.contains(element.id));
@@ -463,6 +417,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                   setState(() {
                                     showLoading = true;
                                     showListStore = true;
+                                    currentService = services[index];
                                   });
                                   var list = await _getListStore(
                                       query: services[index].id);

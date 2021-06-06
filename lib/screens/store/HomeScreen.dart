@@ -472,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               height: 10,
                                             ),
                                             Text(
-                                              '${e.userInfo.address}',
+                                              '${e.userInfo.phone}',
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(

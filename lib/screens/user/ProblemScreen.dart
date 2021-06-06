@@ -20,6 +20,7 @@ class _ProblemScreenState extends State<ProblemScreen> {
   List<Store> listStore = [];
   bool showLoading = false;
   Problem currentProblem;
+  List<Service> services = [];
 
   @override
   void initState() {
@@ -60,7 +61,13 @@ class _ProblemScreenState extends State<ProblemScreen> {
         if (listServicesHaveThisProblem.any((element1) => collectionService.docs
             .any((element2) => element1.id == element2.data()['service_id']))) {
           print("found");
-          listStoreHaveThisService.add(listStore[i]);
+          listStoreHaveThisService.add(listStore[i].copyWith(
+              listService: collectionService.docs
+                  .map((e) => Service(
+                        id: e.data()['service_id'],
+                        price: e.data()['price'],
+                      ))
+                  .toList()));
         }
         // listStoreHaveThisService.add(listStore[i]);
       }
@@ -72,40 +79,49 @@ class _ProblemScreenState extends State<ProblemScreen> {
   }
 
   _sortByPrice() async {
-    for (int i = 0; i < listStore.length; i++) {
-      var collectionService = await FirebaseFirestore.instance
-          .collection('store')
-          .doc(listStore[i].idStore)
-          .collection('service')
-          .get();
-      var services = collectionService.docs.map((e) {
-        return Service(
-          id: e.id,
-          name: e.data()['name'],
-          price: e.data()['price'],
-          desc: e.data()['desc'],
-        );
-      }).toList();
-
-      listStore[i] = listStore[i].copyWith(listService: services);
-    }
+    var listServiceAdmin =
+        await FirebaseFirestore.instance.collection('services').get();
+    var list = listServiceAdmin.docs.where(
+        (element) => element.data()['problem_id'] == currentProblem.problemId);
+    var service = list.first;
+    // for (int i = 0; i < listStore.length; i++) {
+    //   var collectionServiceStore = await FirebaseFirestore.instance
+    //       .collection('store')
+    //       .doc(listStore[i].idStore)
+    //       .collection('service')
+    //       .get();
+    //   var listServiceAdmin =
+    //       await FirebaseFirestore.instance.collection('services').get();
+    //   listServiceAdmin.docs.map((element1) {
+    //     if (collectionServiceStore.docs
+    //         .any((element2) => element1.id == element2.data()['service_id'])) {
+    //       var services = collectionServiceStore.docs.map((e) {
+    //         return Service(
+    //           id: element1.id,
+    //           price: collectionServiceStore.docs
+    //               .firstWhere(
+    //                   (element) => element1.id == element.data()['service_id'])
+    //               .data()['price'],
+    //         );
+    //       }).toList();
+    //       listStore[i] = listStore[i].copyWith(listService: services);
+    //     }
+    //   });
+    // }
     listStore.sort((a, b) {
-      var serviceA = a.listService.firstWhere(
-          (element) => currentProblem.services.contains(element.name));
-      var serviceB = b.listService.firstWhere(
-          (element) => currentProblem.services.contains(element.name));
+      var serviceA =
+          a.listService.firstWhere((element) => service.id == element.id);
+      var serviceB =
+          b.listService.firstWhere((element) => service.id == element.id);
       return int.tryParse(serviceA.price)
           .compareTo(int.tryParse(serviceB.price));
     });
     setState(() {});
   }
 
-  _sortByRating() async {
+  _sortByRating() {
     StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('feedback')
-          .where('storeId', isEqualTo: listStore.map((e) => e.idStore))
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('feedback').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           sumrating = 0;
@@ -155,6 +171,9 @@ class _ProblemScreenState extends State<ProblemScreen> {
                       listStore = result;
                       showListStore = true;
                       showLoading = false;
+                      listStore.sort((a, b) => a
+                          .getM(10.02545, 105.77621)
+                          .compareTo(b.getM(10.02545, 105.77621)));
                     });
                   },
                   child: ChoiceChip(
