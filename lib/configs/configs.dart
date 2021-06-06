@@ -1,8 +1,3 @@
-// ignore: non_constant_identifier_names
-// final String GOOGLE_API_KEY = 'AIzaSyBLnQ6KLSCfkgMFDgbw1_jMzlo4fhXILss';
+// final String GOOGLE_API_KEY = 'AIzaSyByWFWWt8L9dsvvNzKlUR6RJC9O0SI8gZQ';
 
-// ignore: non_constant_identifier_names
-final String GOOGLE_API_KEY = 'AIzaSyBHRMxpBKc25CMHY51h1jrnCCm6PjNs62s';
-
-// ignore: non_constant_identifier_names
-// final String GOOGLE_API_KEY = 'AIzaSyAuFYSUAOPOxPyHolLKH8yNENjBipVAKCM';
+final String GOOGLE_API_KEY = 'AIzaSyBLnQ6KLSCfkgMFDgbw1_jMzlo4fhXILss';
