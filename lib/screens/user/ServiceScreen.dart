@@ -91,6 +91,31 @@ class _ServiceScreenState extends State<ServiceScreen> {
     setState(() {});
   }
 
+  _sortByRating() async {
+    var result = await FirebaseFirestore.instance.collection('feedback').get();
+    var feedback = result.docs.toList();
+    listStore = listStore.map((element) {
+      int total = 0;
+      int index = 0;
+      total = feedback
+          .map((e) {
+            if (e.data()['storeId'] == element.idStore) {
+              index++;
+              return e.data()['rating'] as int;
+            }
+            return 0;
+          })
+          .toList()
+          .reduce((value, element) => value + element);
+
+      return element.copyWith(avgRating: total / ((index == 0 ? 1 : index)));
+    }).toList();
+
+    listStore.sort((a, b) => b.avgRating.compareTo(a.avgRating));
+
+    setState(() {});
+  }
+
   double rating;
   int sumrating = 0;
   int size;
@@ -124,8 +149,8 @@ class _ServiceScreenState extends State<ServiceScreen> {
                             onPressed: () {
                               setState(() {
                                 listStore.sort((a, b) => a
-                                    .getM(10.02545, 105.77621)
-                                    .compareTo(b.getM(10.02545, 105.77621)));
+                                    .getM(10.029939, 105.7684213)
+                                    .compareTo(b.getM(10.029939, 105.7684213)));
                               });
                             },
                             child: Container(
@@ -180,11 +205,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                           ),
                           FlatButton(
                             onPressed: () async {
-                              // await _sortByRating();
-                              setState(() {
-                                listStore
-                                    .sort((a, b) => b.name.compareTo(a.name));
-                              });
+                              await _sortByRating();
                             },
                             child: Container(
                                 // color: Colors.amber,
@@ -215,7 +236,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                       ),
                       Column(
                         children: listStore.map((e) {
-                          double m = e.getM(10.02545, 105.77621);
+                          double m = e.getM(10.029939, 105.7684213);
                           return GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -328,8 +349,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                                             rating = sumrating /
                                                                 snapshot
                                                                     .data.size;
-                                                            size = snapshot
-                                                                .data.size;
+
                                                             return Row();
                                                           }).toList(),
                                                         ),
@@ -355,7 +375,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                                                   .horizontal,
                                                             ),
                                                             Spacer(),
-                                                            size == null
+                                                            snapshot.data
+                                                                        .size ==
+                                                                    null
                                                                 ? Text(
                                                                     '0 đánh giá',
                                                                     style: TextStyle(
@@ -363,7 +385,7 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                                                             .white),
                                                                   )
                                                                 : Text(
-                                                                    '${size.toString()} đánh giá',
+                                                                    '${snapshot.data.size} đánh giá',
                                                                     style: TextStyle(
                                                                         color: Colors
                                                                             .white),
@@ -425,9 +447,9 @@ class _ServiceScreenState extends State<ServiceScreen> {
                                     listStore = list;
                                     showLoading = false;
                                     listStore.sort((a, b) => a
-                                        .getM(10.02545, 105.77621)
+                                        .getM(10.029939, 105.7684213)
                                         .compareTo(
-                                            b.getM(10.02545, 105.77621)));
+                                            b.getM(10.029939, 105.7684213)));
                                   });
                                 },
                                 child: ChoiceChip(

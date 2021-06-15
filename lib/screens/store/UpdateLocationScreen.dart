@@ -76,8 +76,8 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
                     BlocProvider.of<StoreBloc>(context).add(
                       UpdateLocation(
                         storeId: FirebaseAuth.instance.currentUser.uid,
-                        lat: 10.028118,
-                        lng: 105.773649,
+                        lat: 10.0285683,
+                        lng: 105.7694787,
                         // 10.028167, 105.776633
                       ),
                     );
@@ -104,8 +104,8 @@ class _UpdateLocationScreenState extends State<UpdateLocationScreen> {
                     BlocProvider.of<StoreBloc>(context).add(
                       UpdateLocation(
                         storeId: FirebaseAuth.instance.currentUser.uid,
-                        lat: 10.028167,
-                        lng: 105.776633,
+                        lat: 10.0283442,
+                        lng: 105.7706658,
                         // 10.028167, 105.776633
                       ),
                     );

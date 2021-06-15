@@ -146,8 +146,10 @@ class _HomeScreenState extends State<HomeScreen> {
   setPolylines(latitude, longitude) async {
     polylineCoordinates.clear();
     PolylineResult resultPoly =
-        await polylinePoints?.getRouteBetweenCoordinates(GOOGLE_API_KEY,
-            PointLatLng(10.02545, 105.77621), PointLatLng(latitude, longitude));
+        await polylinePoints?.getRouteBetweenCoordinates(
+            GOOGLE_API_KEY,
+            PointLatLng(10.029939, 105.768421),
+            PointLatLng(latitude, longitude));
     List<PointLatLng> result = resultPoly?.points;
     // print(result);
     if (result.isNotEmpty) {
@@ -548,13 +550,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (state.listStore != null &&
                               state.listStore.isNotEmpty) {
                             state.listStore.sort((a, b) => a
-                                .getM(10.02545, 105.77621)
-                                .compareTo(b.getM(10.02545, 105.77621)));
+                                .getM(10.029939, 105.768421)
+                                .compareTo(b.getM(10.029939, 105.768421)));
                             return SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                   children: state.listStore.map((e) {
-                                double m = e.getM(10.02545, 105.77621);
+                                double m = e.getM(10.029939, 105.768421);
                                 // calculateDistance(10.02545, 105.77621, e.lat, e.long);
                                 return Container(
                                     height: 160,

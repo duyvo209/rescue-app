@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             controller: _nameController,
                             decoration: InputDecoration(
                                 contentPadding: EdgeInsets.only(bottom: 5),
-                                labelText: 'Họ tên'.tr().toString(),
+                                labelText: 'Tên cửa hàng'.tr().toString(),
                                 floatingLabelBehavior:
                                     FloatingLabelBehavior.always,
                                 hintStyle: TextStyle(

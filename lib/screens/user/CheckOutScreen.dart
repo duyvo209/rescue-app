@@ -27,34 +27,24 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  var totalPriceAll = 0.0;
   double usd = 23000;
 
-  var totalPrice = 0.0;
-  var sum = 0.0;
   var priceMove = 0.0;
   var priceServiceStore = 0.0;
   var priceListService = 0.0;
 
-  payViaNewCard(BuildContext context) async {
-    var totalCard = totalPriceAll / usd * 100;
-    print(totalCard.toStringAsFixed(0));
-    var response = await StripeService.payWithNewCard(
-        amount: totalCard.toStringAsFixed(0), currency: 'USD');
+  var priceSum = 0.0;
 
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(response.message),
-      duration:
-          new Duration(milliseconds: response.success == true ? 1200 : 3000),
-    ));
-  }
+  payViaNewCard(BuildContext context) async {}
 
   @override
   void initState() {
     StripeService.init();
     _calPriceMove();
     _calPriceServiceStore();
-    _calPriceListService();
+    if (widget.detailStore.service.isNotEmpty) {
+      _calPriceListService();
+    }
 
     super.initState();
   }
@@ -286,27 +276,27 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       _showDialog(context);
-                      // var sum = totalPrice + priceMove;
-                      // BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
-                      //   storeId: widget.detailStore.idStore,
-                      //   userId: widget.detailStore.idUser,
-                      //   total: priceSum.toStringAsFixed(0),
-                      //   userInfo: widget.detailStore.userInfo,
-                      //   checkout: 1,
-                      // ));
 
-                      // BlocProvider.of<RequestBloc>(context).add(
-                      //   UpdateCheckout(
-                      //     requestId: widget.detailStore.idRequest,
-                      //     checkout: 1,
-                      //   ),
-                      // );
+                      BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
+                        storeId: widget.detailStore.idStore,
+                        userId: widget.detailStore.idUser,
+                        total: priceSum.toStringAsFixed(0),
+                        userInfo: widget.detailStore.userInfo,
+                        checkout: 1,
+                      ));
 
-                      // BlocProvider.of<RequestBloc>(context).add(
-                      //   DeleteService(
-                      //     requestId: widget.detailStore.idRequest,
-                      //   ),
-                      // );
+                      BlocProvider.of<RequestBloc>(context).add(
+                        UpdateCheckout(
+                          requestId: widget.detailStore.idRequest,
+                          checkout: 1,
+                        ),
+                      );
+
+                      BlocProvider.of<RequestBloc>(context).add(
+                        DeleteService(
+                          requestId: widget.detailStore.idRequest,
+                        ),
+                      );
                     },
                     child: Text(
                       "Xác Nhận Hoá Đơn".tr().toString(),
@@ -326,8 +316,21 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   width: 390,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () {
-                      payViaNewCard(context);
+                    onPressed: () async {
+                      // payViaNewCard(context);
+
+                      var totalCard = priceSum / usd * 100;
+                      print(totalCard.toStringAsFixed(0));
+                      var response = await StripeService.payWithNewCard(
+                          amount: totalCard.toStringAsFixed(0),
+                          currency: 'USD');
+
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(response.message),
+                        duration: new Duration(
+                            milliseconds:
+                                response.success == true ? 1200 : 3000),
+                      ));
 
                       BlocProvider.of<OrderBloc>(context).add(NewOrderEvent(
                         storeId: widget.detailStore.idStore,

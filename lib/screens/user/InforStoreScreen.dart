@@ -183,7 +183,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                                         ),
                                         Text.rich(
                                           TextSpan(
-                                            text: "Báo cáo vi phạm",
+                                            text: "Báo cáo cửa hàng vi phạm",
                                             style: TextStyle(fontSize: 18),
                                           ),
                                         ),
@@ -275,7 +275,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                   vertical: 0,
                 ),
                 child: Text(
-                  "Cách bạn ${widget.store.getM(10.02545, 105.77621).toString().substring(0, 4)} km",
+                  "Cách bạn ${widget.store.getM(10.029939, 105.768421).toString().substring(0, 4)} km",
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -580,7 +580,7 @@ class _InforStoreScreenState extends State<InforStoreScreen> {
                                                       Text.rich(
                                                         TextSpan(
                                                           text:
-                                                              "Báo cáo vi phạm",
+                                                              "Báo cáo bình luận vi phạm",
                                                           style: TextStyle(
                                                               fontSize: 18),
                                                         ),

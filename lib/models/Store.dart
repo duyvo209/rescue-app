@@ -13,6 +13,7 @@ class Store {
   double long;
   double m;
   List<Service> listService;
+  double avgRating;
   Store({
     this.idStore,
     this.name,
@@ -24,6 +25,7 @@ class Store {
     this.long,
     this.m,
     this.listService,
+    this.avgRating,
   });
 
   factory Store.fromFireStore(Map<String, dynamic> json) {
@@ -56,7 +58,7 @@ class Store {
     };
   }
 
-  Store copyWith({final List<Service> listService}) {
+  Store copyWith({final List<Service> listService, double avgRating}) {
     return Store(
       listService: listService ?? this.listService,
       idStore: idStore,
@@ -68,6 +70,7 @@ class Store {
       lat: lat,
       long: long,
       m: m,
+      avgRating: avgRating ?? this.avgRating,
     );
   }
 

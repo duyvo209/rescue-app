@@ -30,7 +30,6 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
   List<Service> services = [];
 
   var priceMove = 0.0;
-  // var xs = 0.0;
   var priceListService = 0.0;
   var percentService = 0.0;
   var phiDichVu = 0.0;
@@ -245,7 +244,7 @@ class _ComfirmScreenState extends State<ComfirmScreen> {
                                               }
                                             });
 
-                                            print(listServiceSelected.length);
+                                            // print(listServiceSelected.length);
                                           },
                                           items: services.map((value) {
                                             return DropdownMenuItem(

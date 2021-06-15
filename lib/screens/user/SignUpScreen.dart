@@ -97,8 +97,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return BlocListener<SignupBloc, SignupState>(
       listener: (_, state) {
         if (state.signupSuccess) {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          // Navigator.push(
+          //     context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.pop(context);
         }
       },
       child: BlocBuilder<SignupBloc, SignupState>(
@@ -267,10 +268,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     password: _passwordController.text,
                                     uid: widget.uid),
                               );
-                              await Navigator.push(
-                                  context,
-                                  new MaterialPageRoute(
-                                      builder: (context) => LoginScreen()));
+                              // await Navigator.push(
+                              //     context,
+                              //     new MaterialPageRoute(
+                              //         builder: (context) => LoginScreen()));
                             },
                             child: Container(
                               width: 360,
@@ -305,28 +306,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-
-  // _showDialog(BuildContext context) => showDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //           title:
-  //               Text('Thành công', style: TextStyle(color: Colors.green[600])),
-  //           content: Text('Đăng ký tài khoản thành công !'),
-  //           actions: [
-  //             FlatButton(
-  //                 onPressed: () {
-  //                   Navigator.pop(context);
-  //                   // Navigator.push(
-  //                   //   context,
-  //                   //   new MaterialPageRoute(
-  //                   //       builder: (context) =>
-  //                   //           FeedbackScreen(widget.detailStore)),
-  //                   // );
-  //                 },
-  //                 child: Text(
-  //                   'OK',
-  //                   style: TextStyle(color: Colors.blueGrey[800]),
-  //                 ))
-  //           ],
-  //         ));
 }

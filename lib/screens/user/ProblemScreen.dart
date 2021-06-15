@@ -119,28 +119,29 @@ class _ProblemScreenState extends State<ProblemScreen> {
     setState(() {});
   }
 
-  _sortByRating() {
-    StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('feedback').snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          sumrating = 0;
-          rating = 0;
-          return Column(
-            children: [
-              Row(
-                children: snapshot.data.docs.map((feedback) {
-                  sumrating += feedback['rating'];
-                  rating = sumrating / snapshot.data.size;
-                  return Row();
-                }).toList(),
-              ),
-            ],
-          );
-        }
-        return Container();
-      },
-    );
+  _sortByRating() async {
+    var result = await FirebaseFirestore.instance.collection('feedback').get();
+    var feedback = result.docs.toList();
+    listStore = listStore.map((element) {
+      int total = 0;
+      int index = 0;
+      total = feedback
+          .map((e) {
+            if (e.data()['storeId'] == element.idStore) {
+              index++;
+              return e.data()['rating'] as int;
+            }
+            return 0;
+          })
+          .toList()
+          .reduce((value, element) => value + element);
+
+      return element.copyWith(avgRating: total / ((index == 0 ? 1 : index)));
+    }).toList();
+
+    listStore.sort((a, b) => b.avgRating.compareTo(a.avgRating));
+
+    setState(() {});
   }
 
   double rating;
@@ -172,8 +173,8 @@ class _ProblemScreenState extends State<ProblemScreen> {
                       showListStore = true;
                       showLoading = false;
                       listStore.sort((a, b) => a
-                          .getM(10.02545, 105.77621)
-                          .compareTo(b.getM(10.02545, 105.77621)));
+                          .getM(10.029939, 105.7684213)
+                          .compareTo(b.getM(10.029939, 105.7684213)));
                     });
                   },
                   child: ChoiceChip(
@@ -223,8 +224,9 @@ class _ProblemScreenState extends State<ProblemScreen> {
                               onPressed: () {
                                 setState(() {
                                   listStore.sort((a, b) => a
-                                      .getM(10.02545, 105.77621)
-                                      .compareTo(b.getM(10.02545, 105.77621)));
+                                      .getM(10.029939, 105.7684213)
+                                      .compareTo(
+                                          b.getM(10.029939, 105.7684213)));
                                 });
                               },
                               child: Container(
@@ -279,11 +281,7 @@ class _ProblemScreenState extends State<ProblemScreen> {
                             ),
                             FlatButton(
                               onPressed: () async {
-                                // await _sortByRating();
-                                setState(() {
-                                  listStore
-                                      .sort((a, b) => b.name.compareTo(a.name));
-                                });
+                                await _sortByRating();
                               },
                               child: Container(
                                   // color: Colors.amber,
@@ -314,7 +312,7 @@ class _ProblemScreenState extends State<ProblemScreen> {
                         ),
                         Column(
                           children: listStore.map((e) {
-                            double m = e.getM(10.02545, 105.77621);
+                            double m = e.getM(10.029939, 105.7684213);
                             return GestureDetector(
                               onTap: () {
                                 Navigator.push(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rescue/blocs/feedback/feedback_bloc.dart';
 import 'package:rescue/models/Rescue.dart';
+import 'package:rescue/screens/user/HomeScreen.dart';
 import 'package:rescue/utils/rating.dart';
 
 class FeedbackScreen extends StatefulWidget {
@@ -86,6 +87,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
                                                 return Wrap(
+                                                  spacing: 5,
                                                   children: snapshot.data.docs
                                                       .map(
                                                           (DocumentSnapshot e) {
@@ -148,6 +150,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
                                                 return Wrap(
+                                                  spacing: 5,
                                                   children: snapshot.data.docs
                                                       .map(
                                                           (DocumentSnapshot e) {
@@ -210,6 +213,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
                                                 return Wrap(
+                                                  spacing: 5,
                                                   children: snapshot.data.docs
                                                       .map(
                                                           (DocumentSnapshot e) {
@@ -272,6 +276,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
                                                 return Wrap(
+                                                  spacing: 5,
                                                   children: snapshot.data.docs
                                                       .map(
                                                           (DocumentSnapshot e) {
@@ -334,6 +339,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                             builder: (context, snapshot) {
                                               if (snapshot.hasData) {
                                                 return Wrap(
+                                                  spacing: 5,
                                                   children: snapshot.data.docs
                                                       .map(
                                                           (DocumentSnapshot e) {
@@ -592,7 +598,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
             actions: [
               FlatButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
                   child: Text(
                     'OK',
